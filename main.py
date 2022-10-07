@@ -331,6 +331,37 @@ def anharmonic_oscillator_diag(f, n_dim, w0):
     plt.title('d/dt[log<O(0)O(t)>] - Analytic formula')
     plt.show()
 
+    #Helmotz Free Energy
+
+    #Temperature scale
+    temperature_scale_min = 0.5
+    temperature_scale_max = 5
+    n_temperature_scale = 50
+    dtemperature_scale = (temperature_scale_max-temperature_scale_min)/n_temperature_scale
+
+    temperature_scale = np.arange(temperature_scale_min,temperature_scale_max,dtemperature_scale)
+
+    #Free energy array
+    free_energy = np.zeros(n_temperature_scale)
+    temp_free_energy = 0
+
+    for i in range(n_temperature_scale):
+
+        for j in range(n_dim):
+
+            temp_free_energy += np.exp((-e[j]/temperature_scale[i]))
+
+        free_energy[i] = temperature_scale[i]*np.log(temp_free_energy)
+
+        temp_free_energy = 0
+
+
+    plt.plot(temperature_scale,free_energy)
+    plt.title('Free energy')
+    plt.xscale('log')
+    plt.show()
+
+
 
 if __name__ == '__main__':
     anharmonic_oscillator_diag(1.4, 50, 4 * 1.4)
