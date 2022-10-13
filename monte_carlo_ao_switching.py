@@ -39,7 +39,7 @@ def stat_av_var(observable, observable_sqrd, n_data):
         var_temp = observable_sqrd[i_array]/(n_data * n_data) - \
             pow(observable_av[i_array], 2) / n_data
         if var_temp > 0.0:
-            observable_err[i_array] = var_temp
+            observable_err[i_array] = var_temp  # INPUT OF THE VARIANCES
         else:
             observable_err[i_array] = 0.0
 
@@ -59,50 +59,39 @@ def monte_carlo_ao_switching(x_potential_minimum,  # potential well position
     Solve the anharmonic oscillator through
     Monte Carlo technique on an Euclidian Axis
     '''
+    # Variables for switching algorithm
+    d_alpha = 1.0 / n_switching
 
-    if n_mc_sweeps < n_equil:
-        print("too few Monte Carlo sweeps/ N_equilib > N_Monte_Carlo")
-
-    # Variables for switching process
-    dalpha = 1.0 / (n_switching)
-    a_alpha = 0.0  # value of the coulping constant
-
-    delta_s_alpha = np.zeros((2*n_switching))
-    delta_s_alpha2 = np.zeros((2*n_switching))
-
-    #delta_s_alpha_av = np.zeros((2*n_switching))
-    #delta_s_alpha_err = np.zeros((2*n_switching))
+    delta_s_alpha = np.zeros((2*n_switching + 1))
+    delta_s_alpha2 = np.zeros((2*n_switching + 1))
 
 
     # x position along the tau axis
-    x_config = np.zeros((n_lattice+1))
-
-
-    if icold is True:
-        for i in range(1,n_lattice):
-            x_config[i] = - x_potential_minimum
-    else:
-        rnd.seed()
-        for i in range(1,n_lattice):
-            x_config[i] = 2 * \
-                rnd.uniform(0., 1.) * x_potential_minimum \
-                - x_potential_minimum
-
-    # impose periodic boundary conditions and
-    # understand the way in which they are imposed in the reference file
-    x_config[0] = x_config[n_lattice-1]
-    x_config[n_lattice] = x_config[1]
+    x_config = np.zeros((n_lattice + 1))
 
     # Now the principal cycle is over the coupling constant alpha
-    for i_switching in range(2 * n_switching):
+    for i_switching in range(2 * n_switching + 1):
+
+        if icold is True:
+            for i in range(1, n_lattice):
+                x_config[i] = - x_potential_minimum
+        else:
+            for i in range(1, n_lattice):
+                x_config[i] = 2 * \
+                    rnd.uniform(0., 1.) * x_potential_minimum \
+                    - x_potential_minimum
+        # impose periodic boundary conditions
+        x_config[0] = x_config[n_lattice - 1]
+        x_config[n_lattice] = x_config[1]
+
 
         if i_switching <= n_switching:
-            a_alpha = i_switching * dalpha
+            a_alpha = i_switching * d_alpha
         else:
-            a_alpha = 2.0 - (i_switching) * dalpha
+            a_alpha = 2.0 - (i_switching) * d_alpha
 
         # Monte Carlo sweeps
-        
+
         # Counters for different parts
         n_accept = 0
         n_hit = 0
@@ -122,7 +111,7 @@ def monte_carlo_ao_switching(x_potential_minimum,  # potential well position
 
                 action_loc_old = (
                     pow((x_config[i] - x_config[i-1])/(2 * dtau), 2) +
-                    pow((x_config[i+1] - x_config[i])/(2 * dtau), 2) + 
+                    pow((x_config[i+1] - x_config[i])/(2 * dtau), 2) +
                     (v1 - v0) * a_alpha + v0  # Potential V_alpha
                     ) * dtau
 
@@ -148,7 +137,7 @@ def monte_carlo_ao_switching(x_potential_minimum,  # potential well position
                     x_config[i] = x_new
                     n_accept += 1
 
-            x_config[0] = x_config[n_lattice-1]
+            x_config[0] = x_config[n_lattice - 1]
             x_config[n_lattice] = x_config[1]
 
             if i_mc >= n_equil:
@@ -164,54 +153,60 @@ def monte_carlo_ao_switching(x_potential_minimum,  # potential well position
             delta_s_alpha[i_switching] += delta_s_alpha_temp
             delta_s_alpha2[i_switching] += pow(delta_s_alpha_temp, 2)
 
-
         # Monte Carlo End
         # Control Acceptance ratio
-        print('acceptance ratio = {n}'.format(n=n_accept/n_hit))
+        #print('acceptance ratio = {n}'.format(n=n_accept/n_hit))
 
-    
     delta_s_alpha_av, delta_s_alpha_err = stat_av_var(delta_s_alpha, delta_s_alpha2, n_config)
-    delta_s_alpha_err = np.power(delta_s_alpha_err,2)
-    
-
-    delta_s_alpha_av = np.append(delta_s_alpha_av, delta_s_alpha_av[0])
-    delta_s_alpha_err = np.append(delta_s_alpha_err, delta_s_alpha_err[0])
-
-    print(delta_s_alpha_av)
+    #delta_s_alpha_err = np.power(delta_s_alpha_err,2)
 
     # Integration over alpha in <deltaS>
-    integral_01 = np.trapz(delta_s_alpha_av[0:(n_switching + 1)], dx = dalpha)
-    integral_10 = np.trapz(delta_s_alpha_av[n_switching:(2*n_switching + 1)], dx = dalpha)
-    print(integral_01)
-    print(integral_10)
-    integral_01_err = np.trapz(delta_s_alpha_err[0:(n_switching + 1)], dx = dalpha)
-    integral_10_err = np.trapz(delta_s_alpha_err[n_switching:(2*n_switching + 1)], dx = dalpha)
+    integral_01 = np.trapz(delta_s_alpha_av[0:(n_switching + 1)], dx = d_alpha)
+    integral_10 = np.trapz(delta_s_alpha_av[n_switching:(2*n_switching + 1)], dx = d_alpha)
+
+    integral_01_err = np.trapz(delta_s_alpha_err[0:(n_switching + 1)], dx = d_alpha)
+    integral_10_err = np.trapz(delta_s_alpha_err[n_switching:(2*n_switching + 1)], dx = d_alpha)
+
     trapezoidal_error = np.abs(
         (delta_s_alpha_av[n_switching] - delta_s_alpha_av[n_switching-1] +
           delta_s_alpha_av[1] - delta_s_alpha_av[0]) /
-        (dalpha * 12 * n_switching * n_switching ) )
+        (d_alpha * 12 * n_switching * n_switching ) )
+
     propagation_error = np.sqrt(integral_01_err + integral_10_err)
     hysteresis_error = np.abs(integral_01 - integral_10)
+
+
+    with open('data.txt','a') as writer:
+       np.savetxt(writer, delta_s_alpha_av)
+       writer.write('Errors:\n')
+       np.savetxt(writer, delta_s_alpha_err)
+       writer.write('prop error:\n')
+       writer.write(str(propagation_error))
+       writer.write('\ntrap error:\n')
+       writer.write(str(trapezoidal_error))
+       writer.write('\nhys error:\n')
+       writer.write(str(hysteresis_error))
+       writer.write('\nintegral 0->1:\n')
+       writer.write(str(integral_01))
+       writer.write('\nintegral 1->0:\n')
+       writer.write(str(integral_10))
+       writer.write('\n#######################\n')
+
 
     return -(integral_01 + integral_10) / 2.0, np.sqrt(pow(propagation_error, 2) +
                                                       pow(hysteresis_error, 2) +
                                                       pow(trapezoidal_error, 2))
 
 
-def total(n_beta):
+def free_energy_anharm(n_beta):
 
-    rnd.seed(time.time())   
+    rnd.seed(time.time())
 
     # Free Helmoltz energy for the anharmonic oscillator
-    beta_min = 1.0
-    beta_max = 10
-    beta_axis = np.linspace(beta_min, beta_max, n_beta, False)
+    beta_axis = np.linspace(1.0, 8.0, n_beta - 1)
     temperature_axis = 1.0 / beta_axis
 
     dtau = 0.05
-
-    print(beta_axis)
-    print(temperature_axis)
 
     free_energy = np.empty((n_beta), float)
     free_energy_err = np.empty((n_beta), float)
@@ -220,14 +215,12 @@ def total(n_beta):
 
         n_lattice = int(beta_axis[i_beta]/dtau)
 
-        print(n_lattice)
-
         free_energy[i_beta], free_energy_err[i_beta] = \
         monte_carlo_ao_switching(1.4,
-                                 20,  # n_lattice
-                                 0.05,  # dtau
+                                 n_lattice,  # n_lattice
+                                 dtau,  # dtau
                                  100,  # n_equil
-                                 100000,  # n_mc_sweeps
+                                 100000,  # n_mc_sweeps-
                                  0.45,
                                  20,
                                  1.4 * 4,
@@ -237,9 +230,8 @@ def total(n_beta):
         free_energy[i_beta] += free_energy_harmonic_osc(beta_axis[i_beta], 1.4*4)
 
     print(free_energy)
-    print(beta_axis)
 
-    fig1 = plt.figure(1, figsize=(8, 2.5), facecolor="#f1f1f1")
+    fig1 = plt.figure(1, facecolor="#f1f1f1")
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     ax1.set_xlabel(r"$T$")
@@ -249,7 +241,7 @@ def total(n_beta):
                   free_energy,
                   free_energy_err,
                   color='b',
-                  fmt='o')
+                  fmt='.')
 
     ax1.set_xscale('log')
 
@@ -258,7 +250,12 @@ def total(n_beta):
 
     ax1.plot(temperature_axis,
             free_energy,
-            color='blue')
+            color='green')
+
+
+    ax1.plot(temperature_axis,
+            free_energy_harmonic_osc(1.0/temperature_axis, 1.4 * 4),
+            color='red')
 
     fig1.savefig("Free_energy_mc.png", dpi = 200)
 
@@ -267,5 +264,4 @@ def total(n_beta):
 
 if __name__ == '__main__':
 
-    total(1)
-
+    free_energy_anharm(4)
