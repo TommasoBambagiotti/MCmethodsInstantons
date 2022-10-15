@@ -87,26 +87,26 @@ def log_corr_funct_analytic(energy_density,
 
 
 def free_energy(energy_eigenvalues):
-    
+
     temperature_array = np.linspace(0.08, 2.0, 99)
-    
+
     free_energy_array = np.empty(temperature_array.size)
     z_partition_function = 0.0
     i_f_energy = 0
     for temperature in temperature_array:
         for energy in energy_eigenvalues:
             z_partition_function += np.exp(-energy / temperature)
-        
+
         free_energy_array[i_f_energy] = temperature*np.log(z_partition_function)
         z_partition_function = 0.0
         i_f_energy += 1
-        
+
     with open(r'output_data\temperature.txt', 'w') as temperature_writer:
         np.savetxt(temperature_writer, temperature_array)
     with open(r'output_data\free_energy.txt', 'w') as fenergy_writer:
         np.savetxt(fenergy_writer, free_energy_array)
-        
-        
+
+
 def anharmonic_oscillator_diag(x_potential_minimum,
                                n_dim,
                                freq_har_osc):
@@ -264,8 +264,6 @@ def anharmonic_oscillator_diag(x_potential_minimum,
             pow(hermite.hermval(x_position_array[i_pos] / (c_norm_coeff * np.sqrt(2.0)),
                                 groundstate_projections), 2)
 
-        #x_norm += psi_ground_state_squared[i_pos] * d_x_position
-
     with open(r'output_data\x_position_array.txt', 'w') as x_writer:
         np.savetxt(x_writer, x_position_array)
     with open(r'output_data\psi_simple_model.txt', 'w') as psi_simple_writer:
@@ -347,8 +345,7 @@ def anharmonic_oscillator_diag(x_potential_minimum,
 
     # Helmoltz Free Energy
     free_energy(energy_eigenvalues)
-    
+
 
 if __name__ == '__main__':
     anharmonic_oscillator_diag(1.4, 50, 4 * 1.4)
-    
