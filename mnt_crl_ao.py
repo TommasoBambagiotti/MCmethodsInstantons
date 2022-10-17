@@ -4,6 +4,7 @@
 import random as rnd
 import numpy as np
 import utility_custom
+<<<<<<< Updated upstream
 
 
 def stat_av_var(observable, observable_sqrd, n_data):
@@ -101,13 +102,14 @@ def metropolis_question(x_config,
 
     return x_config
 
+=======
+import utility_monte_carlo as mc
+import input_parameters as ip
+>>>>>>> Stashed changes
 
-def monte_carlo_ao(x_potential_minimum,  # potential well position
-                   n_lattice,  # size of the grid
-                   dtau,  # grid spacing in time
+def monte_carlo_ao(n_lattice,  # size of the grid
                    n_equil,  # equilibration sweeps
                    n_mc_sweeps,  # monte carlo sweeps
-                   delta_x,  # width of gauss. dist. for update x
                    n_points,  #
                    n_meas,  #
                    i_cold):  # cold/hot start):
@@ -119,7 +121,7 @@ def monte_carlo_ao(x_potential_minimum,  # potential well position
         return 0
 
     # Control output filepath
-    output_path = r'.\output_data\output_monte_carlo'
+    output_path = './output_data/output_monte_carlo'
     utility_custom.output_control(output_path)
 
     # Correlation functions
@@ -127,19 +129,32 @@ def monte_carlo_ao(x_potential_minimum,  # potential well position
     x2_cor_sums = np.zeros((3, n_points))
 
     # x position along the tau axis
+<<<<<<< Updated upstream
     x_config = initialize_lattice(n_lattice, i_cold, x_potential_minimum)
+=======
+    x_config = mc.initialize_lattice(n_lattice, i_cold)
+>>>>>>> Stashed changes
 
     # Monte Carlo sweeps: Principal cycle
 
     # Equilibration cycle
     for i_equil in range(n_equil):
+<<<<<<< Updated upstream
         x_config = metropolis_question(x_config, dtau, delta_x, x_potential_minimum)
+=======
+        x_config = mc.metropolis_question(x_config)
+>>>>>>> Stashed changes
 
         # Rest of the MC sweeps
-    with open(output_path + r'\ground_state_histogram.dat', 'wb') as hist_writer:
+    with open(output_path + '/ground_state_histogram.dat', 'wb') as hist_writer:
         for i_mc in range(n_mc_sweeps - n_equil):
+<<<<<<< Updated upstream
             x_config = metropolis_question(x_config, dtau, delta_x, x_potential_minimum)
             np.save(hist_writer, x_config[0:(n_lattice-1)])
+=======
+            x_config = mc.metropolis_question(x_config)
+            np.save(hist_writer, x_config[0:(n_lattice - 1)])
+>>>>>>> Stashed changes
             for k_meas in range(n_meas):
                 i_p0 = int((n_lattice - n_points) * rnd.uniform(0., 1.))
                 x_0 = x_config[i_p0]
@@ -163,27 +178,37 @@ def monte_carlo_ao(x_potential_minimum,  # potential well position
                                           n_meas*(n_mc_sweeps - n_equil))
     x_cor_3_av, x_cor_3_err = stat_av_var(x_cor_sums[2],
                                           x2_cor_sums[2],
+<<<<<<< Updated upstream
                                           n_meas*(n_mc_sweeps - n_equil))
     
     with open(output_path + r'\tau_array.txt', 'w') as tau_writer:
+=======
+                                          n_meas * (n_mc_sweeps - n_equil))
+
+    with open(output_path + '/tau_array.txt', 'w') as tau_writer:
+>>>>>>> Stashed changes
         np.savetxt(tau_writer,
-                   np.linspace(0, n_points * dtau, n_points, False))
-    with open(output_path + r'\average_x_cor.txt', 'w') as av_writer:
+                   np.linspace(0, n_points * ip.dtau, n_points, False))
+    with open(output_path + '/average_x_cor.txt', 'w') as av_writer:
         np.savetxt(av_writer, x_cor_av)
-    with open(output_path + r'\error_x_cor.txt', 'w') as err_writer:
+    with open(output_path + '/error_x_cor.txt', 'w') as err_writer:
         np.savetxt(err_writer, x_cor_err)
-    with open(output_path + r'\average_x_cor_2.txt', 'w') as av_writer:
+    with open(output_path + '/average_x_cor_2.txt', 'w') as av_writer:
         np.savetxt(av_writer, x_cor_2_av)
-    with open(output_path + r'\error_x_cor_2.txt', 'w') as err_writer:
+    with open(output_path + '/error_x_cor_2.txt', 'w') as err_writer:
         np.savetxt(err_writer, x_cor_2_err)
-    with open(output_path + r'\average_x_cor_3.txt', 'w') as av_writer:
+    with open(output_path + '/average_x_cor_3.txt', 'w') as av_writer:
         np.savetxt(av_writer, x_cor_3_av)
-    with open(output_path + r'\error_x_cor_3.txt', 'w') as err_writer:
+    with open(output_path + '/error_x_cor_3.txt', 'w') as err_writer:
         np.savetxt(err_writer, x_cor_3_err)
 
     # Correlation function Log
     derivative_log_corr_funct, derivative_log_corr_funct_err = \
+<<<<<<< Updated upstream
         log_central_der_alg(x_cor_av, x_cor_err, dtau)
+=======
+        mc.log_central_der_alg(x_cor_av, x_cor_err, ip.dtau)
+>>>>>>> Stashed changes
 
     # In the case of log <x^2x^2> the constant part <x^2>
     # is circa the average for the greatest tau
@@ -191,25 +216,30 @@ def monte_carlo_ao(x_potential_minimum,  # potential well position
     derivative_log_corr_funct_2, derivative_log_corr_funct_2_err = \
         log_central_der_alg(x_cor_2_av - x_cor_2_av[n_points-1],
                             np.sqrt(x_cor_2_err * x_cor_2_err + pow(x_cor_2_err, 2)),
-                            dtau)
+                            ip.dtau)
 
     derivative_log_corr_funct_3, derivative_log_corr_funct_3_err = \
+<<<<<<< Updated upstream
         log_central_der_alg(x_cor_3_av, x_cor_3_err, dtau)
+=======
+        mc.log_central_der_alg(x_cor_3_av, x_cor_3_err, ip.dtau)
+>>>>>>> Stashed changes
 
-    with open(output_path + r'\average_der_log.txt', 'w') as av_writer:
+    with open(output_path + '/average_der_log.txt', 'w') as av_writer:
         np.savetxt(av_writer, derivative_log_corr_funct)
-    with open(output_path + r'\error_der_log.txt', 'w') as err_writer:
+    with open(output_path + '/error_der_log.txt', 'w') as err_writer:
         np.savetxt(err_writer, derivative_log_corr_funct_err)
-    with open(output_path + r'\average_der_log_2.txt', 'w') as av_writer:
+    with open(output_path + '/average_der_log_2.txt', 'w') as av_writer:
         np.savetxt(av_writer, derivative_log_corr_funct_2)
-    with open(output_path + r'\error_der_log_2.txt', 'w') as err_writer:
+    with open(output_path + '/error_der_log_2.txt', 'w') as err_writer:
         np.savetxt(err_writer, derivative_log_corr_funct_2_err)
-    with open(output_path + r'\average_der_log_3.txt', 'w') as av_writer:
+    with open(output_path + '/average_der_log_3.txt', 'w') as av_writer:
         np.savetxt(av_writer, derivative_log_corr_funct_3)
-    with open(output_path + r'\error_der_log_3.txt', 'w') as err_writer:
+    with open(output_path + '/error_der_log_3.txt', 'w') as err_writer:
         np.savetxt(err_writer, derivative_log_corr_funct_3_err)
 
     return 1
+<<<<<<< Updated upstream
 
 if __name__ == '__main__':
 
@@ -222,3 +252,5 @@ if __name__ == '__main__':
                    20,  # n_point
                    5,  # n_meas
                    False)
+=======
+>>>>>>> Stashed changes
