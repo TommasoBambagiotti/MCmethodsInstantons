@@ -5,6 +5,7 @@ import input_parameters as ip
 
 def potential_alpha(x_position,
                     a_alpha):
+<<<<<<< Updated upstream
     if (a_alpha > -0.01):
         potential_1 = pow(x_position * x_position -
                           ip.x_potential_minimum * ip.x_potential_minimum, 2)
@@ -12,11 +13,24 @@ def potential_alpha(x_position,
         return a_alpha * (potential_1 - potential_0) + potential_0
     else:
         return pow(x_position * x_position -
+=======
+    if(a_alpha > -0.01):
+        potential_1 = pow(x_position * x_position - 
+                   ip.x_potential_minimum * ip.x_potential_minimum, 2)
+        potential_0 = pow(ip.w_omega0 * x_position, 2) / 4.0
+        return a_alpha * (potential_1 - potential_0) + potential_0
+    else:
+        return pow(x_position * x_position - 
+>>>>>>> Stashed changes
                    ip.x_potential_minimum * ip.x_potential_minimum, 2)
 
 
 def metropolis_question(x_config,
+<<<<<<< Updated upstream
                         a_alpha=-1.0):
+=======
+                        a_alpha = -1.0):
+>>>>>>> Stashed changes
     '''
     '''
     n_lattice = x_config.size - 1
@@ -54,6 +68,10 @@ def metropolis_question(x_config,
 
 def initialize_lattice(n_lattice,
                        i_cold):
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
     if i_cold is True:
         x_config = np.repeat(-ip.x_potential_minimum, n_lattice + 1)
     else:
@@ -140,11 +158,21 @@ def find_instantons(x,n_lattice,dt):
 
     pos_roots = 0
     neg_roots = 0
+<<<<<<< Updated upstream
     pos_roots_position = np.zeros(1)
     neg_roots_position = np.zeros(1)
+=======
+    pos_roots_position = np.empty((0), float)
+    neg_roots_position = np.empty((0), float)
+    i_zero = 0
+
+    while(i_zero < n_lattice) and (x[i_zero] == 0):
+        i_zero +=1
+>>>>>>> Stashed changes
 
     #print(f'x_pos ={x[i_zero]} with i_zero = {i_zero}')
 
+<<<<<<< Updated upstream
     if x[0] == 0:
 
         if x[1] - x[0] > 0:
@@ -165,6 +193,9 @@ def find_instantons(x,n_lattice,dt):
         x_pos = x[i_zero]
 
     for i in range(i_zero+1,n_lattice):
+=======
+    for i in range(i_zero + 1, n_lattice):
+>>>>>>> Stashed changes
 
 
         if x_pos*x[i] < 0 :
