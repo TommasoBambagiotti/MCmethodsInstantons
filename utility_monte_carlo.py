@@ -73,8 +73,10 @@ def stat_av_var(observable, observable_sqrd, n_data):
     expressed in an array, directly as the sum and the sum of squares.
     We use the formula Var[<O>] = (<O^2> - <O>^2)/N'''
     # Control
-    if observable.size != observable_sqrd.size:
-        return None, None
+    if (type(observable) is np.ndarray) and (type(observable_sqrd) is np.ndarray):
+        if observable.size != observable_sqrd.size:
+            return None, None
+    
 
     observable_av = observable / n_data
     observable_var = observable_sqrd / (n_data * n_data)
