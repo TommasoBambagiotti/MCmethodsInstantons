@@ -342,7 +342,7 @@ def anharmonic_oscillator_diag(x_potential_minimum,
 
     with open(output_path + '/av_der_log_corr_funct.txt', 'w') as log_writer:
         np.savetxt(log_writer, an_derivative_log_corr_funct)
-    with open(output_path  + 'av_der_log_corr_funct2.txt', 'w') as log_writer:
+    with open(output_path  + '/av_der_log_corr_funct2.txt', 'w') as log_writer:
         np.savetxt(log_writer, an_derivative_log_corr_funct2)
     with open(output_path + '/av_der_log_corr_funct3.txt', 'w') as log_writer:
         np.savetxt(log_writer, an_derivative_log_corr_funct3)

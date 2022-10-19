@@ -113,4 +113,4 @@ def monte_carlo_ao(n_lattice,  # size of the grid
 
     return 1
 
-monte_carlo_ao(800, 100, 50000, 20, 5, False)
+monte_carlo_ao(800, 100, 100000, 20, 5, False)
