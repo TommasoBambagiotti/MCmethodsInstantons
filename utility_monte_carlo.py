@@ -143,8 +143,8 @@ def find_instantons(x,n_lattice,dt):
     pos_roots = 0
     neg_roots = 0
 
-    pos_roots_position = np.empty((0), float)
-    neg_roots_position = np.empty((0), float)
+    pos_roots_position = np.zeros((1), float)
+    neg_roots_position = np.zeros((1), float)
     i_zero = 0
 
     while(i_zero < n_lattice) and (x[i_zero] == 0):
