@@ -184,8 +184,8 @@ def free_energy_anharm(n_beta,
         f_writer.write(str(virial_hamiltonian_err))
     with open(output_path + '/temperature.txt', 'w') as f_writer:
         np.savetxt(f_writer, temperature_array)
-        f_writer.write(str(1 / (200 * 0.05)))
+        f_writer.write(str(1 / (n_virial * ip.dtau)))
 
 
-if __name__ == '__main__':
-    cP.run("free_energy_anharm(4, 20.0, 100, 50000, 20, False)")
+
+#cP.run("free_energy_anharm(4, 20.0, 100, 50000, 20, False)")
