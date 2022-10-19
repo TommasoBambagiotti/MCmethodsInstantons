@@ -60,50 +60,47 @@ def monte_carlo_ao(n_lattice,  # size of the grid
                     x2_cor_sums[2, i_point] += pow(x_0 * x_1, 6)
 
     # Evaluate averages and other stuff, maybe we can create a function
-    x_cor_av, x_cor_err = mc.stat_av_var(x_cor_sums[0],
-                                      x2_cor_sums[0],
-                                      n_meas * (n_mc_sweeps - n_equil))
-    x_cor_2_av, x_cor_2_err = mc.stat_av_var(x_cor_sums[1],
-                                          x2_cor_sums[1],
-                                          n_meas * (n_mc_sweeps - n_equil))
-    x_cor_3_av, x_cor_3_err = mc.stat_av_var(x_cor_sums[2],
-                                          x2_cor_sums[2],
-                                          n_meas * (n_mc_sweeps - n_equil))
+    x_cor_av = np.zeros((3, n_points))
+    x_cor_err = np.zeros((3, n_points))
+    
+    for i_stat in range(3):
+        x_cor_av[i_stat] , x_cor_err[i_stat] = \
+            mc.stat_av_var(x_cor_sums[i_stat],
+                           x2_cor_sums[i_stat],
+                           n_meas * (n_mc_sweeps - n_equil)
+                           )
+            
+        
+        with open(output_path + f'/average_x_cor_{i_stat + 1}.txt', 'w') as av_writer:
+            np.savetxt(av_writer, x_cor_av[i_stat])
+        with open(output_path + f'/error_x_cor_{i_stat + 1}.txt', 'w') as err_writer:
+            np.savetxt(err_writer, x_cor_err[i_stat])
 
     with open(output_path + '/tau_array.txt', 'w') as tau_writer:
         np.savetxt(tau_writer,
                    np.linspace(0, n_points * ip.dtau, n_points, False))
-    with open(output_path + '/average_x_cor.txt', 'w') as av_writer:
-        np.savetxt(av_writer, x_cor_av)
-    with open(output_path + '/error_x_cor.txt', 'w') as err_writer:
-        np.savetxt(err_writer, x_cor_err)
-    with open(output_path + '/average_x_cor_2.txt', 'w') as av_writer:
-        np.savetxt(av_writer, x_cor_2_av)
-    with open(output_path + '/error_x_cor_2.txt', 'w') as err_writer:
-        np.savetxt(err_writer, x_cor_2_err)
-    with open(output_path + '/average_x_cor_3.txt', 'w') as av_writer:
-        np.savetxt(av_writer, x_cor_3_av)
-    with open(output_path + '/error_x_cor_3.txt', 'w') as err_writer:
-        np.savetxt(err_writer, x_cor_3_err)
+    
 
     # Correlation function Log
     derivative_log_corr_funct, derivative_log_corr_funct_err = \
-        mc.log_central_der_alg(x_cor_av, x_cor_err, ip.dtau)
+        mc.log_central_der_alg(x_cor_av[0], x_cor_err[0], ip.dtau)
 
     # In the case of log <x^2x^2> the constant part <x^2>
     # is circa the average for the greatest tau
 
     derivative_log_corr_funct_2, derivative_log_corr_funct_2_err = \
-        mc.log_central_der_alg(x_cor_2_av - x_cor_2_av[n_points - 1],
-                            np.sqrt(x_cor_2_err * x_cor_2_err + pow(x_cor_2_err, 2)),
-                            ip.dtau)
+        mc.log_central_der_alg(x_cor_av[1] - x_cor_av[1, n_points - 1],
+                               np.sqrt(x_cor_err[1] * x_cor_err[1] \
+                                       + pow(x_cor_err[1, n_points - 1], 2)
+                                       ),
+                               ip.dtau)
 
     derivative_log_corr_funct_3, derivative_log_corr_funct_3_err = \
-        mc.log_central_der_alg(x_cor_3_av, x_cor_3_err, ip.dtau)
+        mc.log_central_der_alg(x_cor_av[2], x_cor_err[2], ip.dtau)
 
-    with open(output_path + '/average_der_log.txt', 'w') as av_writer:
+    with open(output_path + '/average_der_log_1.txt', 'w') as av_writer:
         np.savetxt(av_writer, derivative_log_corr_funct)
-    with open(output_path + '/error_der_log.txt', 'w') as err_writer:
+    with open(output_path + '/error_der_log_1.txt', 'w') as err_writer:
         np.savetxt(err_writer, derivative_log_corr_funct_err)
     with open(output_path + '/average_der_log_2.txt', 'w') as av_writer:
         np.savetxt(av_writer, derivative_log_corr_funct_2)
@@ -115,3 +112,5 @@ def monte_carlo_ao(n_lattice,  # size of the grid
         np.savetxt(err_writer, derivative_log_corr_funct_3_err)
 
     return 1
+
+monte_carlo_ao(800, 100, 50000, 20, 5, False)
