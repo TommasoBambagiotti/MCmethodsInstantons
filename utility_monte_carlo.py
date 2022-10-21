@@ -5,7 +5,6 @@ import input_parameters as ip
 
 def potential_alpha(x_position,
                     a_alpha):
-
     if (a_alpha > -0.01):
         potential_1 = pow(x_position * x_position -
                           ip.x_potential_minimum * ip.x_potential_minimum, 2)
@@ -17,7 +16,7 @@ def potential_alpha(x_position,
 
 
 def metropolis_question(x_config,
-                        a_alpha = -1.0):
+                        a_alpha=-1.0):
     '''
     '''
     n_lattice = x_config.size - 1
@@ -55,7 +54,6 @@ def metropolis_question(x_config,
 
 def initialize_lattice(n_lattice,
                        i_cold):
-
     if i_cold is True:
         x_config = np.repeat(-ip.x_potential_minimum, n_lattice + 1)
     else:
@@ -76,7 +74,6 @@ def stat_av_var(observable, observable_sqrd, n_data):
     if (type(observable) is np.ndarray) and (type(observable_sqrd) is np.ndarray):
         if observable.size != observable_sqrd.size:
             return None, None
-    
 
     observable_av = observable / n_data
     observable_var = observable_sqrd / (n_data * n_data)
@@ -109,12 +106,12 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
 
     return derivative_log, derivative_log_err
 
-def configuration_cooling(x_cold_config, dtau, delta_x, x_potential_minimum):
 
-    n_lattice = x_cold_config.size -1
+def configuration_cooling(x_cold_config, dtau, delta_x, x_potential_minimum):
+    n_lattice = x_cold_config.size - 1
     n_trials = 10
 
-    for i in range (1,n_lattice):
+    for i in range(1, n_lattice):
 
         action_loc_old = (
                                  pow((x_cold_config[i] - x_cold_config[i - 1]) / (2 * dtau), 2) +
@@ -122,20 +119,18 @@ def configuration_cooling(x_cold_config, dtau, delta_x, x_potential_minimum):
                                  pow(x_cold_config[i] * x_cold_config[i] -
                                      x_potential_minimum * x_potential_minimum, 2)
                          ) * dtau
-        for j in range(1,n_trials): #perchè??
+        for j in range(1, n_trials):  # perchè??
 
             x_new = x_cold_config[i] + rnd.gauss(0, delta_x)
 
             action_loc_new = (
-                                         pow((x_new - x_cold_config[i - 1]) / (2 * dtau), 2) +
-                                         pow((x_cold_config[i + 1] - x_new) / (2 * dtau), 2) +
-                                         pow(x_new * x_new -
-                                             x_potential_minimum * x_potential_minimum, 2)) * dtau
+                                     pow((x_new - x_cold_config[i - 1]) / (2 * dtau), 2) +
+                                     pow((x_cold_config[i + 1] - x_new) / (2 * dtau), 2) +
+                                     pow(x_new * x_new -
+                                         x_potential_minimum * x_potential_minimum, 2)) * dtau
 
-            if ((action_loc_new - action_loc_old) < 0 ):
+            if ((action_loc_new - action_loc_old) < 0):
                 x_cold_config[i] = x_new
-
-
 
     return x_cold_config
 
@@ -144,13 +139,10 @@ def find_instantons(x,n_lattice,dt):
 
     pos_roots = 0
     neg_roots = 0
+    pos_roots_position = np.zeros(1)
+    neg_roots_position = np.zeros(1)
 
-    pos_roots_position = np.zeros((1), float)
-    neg_roots_position = np.zeros((1), float)
-    i_zero = 0
-
-    while(i_zero < n_lattice) and (x[i_zero] == 0):
-        i_zero +=1
+    #print(f'x_pos ={x[i_zero]} with i_zero = {i_zero}')
 
     if x[0] == 0:
 
@@ -168,10 +160,12 @@ def find_instantons(x,n_lattice,dt):
             i_zero = 1
             x_pos = x[i_zero]
     else:
+
         i_zero = 0
         x_pos = x[i_zero]
 
-    for i in range(i_zero + 1, n_lattice):
+    for i in range(i_zero+1,n_lattice):
+
 
         if x_pos*x[i] < 0 :
 
