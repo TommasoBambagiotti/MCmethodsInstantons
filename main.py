@@ -1,7 +1,7 @@
 # This is a sample Python script.
 
 import anh_osc_diag
-import mnt_rcl_ao
+import monte_carlo_ao
 import monte_carlo_ao_switching
 
 if __name__ == '__main__':
@@ -12,7 +12,7 @@ if __name__ == '__main__':
     if call in ['diagonalize']:
         anh_osc_diag.anharmonic_oscillator_diag(1.4, 50, 4 * 1.4)
     elif call in ['monte_carlo_simulation']:
-        mnt_rcl_ao.monte_carlo_ao(1.4, #potential minimum
+        monte_carlo_ao.monte_carlo_ao(1.4, #potential minimum
                    800,  # n_lattice
                    0.05,  # dtau
                    100,  # n_equil
