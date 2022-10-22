@@ -5,6 +5,7 @@ import numpy as np
 from numpy import math
 from numpy import linalg as LA
 from numpy.polynomial import hermite
+import utility_custom
 
 
 def psi_simple_model(x_position,
@@ -86,7 +87,7 @@ def log_corr_funct_analytic(energy_density,
     return an_log_corr_funct
 
 
-def free_energy(energy_eigenvalues):
+def free_energy(energy_eigenvalues, output_path):
 
     temperature_array = np.linspace(0.08, 2.0, 99)
 
@@ -101,9 +102,9 @@ def free_energy(energy_eigenvalues):
         z_partition_function = 0.0
         i_f_energy += 1
 
-    with open(r'output_data\temperature.txt', 'w') as temperature_writer:
+    with open(output_path + '/temperature.txt', 'w') as temperature_writer:
         np.savetxt(temperature_writer, temperature_array)
-    with open(r'output_data\free_energy.txt', 'w') as fenergy_writer:
+    with open(output_path + '/free_energy.txt', 'w') as fenergy_writer:
         np.savetxt(fenergy_writer, free_energy_array)
 
 
@@ -111,6 +112,9 @@ def anharmonic_oscillator_diag(x_potential_minimum,
                                n_dim,
                                freq_har_osc):
 
+    # Output control
+    output_path = './output_data/output_diag'
+    utility_custom.output_control(output_path)
     # parameters
     n_hamiltonian = n_dim + 4
     #n_max = 100
@@ -198,7 +202,7 @@ def anharmonic_oscillator_diag(x_potential_minimum,
         if energy_eigenvalues[i_removal] > 1e-5:
             break
 
-    with open(r'output_data\removed_energy_values.txt', 'w') as e_writer:
+    with open(output_path + '/removed_energy_values.txt', 'w') as e_writer:
         e_writer.write('Removed energy eigenvalues:\n')
         np.savetxt(e_writer, energy_eigenvalues[:i_removal])
         for i in range(i_removal):
@@ -264,9 +268,9 @@ def anharmonic_oscillator_diag(x_potential_minimum,
             pow(hermite.hermval(x_position_array[i_pos] / (c_norm_coeff * np.sqrt(2.0)),
                                 groundstate_projections), 2)
 
-    with open(r'output_data\x_position_array.txt', 'w') as x_writer:
+    with open(output_path + '/x_position_array.txt', 'w') as x_writer:
         np.savetxt(x_writer, x_position_array)
-    with open(r'output_data\psi_simple_model.txt', 'w') as psi_simple_writer:
+    with open(output_path + '/psi_simple_model.txt', 'w') as psi_simple_writer:
         for x_position in np.nditer(x_position_array):
             psi_simple_writer.write(
                 str(
@@ -274,7 +278,7 @@ def anharmonic_oscillator_diag(x_potential_minimum,
                     )
                 )
             psi_simple_writer.write('\n')
-    with open(r'output_data\psi_ground_state.txt', 'w') as psi_ground_writer:
+    with open(output_path + '/psi_ground_state.txt', 'w') as psi_ground_writer:
         np.savetxt(psi_ground_writer, psi_ground_state_squared)
 
     # Correlation functions
@@ -285,13 +289,13 @@ def anharmonic_oscillator_diag(x_potential_minimum,
     correlation_functions[2] = corr_functs_analytic(energy_densities[2],
                                                     tau_array, energy_eigenvalues)
 
-    with open(r'output_data\tau_array.txt', 'w') as tau_writer:
+    with open(output_path + '/tau_array.txt', 'w') as tau_writer:
         np.savetxt(tau_writer, tau_array)
-    with open(r'output_data\corr_function.txt', 'w') as corr_writer:
+    with open(output_path + '/corr_function.txt', 'w') as corr_writer:
         np.savetxt(corr_writer, correlation_functions[0])
-    with open(r'output_data\corr_function2.txt', 'w') as corr_writer:
+    with open(output_path + '/corr_function2.txt', 'w') as corr_writer:
         np.savetxt(corr_writer, correlation_functions[1])
-    with open(r'output_data\corr_function3.txt', 'w') as corr_writer:
+    with open(output_path + '/corr_function3.txt', 'w') as corr_writer:
         np.savetxt(corr_writer, correlation_functions[2])
 
 
@@ -302,7 +306,7 @@ def anharmonic_oscillator_diag(x_potential_minimum,
     py_derivative_log_corr_funct2 = np.gradient(-correlation_functions[1], dtau)
     py_derivative_log_corr_funct3 = np.gradient(-correlation_functions[2], dtau)
 
-    with open(r'output_data\py_der_log_corr_funct.txt', 'w') as log_writer:
+    with open(output_path + '/py_der_log_corr_funct.txt', 'w') as log_writer:
         np.savetxt(log_writer, py_derivative_log_corr_funct)
         np.savetxt(log_writer, py_derivative_log_corr_funct2)
         np.savetxt(log_writer, py_derivative_log_corr_funct3)
@@ -316,7 +320,7 @@ def anharmonic_oscillator_diag(x_potential_minimum,
     fd_derivative_log_corr_funct3 = log_corr_funct_forward_difference(
         correlation_functions[2], dtau)
 
-    with open(r'output_data\fd_der_log_corr_funct.txt', 'w') as log_writer:
+    with open(output_path +'/fd_der_log_corr_funct.txt', 'w') as log_writer:
         np.savetxt(log_writer, fd_derivative_log_corr_funct)
         np.savetxt(log_writer, fd_derivative_log_corr_funct2)
         np.savetxt(log_writer, fd_derivative_log_corr_funct3)
@@ -336,15 +340,15 @@ def anharmonic_oscillator_diag(x_potential_minimum,
                                                 energy_eigenvalues,
                                                 correlation_functions[2])
 
-    with open(r'output_data\av_der_log_corr_funct.txt', 'w') as log_writer:
+    with open(output_path + '/av_der_log_corr_funct.txt', 'w') as log_writer:
         np.savetxt(log_writer, an_derivative_log_corr_funct)
-    with open(r'output_data\av_der_log_corr_funct2.txt', 'w') as log_writer:
+    with open(output_path  + '/av_der_log_corr_funct2.txt', 'w') as log_writer:
         np.savetxt(log_writer, an_derivative_log_corr_funct2)
-    with open(r'output_data\av_der_log_corr_funct3.txt', 'w') as log_writer:
+    with open(output_path + '/av_der_log_corr_funct3.txt', 'w') as log_writer:
         np.savetxt(log_writer, an_derivative_log_corr_funct3)
 
     # Helmoltz Free Energy
-    free_energy(energy_eigenvalues)
+    free_energy(energy_eigenvalues, output_path)
 
 
 if __name__ == '__main__':
