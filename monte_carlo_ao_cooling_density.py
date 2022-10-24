@@ -32,7 +32,7 @@ def cooled_monte_carlo(
         #contatore probabilmente inutile
         n_cooling = 0
 
-        ip.x_potential_minimum = 1.4 + 0.1 * i_minimum
+        ip.x_potential_minimum = 1.6 + 0.1 * i_minimum
 
         ip.print_minimum()
 
@@ -54,6 +54,8 @@ def cooled_monte_carlo(
 
         for i_equil in range(n_equil):
             mc.metropolis_question(x_config)
+
+        np.savetxt(output_path + f'/config_equil_{i_minimum + 1}.txt', x_config )
 
         # Rest of the MC sweeps
 
@@ -80,6 +82,7 @@ def cooled_monte_carlo(
                                                                              ip.dtau)
                     #pos_instantons, pos_anti_instantons 
 
+                    print(n_instantons)
                     n_total_instantons_sum[i_cooling] += (n_instantons + n_anti_instantons)
                     n2_total_instantons_sum[i_cooling] += pow((n_instantons + n_anti_instantons), 2)
 
