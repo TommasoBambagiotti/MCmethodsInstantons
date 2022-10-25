@@ -32,7 +32,7 @@ def cooled_monte_carlo(
         #contatore probabilmente inutile
         n_cooling = 0
 
-        ip.x_potential_minimum = 1.6 + 0.1 * i_minimum
+        ip.x_potential_minimum = 1.4 + 0.1 * i_minimum
 
         ip.print_minimum()
 
