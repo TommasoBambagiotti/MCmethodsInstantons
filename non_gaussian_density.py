@@ -8,12 +8,14 @@ import utility_cooling as cool
 
 
 def non_gaussian_inst_density(n_lattice,  # size of the grid
-                             n_equil,  # equilibration sweeps
-                             n_mc_sweeps,  # monte carlo sweeps
-                             n_switching,  #
-                             i_cold):  # cold/hot st): 
+                            n_equil,  # equilibration sweeps
+                            n_mc_sweeps,  # monte carlo sweeps
+                            n_switching,  #
+                            i_cold):  # cold/hot st): 
 
     # initialize lattice and other arrays
+    
+    i_half_lattice = (n_lattice) / 2 
     
     x_config_inst, x_config_inst_0, potential_initial, anharmonic_frequency = \
         cool.initialize_instanto_lattice(n_lattice)
@@ -35,14 +37,27 @@ def non_gaussian_inst_density(n_lattice,  # size of the grid
         print(f'Switching #{i_switching}')
 
         for i_equil in range(n_equil):
-           cool.metropolis_question(x_config_inst, a_alpha)
+            for i_pos in range(1, n_lattice):
+                cool.metropolis_question(x_config_inst,
+                                         x_config_inst_0,
+                                         anharmonic_frequency,
+                                         potential_initial,
+                                         a_alpha)
 
         for i_mc in range(n_equil, n_mc_sweeps):
 
             delta_s_alpha_temp = 0.0
-            cool.metropolis_question(x_config_inst, a_alpha)
+            cool.metropolis_question(x_config_inst,
+                                     x_config_inst_0,
+                                     anharmonic_frequency,
+                                     potential_initial,
+                                     a_alpha)
+            
             for j in range(n_lattice):
-                potential_0 = pow(ip.w_omega0 * x_config_inst[j], 2) / 4.0
+                potential_0 = 0.5 * anharmonic_frequency[j] * \
+                    pow(x_config_inst[j] - x_config_inst_0[j], 2) \
+                        + potential_initial[j]
+                        
                 potential_1 = pow(x_config_inst[j] * x_config_inst[j]
                                   - (ip.x_potential_minimum
                                   * ip.x_potential_minimum)
