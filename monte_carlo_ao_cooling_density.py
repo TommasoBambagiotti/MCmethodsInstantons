@@ -110,10 +110,8 @@ def cooled_monte_carlo(
         action_cooling = np.divide(action_cooling, n_total)
 
 
-        n_total /= (n_lattice * ip.dtau * 2.0)
-        n_total_err /= (n_lattice * ip.dtau * 2.0)
-
-        
+        n_total /= (n_lattice * ip.dtau)
+        n_total_err /= (n_lattice * ip.dtau)
 
         with open (output_path + f'/n_instantons_{i_minimum + 1}.txt', 'w',
                   encoding='utf-8') as n_inst_writer:
