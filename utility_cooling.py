@@ -1,7 +1,7 @@
 
 import numpy as np
 import random as rnd
-import initial_parameters as ip
+import input_parameters as ip
 
 
 def configuration_cooling(x_cold_config,
@@ -17,7 +17,8 @@ def configuration_cooling(x_cold_config,
                                  pow(x_cold_config[i] * x_cold_config[i] -
                                      x_potential_minimum * x_potential_minimum, 2)
                          ) * ip.dtau
-        for j in range(1, n_trials):  # perchè??
+        
+        for j in range(n_trials):  # perchè??
     
             x_new = x_cold_config[i] + rnd.gauss(0, ip.delta_x * 0.1)
     
@@ -27,7 +28,7 @@ def configuration_cooling(x_cold_config,
                                     pow(x_new * x_new -
                                         x_potential_minimum * x_potential_minimum, 2)
                              ) * ip.dtau
-    
+
             if ((action_loc_new - action_loc_old) < 0):
                     x_cold_config[i] = x_new
 
