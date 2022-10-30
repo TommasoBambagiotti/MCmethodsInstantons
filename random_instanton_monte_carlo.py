@@ -8,13 +8,19 @@ from scipy.stats import rv_discrete as dis
 
 import utility_custom
 import utility_monte_carlo as mc
-
 import input_parameters as ip
 
 
-def centers_setup(n_ia, beta_max):
-    tau_centers_ia = np.random.uniform(0.0, beta_max, (n_ia))
-    return tau_centers_ia
+def centers_setup(tau_array, n_ia, n_lattice):
+    tau_centers_ia_index = np.random.randint(0, n_lattice, size=n_ia)
+    tau_centers_ia_index = np.sort(tau_centers_ia_index)
+
+    tau_centers_ia = np.zeros((n_ia))
+    for i_tau in range(n_ia):
+        tau_centers_ia[i_tau] = \
+            tau_array[tau_centers_ia_index[i_tau]]
+
+    return tau_centers_ia, tau_centers_ia_index
 
 
 def ansatz_instanton_conf(tau_centers_ia, tau_array):
@@ -25,9 +31,8 @@ def ansatz_instanton_conf(tau_centers_ia, tau_array):
 
     x_ansatz = np.zeros((tau_array.size), float)
 
-    tau_centers_ia_sorted = np.sort(tau_centers_ia)
     top_charge = 1
-    for tau_ia in np.nditer(tau_centers_ia_sorted):
+    for tau_ia in np.nditer(tau_centers_ia):
         x_ansatz += top_charge * ip.x_potential_minimum \
             * np.tanh(2 * ip.x_potential_minimum
                       * (tau_array - tau_ia))
@@ -51,7 +56,7 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           x2_cor_sums):
 
     # Center of instantons and anti instantons
-    tau_centers_ia = centers_setup(n_ia, tau_array[-1])
+    tau_centers_ia, _ = centers_setup(tau_array, n_ia, tau_array.size)
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array)
 
@@ -70,6 +75,8 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
             x2_cor_sums[2, i_point] += pow(x_0 * x_1, 6)
 
 # Classic distribution of instantons
+
+
 def rho_n_ia(n_ia, tau_max):
     norm = 10
 
@@ -113,7 +120,7 @@ def random_instanton_liquid_model(n_lattice,  # size of the grid
         n_ia_distribution = \
             dis(name='number_inst_distribution', values=(n_ia_array, prob))
 
-        for i_mc in range(n_mc_sweeps):
+        for _ in range(n_mc_sweeps):
             n_ia = n_ia_distribution.rvs(size=1)
 
             rilm_monte_carlo_step(n_ia,
@@ -130,7 +137,7 @@ def random_instanton_liquid_model(n_lattice,  # size of the grid
             * pow(2 / np.pi, 1/2) * np.exp(-s0 - 71 / (72 * s0))
         n_ia = int(np.rint(loop_2 * n_lattice * ip.dtau))
         print(n_ia)
-        for i_mc in range(n_mc_sweeps):
+        for _ in range(n_mc_sweeps):
             rilm_monte_carlo_step(n_ia,
                                   n_points,
                                   n_meas,
@@ -147,12 +154,15 @@ def random_instanton_liquid_model(n_lattice,  # size of the grid
                            x2_cor_sums[i_stat],
                            n_meas * (n_mc_sweeps))
 
-        with open(output_path + f'/average_x_cor_{i_stat + 1}.txt', 'w') as av_writer:
+        with open(output_path + f'/average_x_cor_{i_stat + 1}.txt', 'w',
+                  encoding='utf8') as av_writer:
             np.savetxt(av_writer, x_cor_av[i_stat])
-        with open(output_path + f'/error_x_cor_{i_stat + 1}.txt', 'w') as err_writer:
+        with open(output_path + f'/error_x_cor_{i_stat + 1}.txt', 'w',
+                  encoding='utf8') as err_writer:
             np.savetxt(err_writer, x_cor_err[i_stat])
 
-    with open(output_path + '/tau_array.txt', 'w') as tau_writer:
+    with open(output_path + '/tau_array.txt', 'w',
+              encoding='utf8') as tau_writer:
         np.savetxt(tau_writer,
                    np.linspace(0, n_points * ip.dtau, n_points, False))
 
