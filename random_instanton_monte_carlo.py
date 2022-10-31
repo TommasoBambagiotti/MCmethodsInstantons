@@ -3,95 +3,13 @@
 '''
 import random as rnd
 import numpy as np
-import scipy.special as sp
-from scipy.stats import rv_discrete as dis
+# import scipy.special as sp
+# from scipy.stats import rv_discrete as dis
 
 import utility_custom
 import utility_monte_carlo as mc
+import utility_rilm as rilm
 import input_parameters as ip
-
-
-def centers_setup(tau_array, n_ia, n_lattice):
-    tau_centers_ia_index = np.random.randint(0, n_lattice, size=n_ia)
-    tau_centers_ia_index = np.sort(tau_centers_ia_index)
-
-    tau_centers_ia = np.zeros((n_ia))
-    for i_tau in range(n_ia):
-        tau_centers_ia[i_tau] = \
-            tau_array[tau_centers_ia_index[i_tau]]
-
-    return tau_centers_ia, tau_centers_ia_index
-
-
-def ansatz_instanton_conf(tau_centers_ia, tau_array):
-
-    if tau_centers_ia.size == 0:
-        x_ansatz = np.repeat(-ip.x_potential_minimum, tau_array.size + 1)
-        return x_ansatz
-
-    x_ansatz = np.zeros((tau_array.size), float)
-
-    top_charge = 1
-    for tau_ia in np.nditer(tau_centers_ia):
-        x_ansatz += top_charge * ip.x_potential_minimum \
-            * np.tanh(2 * ip.x_potential_minimum
-                      * (tau_array - tau_ia))
-
-        top_charge *= -1
-
-    x_ansatz -= ip.x_potential_minimum
-
-    # Border periodic conditions
-    x_ansatz[0] = x_ansatz[-1]
-    x_ansatz = np.append(x_ansatz, x_ansatz[1])
-
-    return x_ansatz
-
-
-def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
-                          n_points,  #
-                          n_meas,
-                          tau_array,
-                          x_cor_sums,
-                          x2_cor_sums):
-
-    # Center of instantons and anti instantons
-    tau_centers_ia, _ = centers_setup(tau_array, n_ia, tau_array.size)
-    # Ansatz sum of indipendent instantons
-    x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array)
-
-    for _ in range(n_meas):
-        i_p0 = int((tau_array.size - n_points) * rnd.uniform(0., 1.))
-        x_0 = x_ansatz[i_p0]
-        for i_point in range(n_points):
-            x_1 = x_ansatz[i_p0 + i_point]
-
-            x_cor_sums[0, i_point] += x_0 * x_1
-            x_cor_sums[1, i_point] += pow(x_0 * x_1, 2)
-            x_cor_sums[2, i_point] += pow(x_0 * x_1, 3)
-
-            x2_cor_sums[0, i_point] += pow(x_0 * x_1, 2)
-            x2_cor_sums[1, i_point] += pow(x_0 * x_1, 4)
-            x2_cor_sums[2, i_point] += pow(x_0 * x_1, 6)
-
-# Classic distribution of instantons
-
-
-def rho_n_ia(n_ia, tau_max):
-    norm = 10
-
-    x = np.power(tau_max/norm, n_ia)
-    f = sp.factorial(n_ia/2)
-    f = np.multiply(f, f)
-
-    exponential = np.exp(-4/3 * pow(ip.x_potential_minimum, 3)
-                         * n_ia)
-    x = np.divide(x, f)
-    x = np.multiply(x, exponential)
-
-    partition_function = np.sum(x, axis=0)
-
-    return x/partition_function
 
 
 def random_instanton_liquid_model(n_lattice,  # size of the grid
@@ -116,19 +34,19 @@ def random_instanton_liquid_model(n_lattice,  # size of the grid
 
         # Discrete distribution
         n_ia_array = [0, 2, 4, 6, 8]
-        prob = rho_n_ia(np.array(n_ia_array), n_lattice * ip.dtau)
-        n_ia_distribution = \
-            dis(name='number_inst_distribution', values=(n_ia_array, prob))
+        # prob = rho_n_ia(np.array(n_ia_array), n_lattice * ip.dtau)
+        # n_ia_distribution = \
+        #     dis(name='number_inst_distribution', values=(n_ia_array, prob))
 
-        for _ in range(n_mc_sweeps):
-            n_ia = n_ia_distribution.rvs(size=1)
+        # for _ in range(n_mc_sweeps):
+        #     n_ia = n_ia_distribution.rvs(size=1)
 
-            rilm_monte_carlo_step(n_ia,
-                                  n_points,
-                                  n_meas,
-                                  tau_array,
-                                  x_cor_sums,
-                                  x2_cor_sums)
+        #     rilm_monte_carlo_step(n_ia,
+        #                           n_points,
+        #                           n_meas,
+        #                           tau_array,
+        #                           x_cor_sums,
+        #                           x2_cor_sums)
 
     # n_ia evaluated from 2-loop semi-classical expansion
     else:
@@ -137,13 +55,14 @@ def random_instanton_liquid_model(n_lattice,  # size of the grid
             * pow(2 / np.pi, 1/2) * np.exp(-s0 - 71 / (72 * s0))
         n_ia = int(np.rint(loop_2 * n_lattice * ip.dtau))
         print(n_ia)
-        for _ in range(n_mc_sweeps):
-            rilm_monte_carlo_step(n_ia,
-                                  n_points,
-                                  n_meas,
-                                  tau_array,
-                                  x_cor_sums,
-                                  x2_cor_sums)
+        for i_mc in range(n_mc_sweeps):
+            print(f'#{i_mc} sweep in {n_mc_sweeps - 1}')
+            rilm.rilm_monte_carlo_step(n_ia,
+                                       n_points,
+                                       n_meas,
+                                       tau_array,
+                                       x_cor_sums,
+                                       x2_cor_sums)
 
     x_cor_av = np.zeros((3, n_points))
     x_cor_err = np.zeros((3, n_points))
