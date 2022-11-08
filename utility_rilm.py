@@ -137,6 +137,8 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
             x2_cor_sums[1, i_point] += pow(x_0 * x_1, 4)
             x2_cor_sums[2, i_point] += pow(x_0 * x_1, 6)
 
+    # We return the x_conf for the tau_zcr distribution
+    return x_ansatz
 
 def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                                  n_heating,
