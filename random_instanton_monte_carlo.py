@@ -35,26 +35,28 @@ def random_instanton_liquid_model(n_lattice,  # size of the grid
 
     hist_writer = open(output_path +'/zcr_hist.txt','w')
 
+    print(n_ia)
 
     for i_mc in range(n_mc_sweeps):
         print(f'#{i_mc} sweep in {n_mc_sweeps - 1}')
-        x_ansatz = np.copy(rilm.rilm_monte_carlo_step(n_ia,
-                                              n_points,
-                                              n_meas,
-                                              tau_array,
-                                              x_cor_sums,
-                                              x2_cor_sums))
+        tau_centers_ia = np.copy(rilm.rilm_monte_carlo_step(n_ia,
+                                                      n_points,
+                                                      n_meas,
+                                                      tau_array,
+                                                      x_cor_sums,
+                                                      x2_cor_sums))
 
-        n_i, n_a, pos_roots, neg_roots = mc.find_instantons(x_ansatz,
-                                                            n_lattice, 
-                                                            ip.dtau)
-        
-        if n_i == n_a and n_i != 0:
+        for i in range(0, tau_centers_ia.size, 2):
+            if i == 0:
+                zero_m = tau_centers_ia[-1] - n_lattice * ip.dtau
+            else:
+                zero_m = tau_centers_ia[i-1]
+                
+            z_ia = min((tau_centers_ia[i+1]-tau_centers_ia[i]),
+                       (tau_centers_ia[i] - zero_m))
             
-            pos_roots = np.abs(pos_roots - neg_roots)
-            np.savetxt(hist_writer, pos_roots)
-        
-    
+            hist_writer.write(str(z_ia) + '\n')
+
     hist_writer.close()
 
     utility_custom.\
