@@ -2,6 +2,7 @@ import numpy as np
 import random as rnd
 import input_parameters as ip
 
+
 def potential_alpha(x_position,
                     a_alpha):
     if (a_alpha > -0.01):
@@ -22,18 +23,18 @@ def metropolis_question(x_config,
     for i in range(1, n_lattice):
 
         action_loc_old = (
-                                 pow((x_config[i] - x_config[i - 1]) / (2 * ip.dtau), 2)
-                                 + pow((x_config[i + 1] - x_config[i]) / (2 * ip.dtau), 2)
-                                 + potential_alpha(x_config[i], a_alpha)
-                         ) * ip.dtau
+            pow((x_config[i] - x_config[i - 1]) / (2 * ip.dtau), 2)
+            + pow((x_config[i + 1] - x_config[i]) / (2 * ip.dtau), 2)
+            + potential_alpha(x_config[i], a_alpha)
+        ) * ip.dtau
 
         x_new = x_config[i] + rnd.gauss(0, ip.delta_x)
 
         action_loc_new = (
-                                 pow((x_new - x_config[i - 1]) / (2 * ip.dtau), 2)
-                                 + pow((x_config[i + 1] - x_new) / (2 * ip.dtau), 2)
-                                 + potential_alpha(x_new, a_alpha)
-                        ) * ip.dtau
+            pow((x_new - x_config[i - 1]) / (2 * ip.dtau), 2)
+            + pow((x_config[i + 1] - x_new) / (2 * ip.dtau), 2)
+            + potential_alpha(x_new, a_alpha)
+        ) * ip.dtau
         delta_action = action_loc_new - action_loc_old
 
         # we put a bound on the value of delta_S
@@ -49,16 +50,16 @@ def metropolis_question(x_config,
 
 
 def return_action(x_config):
-    
+
     n_lattice = x_config.size - 1
     action = 0.0
-    
+
     for i_pos in range(1, n_lattice):
-        action += (pow((x_config[i_pos] - x_config[i_pos - 1]) / (2 * ip.dtau), 2) 
-            + pow(x_config[i_pos] * x_config[i_pos] -
-                ip.x_potential_minimum * ip.x_potential_minimum, 2)
-            ) * ip.dtau
-        
+        action += (pow((x_config[i_pos] - x_config[i_pos - 1]) / (2 * ip.dtau), 2)
+                   + pow(x_config[i_pos] * x_config[i_pos] -
+                         ip.x_potential_minimum * ip.x_potential_minimum, 2)
+                   ) * ip.dtau
+
     return action
 
 
@@ -85,7 +86,6 @@ def stat_av_var(observable, observable_sqrd, n_data):
         if observable.size != observable_sqrd.size:
             return None, None
 
-
     observable_av = observable / n_data
     observable_var = observable_sqrd / (n_data * n_data)
     observable_var -= (np.square(observable_av) / n_data)
@@ -108,7 +108,7 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
 
     for i_array in range(n_array - 1):
         derivative_log[i_array] = - (corr_funct[i_array + 1] - corr_funct[i_array]) \
-                                  / (corr_funct[i_array] * delta_step)
+            / (corr_funct[i_array] * delta_step)
 
         derivative_log_err[i_array] = pow(
             pow(corr_funct_err[i_array + 1] / corr_funct[i_array], 2)
@@ -126,40 +126,35 @@ def configuration_cooling(x_cold_config,
     for i in range(1, n_lattice):
 
         action_loc_old = (
-                                 pow((x_cold_config[i] - x_cold_config[i - 1]) / (2 * ip.dtau), 2) +
-                                 pow((x_cold_config[i + 1] - x_cold_config[i]) / (2 * ip.dtau), 2) +
-                                 pow(x_cold_config[i] * x_cold_config[i] -
-                                     x_potential_minimum * x_potential_minimum, 2)
-                         ) * ip.dtau
+            pow((x_cold_config[i] - x_cold_config[i - 1]) / (2 * ip.dtau), 2) +
+            pow((x_cold_config[i + 1] - x_cold_config[i]) / (2 * ip.dtau), 2) +
+            pow(x_cold_config[i] * x_cold_config[i] -
+                x_potential_minimum * x_potential_minimum, 2)
+        ) * ip.dtau
         for j in range(1, n_trials):  # perchè??
-    
-            x_new = x_cold_config[i] + rnd.gauss(0, ip.delta_x * 0.1)
-    
-            action_loc_new = (
-                                    pow((x_new - x_cold_config[i - 1]) / (2 * ip.dtau), 2) +
-                                    pow((x_cold_config[i + 1] - x_new) / (2 * ip.dtau), 2) +
-                                    pow(x_new * x_new -
-                                        x_potential_minimum * x_potential_minimum, 2)
-                             ) * ip.dtau
-    
-            if ((action_loc_new - action_loc_old) < 0):
-                    x_cold_config[i] = x_new
 
+            x_new = x_cold_config[i] + rnd.gauss(0, ip.delta_x * 0.1)
+
+            action_loc_new = (
+                pow((x_new - x_cold_config[i - 1]) / (2 * ip.dtau), 2) +
+                pow((x_cold_config[i + 1] - x_new) / (2 * ip.dtau), 2) +
+                pow(x_new * x_new -
+                    x_potential_minimum * x_potential_minimum, 2)
+            ) * ip.dtau
+
+            if ((action_loc_new - action_loc_old) < 0):
+                x_cold_config[i] = x_new
 
     x_cold_config[0] = x_cold_config[n_lattice - 1]
     x_cold_config[n_lattice] = x_cold_config[1]
 
 
-
-
-def find_instantons(x,n_lattice,dt):
+def find_instantons(x, n_lattice, dt):
 
     pos_roots = 0
     neg_roots = 0
     pos_roots_position = np.zeros(1)
     neg_roots_position = np.zeros(1)
-
-    #print(f'x_pos ={x[i_zero]} with i_zero = {i_zero}')
 
     if x[0] == 0:
 
@@ -168,7 +163,6 @@ def find_instantons(x,n_lattice,dt):
             pos_roots_position = np.append(pos_roots_position, 0)
             i_zero = 1
             x_pos = x[i_zero]
-
 
         elif x[1] - x[0] < 0:
 
@@ -181,22 +175,31 @@ def find_instantons(x,n_lattice,dt):
         i_zero = 0
         x_pos = x[i_zero]
 
-    for i in range(i_zero+1,n_lattice):
+    for i in range(i_zero+1, n_lattice):
 
-
-        if x_pos*x[i] < 0 :
+        if x_pos*x[i] < 0:
 
             if x[i]-x[i-1] > 0:
                 pos_roots += 1
-                #pos_roots_position = np.append(pos_roots_position, (i*dt+(i-1)*dt)/2)
+                pos_roots_position = np.append(
+                    pos_roots_position, 
+                    -x[i-1] * (dt)\
+                    /(x[i] - x[i-1]) + (i-1)*dt
+                    )
                 x_pos = x[i]
 
             elif x[i]-x[i-1] < 0:
 
                 neg_roots += 1
-                neg_roots_position = np.append(neg_roots_position,(i*dt+(i-1)*dt)/2)
+                neg_roots_position = np.append(
+                    neg_roots_position, 
+                    -x[i-1] * (dt)\
+                    /(x[i] - x[i-1]) + (i-1)*dt
+                    )
                 x_pos = x[i]
-    #a = np.delete(pos_roots_position, 0)
-    #b = np.delete(neg_roots_position, 0)
+                
+                
+    a = np.delete(pos_roots_position, 0)
+    b = np.delete(neg_roots_position, 0)
 
-    return pos_roots,neg_roots, a ,b
+    return pos_roots, neg_roots, a ,b
