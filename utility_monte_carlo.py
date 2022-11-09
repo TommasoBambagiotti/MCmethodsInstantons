@@ -77,46 +77,6 @@ def initialize_lattice(n_lattice,
     return x_config
 
 
-def stat_av_var(observable, observable_sqrd, n_data):
-    '''Evaluate the average and the variance of the average of a set of data,
-    expressed in an array, directly as the sum and the sum of squares.
-    We use the formula Var[<O>] = (<O^2> - <O>^2)/N'''
-
-    if (type(observable) is np.ndarray) and (type(observable_sqrd) is np.ndarray):
-        if observable.size != observable_sqrd.size:
-            return None, None
-
-    observable_av = observable / n_data
-    observable_var = observable_sqrd / (n_data * n_data)
-    observable_var -= (np.square(observable_av) / n_data)
-
-    return observable_av, np.sqrt(observable_var)
-
-
-def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
-    '''Log derivative of the correlation functions.
-    We can not use the analytic formula because
-    we do not know the energy eignevalues.'''
-
-    if corr_funct.size != corr_funct_err.size:
-        return None, None
-
-    n_array = corr_funct.size
-    # Reference method
-    derivative_log = np.empty((n_array - 1), float)
-    derivative_log_err = np.empty((n_array - 1), float)
-
-    for i_array in range(n_array - 1):
-        derivative_log[i_array] = - (corr_funct[i_array + 1] - corr_funct[i_array]) \
-            / (corr_funct[i_array] * delta_step)
-
-        derivative_log_err[i_array] = pow(
-            pow(corr_funct_err[i_array + 1] / corr_funct[i_array], 2)
-            + pow(corr_funct_err[i_array] * corr_funct[i_array + 1]
-                  / pow(corr_funct[i_array], 2), 2), 1 / 2) / delta_step
-
-    return derivative_log, derivative_log_err
-
 
 def configuration_cooling(x_cold_config,
                           x_potential_minimum):
