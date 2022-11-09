@@ -49,6 +49,10 @@ def cooled_monte_carlo_density(n_lattice,
 
         action_cooling = np.zeros((n_cooling_sweeps), float)
         action2_cooling = np.zeros((n_cooling_sweeps), float)
+        
+        # zero crossing density
+        hist_writer = open(output_path + '/zcr_cooling.txt', 'w')
+        
         # Monte Carlo sweeps: Principal cycle
 
         # Equilibration cycle
@@ -56,8 +60,8 @@ def cooled_monte_carlo_density(n_lattice,
         for i_equil in range(n_equil):
             mc.metropolis_question(x_config)
 
-        np.savetxt(output_path +
-                   f'/config_equil_{i_minimum + 1}.txt', x_config)
+        # np.savetxt(output_path +
+        #            f'/config_equil_{i_minimum + 1}.txt', x_config)
 
         # Rest of the MC sweeps
 
@@ -73,17 +77,23 @@ def cooled_monte_carlo_density(n_lattice,
 
                 x_cold_config = np.copy(x_config)
                 n_cooling += 1
-
+                n_instantons, n_anti_instantons = 0, 0
+                
                 for i_cooling in range(n_cooling_sweeps):
                     mc.configuration_cooling(x_cold_config,
                                              ip.x_potential_minimum)
 
                     # Find instantons and antiinstantons
-                    n_instantons, n_anti_instantons = mc.find_instantons(x_cold_config,
-                                                                         n_lattice,
-                                                                         ip.dtau)
+                    n_instantons, n_anti_instantons, pos_roots, neg_roots =\
+                        mc.find_instantons(x_cold_config,
+                                           n_lattice,
+                                           ip.dtau)
+                        
                     #pos_instantons, pos_anti_instantons
+        
 
+                    # total zero crossings
+                    
                     n_total_instantons_sum[i_cooling] += (
                         n_instantons + n_anti_instantons)
                     n2_total_instantons_sum[i_cooling] += pow(
@@ -94,7 +104,19 @@ def cooled_monte_carlo_density(n_lattice,
                         x_cold_config)
                     action_cooling[i_cooling] += action_temp
                     action2_cooling[i_cooling] += pow(action_temp, 2)
-
+                
+                if n_instantons == n_anti_instantons and n_instantons != 0:
+                    
+                    for i in range(n_instantons):
+                        if i == 0:
+                            zero_m = neg_roots[-1] - n_lattice * ip.dtau
+                        else:
+                            zero_m = neg_roots[i-1]
+                        z_ia = min(np.abs(neg_roots[i] - pos_roots[i]),
+                                   np.abs(pos_roots[i] - zero_m))
+                        
+                        hist_writer.write(str(z_ia) + '\n')            
+    
         # Evaluate averages and errors
 
         action_av, action_err = mc.stat_av_var(action_cooling, 
@@ -136,6 +158,8 @@ def cooled_monte_carlo_density(n_lattice,
         with open(output_path + f'/action_err_{i_minimum + 1}.txt', 'w',
                   encoding='utf-8') as act_writer:
             np.savetxt(act_writer, action_err)
+
+    hist_writer.close()
 
     with open(output_path + '/n_cooling.txt', 'w',
               encoding='utf-8') as n_inst_writer:
