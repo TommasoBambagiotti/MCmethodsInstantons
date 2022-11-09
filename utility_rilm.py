@@ -1,12 +1,17 @@
 import numpy as np
 import random as rnd
 
-import utility_custom
-import utility_monte_carlo
 import input_parameters as ip
 
 
 def centers_setup(tau_array, n_ia, n_lattice):
+    tau_centers_ia = np.random.uniform(0, n_lattice * ip.dtau, size=n_ia)
+    tau_centers_ia = np.sort(tau_centers_ia)
+
+    return tau_centers_ia
+
+
+def centers_setup_gauss(tau_array, n_ia, n_lattice):
     tau_centers_ia_index = np.random.randint(0, n_lattice, size=n_ia)
     tau_centers_ia_index = np.sort(tau_centers_ia_index)
 
@@ -53,6 +58,26 @@ def gaussian_potential(x_pos, tau, tau_ia_centers):
         * ip.x_potential_minimum * x_pos * x_pos
 
     return potential
+
+
+def hard_core_action(n_lattice,
+                     tau_centers_ia,
+                     tau_core,
+                     action_core):
+    
+    action = 0.0
+    
+    for i_ia in range(0, tau_centers_ia.size, 2):
+        if i_ia == 0:
+            zero_crossing_m = tau_centers_ia[-1] - n_lattice *ip.dtau
+        else:
+            zero_crossing_m = tau_centers_ia[i_ia-1]
+        
+        action += action_core * np.exp(-(tau_centers_ia[i_ia]
+                                         - zero_crossing_m)
+                                       / tau_core)
+    
+    return action
 
 
 def configuration_heating(x_delta_config, tau_array, tau_centers_ia,
@@ -119,10 +144,11 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           x2_cor_sums):
 
     # Center of instantons and anti instantons
-    tau_centers_ia, _ = centers_setup(tau_array, n_ia, tau_array.size)
+    tau_centers_ia= centers_setup(tau_array, n_ia, tau_array.size)
+
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array)
-
+    
     for _ in range(n_meas):
         i_p0 = int((tau_array.size - n_points) * rnd.uniform(0., 1.))
         x_0 = x_ansatz[i_p0]
@@ -138,7 +164,8 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
             x2_cor_sums[2, i_point] += pow(x_0 * x_1, 6)
 
     # We return the x_conf for the tau_zcr distribution
-    return x_ansatz
+    return tau_centers_ia
+
 
 def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                                  n_heating,
@@ -149,7 +176,7 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                                  x2_cor_sums):
 
     # Center of instantons and anti instantons
-    tau_centers_ia, tau_centers_ia_index = centers_setup(
+    tau_centers_ia, tau_centers_ia_index = centers_setup_gauss(
         tau_array, n_ia, tau_array.size)
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array)
