@@ -12,6 +12,7 @@ def centers_setup(tau_array, n_ia, n_lattice):
 
 
 def centers_setup_gauss(tau_array, n_ia, n_lattice):
+
     tau_centers_ia_index = np.random.randint(0, n_lattice, size=n_ia)
     tau_centers_ia_index = np.sort(tau_centers_ia_index)
 
@@ -83,17 +84,9 @@ def hard_core_action(n_lattice,
 def configuration_heating(x_delta_config, tau_array, tau_centers_ia,
                           tau_centers_ia_index):
 
-    n_lattice = tau_array.size
-
-    for i in range(1, n_lattice):
-
-<<<<<<< Updated upstream
-        if (i in tau_centers_ia_index) is False:
-=======
         if (i in tau_centers_ia_index) is True:
             continue
         else:
->>>>>>> Stashed changes
             action_loc_old = (
                 pow((x_delta_config[i] -
                     x_delta_config[i - 1]) / (2 * ip.dtau), 2)
@@ -120,13 +113,43 @@ def configuration_heating(x_delta_config, tau_array, tau_centers_ia,
                                      tau_centers_ia)
             ) * ip.dtau
 
+=======
+    
+    n_lattice = tau_array.size
+    
+    for i in range(1, n_lattice):
+        
+        if (i in tau_centers_ia_index) is False:
+            action_loc_old = (
+                    pow((x_delta_config[i] - x_delta_config[i - 1]) / (2 * ip.dtau), 2) 
+                    + pow((x_delta_config[i + 1] - x_delta_config[i]) / (2 * ip.dtau), 2) 
+                    + gaussian_potential(x_delta_config[i], tau_array[i],
+                                         tau_centers_ia)
+                    
+                ) * ip.dtau
+        
+            if (i+1) in tau_centers_ia_index or (i-1) in tau_centers_ia_index:
+                der = (x_delta_config[i+1] - x_delta_config[i-1]) / (2.0 * ip.dtau)
+                if der > -0.001 and der < 0.001:
+                    der = 1.0
+                action_loc_old += -np.log(np.abs(der))
+    
+            x_new = x_delta_config[i] + rnd.gauss(0, ip.delta_x)
+    
+            action_loc_new = (
+                   pow((x_new - x_delta_config[i - 1]) / (2 * ip.dtau), 2)
+                   + pow((x_delta_config[i + 1] - x_new) / (2 * ip.dtau), 2) 
+                   + gaussian_potential(x_new, tau_array[i],
+                                        tau_centers_ia)
+            ) * ip.dtau
+    
             if (i-1) in tau_centers_ia_index:
                 der = (x_delta_config[i + 1] - x_new) / (2.0 * ip.dtau)
                 if der > -0.001 and der < 0.001:
                     der = 1.0
-
+                    
                 action_loc_new += - np.log(np.abs(der))
-
+                
             elif (i+1) in tau_centers_ia_index:
                 der = (x_new - x_delta_config[i - 1]) / (2.0 * ip.dtau)
                 if der > -0.001 and der < 0.001:
@@ -183,12 +206,14 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     # Center of instantons and anti instantons
     tau_centers_ia, tau_centers_ia_index = centers_setup_gauss(
         tau_array, n_ia, tau_array.size)
+
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array)
     # Difference from the classical solution
     x_delta_config = np.zeros((tau_array.size + 1))
     # Heating sweeps
     for _ in range(n_heating):
+
         configuration_heating(x_delta_config,
                               tau_array,
                               tau_centers_ia,
