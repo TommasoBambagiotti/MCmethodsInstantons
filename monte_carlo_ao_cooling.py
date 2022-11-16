@@ -33,8 +33,6 @@ def cooled_monte_carlo(
     utility_custom.output_control(output_path)
 
     # Correlation functions
-    x_cor_sums = np.zeros((3, n_points))
-    x2_cor_sums = np.zeros((3, n_points))
     x_cold_cor_sums = np.zeros((3, n_points))
     x2_cold_cor_sums = np.zeros((3, n_points))
 
@@ -89,8 +87,8 @@ def cooled_monte_carlo(
 
     utility_custom.\
         output_correlation_functions_and_log(n_points, 
-                                             x_cor_sums,
-                                             x2_cor_sums,
+                                             x_cold_cor_sums,
+                                             x2_cold_cor_sums,
                                              n_cooling * n_meas,
                                              output_path)
 
