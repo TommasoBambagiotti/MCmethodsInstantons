@@ -6,6 +6,8 @@ import monte_carlo_ao
 import monte_carlo_ao_switching
 import monte_carlo_ao_cooling
 import monte_carlo_ao_cooling_density
+import monte_carlo_ao_density_switching
+import zero_crossing_dist_cooling
 import random_instanton_monte_carlo
 import random_instanton_monte_carlo_heating
 import streamline_iilm
@@ -24,7 +26,9 @@ if __name__ == '__main__':
               f'monte_carlo_simulation\n'
               f'free_energy_int\n'
               f'cooling\n'
+              f'cool0\n'
               f'density\n'
+              f'density_switch\n'
               f'rilm\n'
               f'heating\n'
               f'streamline\n'
@@ -50,7 +54,7 @@ if __name__ == '__main__':
             
         elif call in ['cooling']:
             monte_carlo_ao_cooling.cooled_monte_carlo(
-                                        200,  # n_lattice
+                                        800,  # n_lattice
                                         100,  # n_equil
                                         50000,  # n_mc_sweeps
                                         20,  # n_points
@@ -64,16 +68,24 @@ if __name__ == '__main__':
                                                                       200,
                                                                       100000,
                                                                       False,
-                                                                      10,
-                                                                      10,
-                                                                      1)
+                                                                      50,
+                                                                      200,
+                                                                      3)
+
+        elif call in ['density_switch']:
+            monte_carlo_ao_density_switching.\
+                instantons_density_switching(100,
+                                             100,
+                                             10000,
+                                             20)
 
         elif call in ['rilm']:
             random_instanton_monte_carlo.\
             random_instanton_liquid_model(800,
-                                          100000, 
+                                          120000, 
                                           20,
-                                          5)
+                                          5,
+                                          10)
             
         elif call in ['heating']:
             random_instanton_monte_carlo_heating.\
@@ -92,13 +104,21 @@ if __name__ == '__main__':
 
         elif call in ['iilm']:
             instanton_interactive_liquid_model.inst_int_liquid_model(800,
-                                                                     100000,
-                                                                     0,
-                                                                     0,
+                                                                     10000,
+                                                                     20,
+                                                                     5,
                                                                      0.3,
                                                                      3.0,
-                                                                     0.1)
+                                                                     1.0)
 
+        elif call in ['cool0']:
+            zero_crossing_dist_cooling.\
+                zero_crossing_cooling_density(800,
+                                              100,
+                                              500000,
+                                              False,
+                                              5,
+                                              10)
         elif call in ['print']:
             call2 = input()
             if call2 in ['a']:
@@ -119,13 +139,17 @@ if __name__ == '__main__':
                 graph_print.print_graph_heat()
             elif call2 in ['i']:
                 graph_print.print_iilm()
-            elif call2 in ['l']:
-                graph_print.print_stream()
             elif call2 in ['k']:
-                graph_print.print_zcr_hist()
+                graph_print.print_stream()
             elif call2 in ['j']:
+                graph_print.print_zcr_hist()
+            elif call2 in ['l']:
                 graph_print.print_rilm_conf()
-
+            elif call2 in ['m']:
+                graph_print.print_tau_centers()
+            elif call2 in ['n']:
+                graph_print.print_iilm_graph()
+                
         elif call in ['exit']:
             stop_exec = 1
 
