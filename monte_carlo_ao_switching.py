@@ -4,7 +4,6 @@
 import time
 import random as rnd
 import numpy as np
-import cProfile as cP
 
 import utility_monte_carlo as mc
 import utility_custom
@@ -36,6 +35,7 @@ def monte_carlo_ao_switching(n_lattice,  # size of the grid
 
     delta_s_alpha = np.zeros((2 * n_switching + 1))
     delta_s_alpha2 = np.zeros((2 * n_switching + 1))
+    
     print(f'Adiabatic switching for beta = {n_lattice * ip.dtau}')
     # Now the principal cycle is over the coupling constant alpha
     for i_switching in range(2 * n_switching + 1):
@@ -183,4 +183,3 @@ def free_energy_anharm(n_beta,
         np.savetxt(f_writer, temperature_array)
         f_writer.write(str(1 / (n_virial * ip.dtau)))
 
-# cP.run("free_energy_anharm(4, 20.0, 100, 50000, 20, False)")

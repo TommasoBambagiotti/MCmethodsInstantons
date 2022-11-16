@@ -1,3 +1,9 @@
+'''
+Solve the action problem using
+the streamline method as a valid
+alternative of the classical sum ansatz
+'''
+
 import numpy as np
 
 import utility_rilm as rilm
@@ -8,6 +14,11 @@ import utility_monte_carlo as mc
 
 
 def print_sum_ansatz_ia(n_lattice):
+    '''
+    Dependence of the interactive action
+    with respect to the instanton-anti instanton
+    separation, in the near repulsive case
+    '''
     
     output_path ='./output_data/output_iilm/streamline'
     utility_custom.output_control(output_path)

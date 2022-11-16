@@ -16,12 +16,11 @@ def zero_crossing_cooling_density(n_lattice,
                                   n_mc_sweeps,
                                   i_cold,
                                   n_sweeps_btw_cooling,
-                                  n_cooling_sweeps,
-                                  ):
+                                  n_cooling_sweeps):
 
     if n_mc_sweeps < n_equil:
         print("too few Monte Carlo sweeps/ N_equilib > N_Monte_Carlo")
-        return 1
+        return 0
 
     # Control output filepath
     output_path = './output_data/output_cooled_monte_carlo/zero_crossing'
@@ -34,15 +33,13 @@ def zero_crossing_cooling_density(n_lattice,
     x_config = mc.initialize_lattice(n_lattice, i_cold)
 
     # zero crossing density
-    hist_writer = open(output_path + '/zcr_cooling.txt', 'a')
-
+    hist_writer = open(output_path + '/zcr_cooling.txt', 'w')
+   
     # Equilibration cycle
-
     for _ in range(n_equil):
         mc.metropolis_question(x_config)
 
     # Rest of the MC sweeps
-
     for i_mc in range(n_mc_sweeps - n_equil):
         mc.metropolis_question(x_config)
 
@@ -100,4 +97,4 @@ def zero_crossing_cooling_density(n_lattice,
                 
     hist_writer.close()
 
-    return 0
+    return 1

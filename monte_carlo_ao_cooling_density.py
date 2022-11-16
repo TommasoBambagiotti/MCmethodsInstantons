@@ -1,7 +1,9 @@
 '''
 Density of instantons
-and anti-instantons
+and anti-instantons in 
+cooling process
 '''
+
 import numpy as np
 
 import utility_monte_carlo as mc
@@ -15,11 +17,12 @@ def cooled_monte_carlo_density(n_lattice,
                                i_cold,
                                n_sweeps_btw_cooling,
                                n_cooling_sweeps,
-                               n_minima):
+                               n_minima,
+                               first_minimum = 1.4):
 
     if n_mc_sweeps < n_equil:
         print("too few Monte Carlo sweeps/ N_equilib > N_Monte_Carlo")
-        return 1
+        return 0
 
     # Control output filepath
     output_path = './output_data/output_cooled_monte_carlo'
@@ -30,12 +33,10 @@ def cooled_monte_carlo_density(n_lattice,
     for i_minimum in range(n_minima):
         print(f'New monte carlo for eta = {1.4 + 0.1 * i_minimum}')
 
-        # contatore probabilmente inutile
+        # number of total cooling processes
         n_cooling = 0
 
-        ip.x_potential_minimum = 1.4 + 0.1 * i_minimum
-
-        print(ip.x_potential_minimum)
+        ip.x_potential_minimum = first_minimum + 0.1 * i_minimum
 
         potential_minima[i_minimum] = ip.x_potential_minimum
 
@@ -43,17 +44,16 @@ def cooled_monte_carlo_density(n_lattice,
         x_config = mc.initialize_lattice(n_lattice, i_cold)
 
         # number of instantons
-
         n_total_instantons_sum = np.zeros((n_cooling_sweeps), int)
         n2_total_instantons_sum = np.zeros((n_cooling_sweeps), int)
 
+        # instanton action density
         action_cooling = np.zeros((n_cooling_sweeps), float)
         action2_cooling = np.zeros((n_cooling_sweeps), float)
         
-        
         # Monte Carlo sweeps: Principal cycle
 
-        # Equilibration cycle
+        # Equilibration cycles
 
         for i_equil in range(n_equil):
             mc.metropolis_question(x_config)
@@ -79,14 +79,11 @@ def cooled_monte_carlo_density(n_lattice,
                                              ip.x_potential_minimum)
 
                     # Find instantons and antiinstantons
-                    n_instantons, n_anti_instantons, pos_roots, neg_roots =\
+                    n_instantons, n_anti_instantons, _, _ =\
                         mc.find_instantons(x_cold_config,
                                            n_lattice,
                                            ip.dtau)
                         
-                    #pos_instantons, pos_anti_instantons
-        
-
                     # total zero crossings
                     
                     n_total_instantons_sum[i_cooling] += (
@@ -147,4 +144,4 @@ def cooled_monte_carlo_density(n_lattice,
               encoding='utf-8') as n_inst_writer:
         np.savetxt(n_inst_writer, potential_minima)
         
-    return 0
+    return 1

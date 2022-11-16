@@ -144,7 +144,7 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           x2_cor_sums):
 
     # Center of instantons and anti instantons
-    tau_centers_ia= centers_setup(tau_array, n_ia, tau_array.size)
+    tau_centers_ia = centers_setup(tau_array, n_ia, tau_array.size)
 
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array)
@@ -163,7 +163,6 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
             x2_cor_sums[1, i_point] += pow(x_0 * x_1, 4)
             x2_cor_sums[2, i_point] += pow(x_0 * x_1, 6)
 
-    # We return the x_conf for the tau_zcr distribution
     return tau_centers_ia
 
 

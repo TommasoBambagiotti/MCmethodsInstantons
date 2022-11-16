@@ -413,8 +413,8 @@ def print_density():
 
 
 
-    n_cooling = np.loadtxt(
-        './output_data/output_cooled_monte_carlo/n_cooling.txt')
+    # n_cooling = np.loadtxt(
+    #     './output_data/output_cooled_monte_carlo/n_cooling.txt')
     n_instantons1 = np.loadtxt(
         './output_data/output_cooled_monte_carlo/n_instantons_1.txt')
     n_instantons_err1 = np.loadtxt(
@@ -428,9 +428,11 @@ def print_density():
     n_instantons_err3 = np.loadtxt(
         './output_data/output_cooled_monte_carlo/n_instantons_3_err.txt')
 
-    n_instantons1 *= 2
-    n_instantons2 *= 2
-    n_instantons3 *= 2
+    n_cooling = np.linspace(1 , n_instantons1.size, n_instantons1.size)
+
+    # n_instantons1 *= 2
+    # n_instantons2 *= 2
+    # n_instantons3 *= 2
     ax3.errorbar(n_cooling,
                  n_instantons1,
                  n_instantons_err1,
@@ -460,15 +462,15 @@ def print_density():
 
     ax3.legend()
 
-    potential_minima = np.loadtxt('./output_data/output_cooled_monte_carlo/potential_minima.txt',
-                                  float, delimiter=' ')
+    # potential_minima = np.loadtxt('./output_data/output_cooled_monte_carlo/potential_minima.txt',
+    #                               float, delimiter=' ')
 
-    loop_1 = np.zeros((potential_minima.size), float)
-    loop_2 = np.zeros((potential_minima.size), float)
+    loop_1 = np.zeros(3, float)
+    loop_2 = np.zeros(3, float)
     color_array = ['blue', 'red', 'orange']
 
     c = 0
-    for l in potential_minima:
+    for l in [1.4,1.5, 1.6]: #np.nditer(np.array([1.4, 1.5, 1.6])):
 
         s0 = 4 / 3 * pow(l, 3)
 
@@ -512,12 +514,12 @@ def print_density():
                               delimiter=' ')
 
     c = 0
-    for l1 in potential_minima:
+    for l1 in {1.4,1.5,1.6}:
         print(l1)
         s0 = (4 / 3) * pow(l1, 3)
 
         ax4.hlines(s0, 0, 200, color_array[c], 'dashed',
-                   linewidth = 0.8)
+                    linewidth = 0.8)
         c+=1
 
     ax4.errorbar(n_cooling, action1, action1_err,
@@ -715,7 +717,7 @@ def print_graph_rilm():
     fig2.savefig(filepath + '/der_corr_rilm.png', dpi=300)
 
     plt.show()
-
+    
 
 def print_rilm_conf():
     plt.style.use('ggplot')
@@ -724,17 +726,17 @@ def print_rilm_conf():
     fig1 = plt.figure(1, facecolor="#f1f1f1")
 
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
+    
     conf  = np.loadtxt('./output_data/output_rilm/conf_test.txt',
                            float, delimiter=' ')
-
+    
     tau = np.loadtxt('./output_data/output_rilm/tau_test.txt',
                            float, delimiter=' ')
 
     ax1.plot(tau, conf)
-
+    
     plt.show()
-
+    
 def print_graph_rilm_heating():
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
@@ -898,7 +900,7 @@ def print_graph_rilm_heating():
 
     plt.show()
 
-
+    
 def print_graph_heat():
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
@@ -922,124 +924,99 @@ def print_graph_heat():
 
 
 def print_iilm():
-
+    
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
     fig1 = plt.figure(1, facecolor="#f1f1f1")
 
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
+    
     tau_ia = np.loadtxt('./output_data/output_iilm/streamline/delta_tau_ia.txt',
                            float, delimiter=' ')
-
+    
     act_int = np.loadtxt('./output_data/output_iilm/streamline/streamline_action_int.txt',
                             float, delimiter = ' ')
-
+    
     array_ia = np.loadtxt('./output_data/output_iilm/streamline/array_ia.txt',
                            float, delimiter=' ')
-
+    
     array_int = np.loadtxt('./output_data/output_iilm/streamline/array_int.txt',
                             float, delimiter = ' ')
-
+    
     array_int_core = np.loadtxt('./output_data/output_iilm/streamline/array_int_core.txt',
                             float, delimiter = ' ')
-
-
-    ax1.plot(tau_ia,
+    
+    
+    ax1.plot(tau_ia, 
              act_int,
              marker = '^',
              linestyle ='',
              color = 'green'
              )
-
+    
     ax1.plot(array_ia,
              array_int,
              color = 'b')
-
+    
     ax1.plot(array_ia,
              array_int_core,
              color = 'orange')
-
+    
     ax1.set_ylim(-2.05, 0.05)
     ax1.set_xlim(-0.05, 2.0)
-
+    
     fig1.savefig(filepath + '/iilm.png', dpi = 300)
-
+    
     plt.show()
-
+    
 def print_stream():
-
+    
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
     fig1 = plt.figure(1, facecolor="#f1f1f1")
 
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
+    
     tau = np.loadtxt('./output_data/output_iilm/streamline/tau_array.txt',
                            float, delimiter=' ')
-
+    
     for i in range(3):
         conf = np.loadtxt(f'./output_data/output_iilm/streamline/streamline_{i}.txt',
                            float, delimiter=' ')
         ax1.plot(tau, conf)
         print(mc.return_action(conf)/ip.action_0)
-
-
-
+        
     plt.show()
-
+    
+    
 def print_zcr_hist():
-
+    
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
     fig = plt.figure(1, facecolor="#f1f1f1")
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float,
+    
+    zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float, 
                      delimiter =' ')
-
     
-    with open('./output_data/n_count.txt', 'r') as read:
-        lines = read.readlines()
-        for i in range(len(lines)):
-            if 'zcr_int' in lines[i]:
-                count_int = int(lines[i][8:])
-            elif 'zcr_cool' in lines[i]:
-                count_cool = int(lines[i][9:])
-    
-    
-    reader_zcr = open('./output_data/output_iilm/iilm/zcr_int.dat', 'rb')
-    
-    hist_raw = reader_zcr.read(count_int*8)
-    
-    zcr_int = np.array(struct.unpack('d'*count_int, hist_raw))
-    reader_zcr.close()
-    
-    reader_zcr = open('./output_data/output_cooled_monte_carlo/zcr_cooling.dat',
-                      'rb')
-    hist_raw = reader_zcr.read(count_cool*8)
-    
-    zcr_cooling = np.array(struct.unpack('d'*count_cool, hist_raw))
-    
-    reader_zcr.close()
+    zcr_cooling = np.loadtxt('./output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
+                             float, delimiter =' ')
     
     print(zcr.size)
     print(zcr_cooling.size)
-    print(zcr_int.size)
-
-    ax.hist(zcr, 100, (0., 10.), histtype = 'step')
-    ax.hist(zcr_cooling, 100, (0.,10.), histtype = 'step', color ='blue')
-    #ax.hist(zcr_int, 40, (0.,4.), histtype = 'step', color ='orange')
-
-    fig.savefig(filepath + './zcr_density.png', dpi = 300)
-
+    
+    ax.hist(zcr, 390, (0.1, 4.), histtype = 'step',density='True')
+    ax.hist(zcr_cooling, 390, (0.1,4.), histtype = 'step', color ='blue', density='True')
+    
+    fig.savefig(filepath + '/zcr_histogram.png', dpi = 300)
+    
     plt.show()
-
-
-def print_iilm_diag():
+    
+    
+def print_tau_centers():
     
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
@@ -1054,14 +1031,14 @@ def print_iilm_diag():
         tau = np.loadtxt(f'./output_data/output_iilm/iilm/center_{n+1}.txt',
                                  float, delimiter =' ')
 
-        print(n%2)
         if (n % 2) == 0:
             ax.plot(n_conf, tau, color = 'blue',
-                    linewidth = 0.5)
+                    linewidth = 0.4)
         else:
             ax.plot(n_conf, tau, color = 'red',
-                    linewidth = 0.5)
+                    linewidth = 0.4)
 
+    fig.savefig(filepath + '/iilm_config.png', dpi = 300)
     plt.show()
     
     
@@ -1228,40 +1205,3 @@ def print_iilm_graph():
     fig2.savefig(filepath + '/der_corr.png', dpi=300)
     
     plt.show()
-
-    
-def loop_1(x):
-    action = np.power(x,3)
-    return 8 * np.power(x,5/2) * np.sqrt(2/np.pi)\
-        * np.exp(-4/3 *action)
-        
-def loop_2(x):
-    action = np.power(x,3)
-    inv = np.full(x.size, 1.)
-    action_inv = np.divide(inv,action)
-    return 8 * np.power(x,5/2) * np.sqrt(2./np.pi)\
-        * np.exp(-4/3 *action - 71/72 * action_inv)
-        
-def graph_test():
-    x = np.linspace(0.1,1.8, 20)
-
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-    
-    loop_uno = loop_1(x)
-    loop_due = loop_2(x)
-    
-    ax1.plot(x,loop_uno, linestyle='-.')
-    ax1.plot(x,loop_due)
-    ax1.hlines([0.381,0.266],0.,1.75, color = ['red','blue'])
-    ax1.set_ylim(0.03, 2.1)
-    ax1.set_yscale('log')
-    plt.show()
-    
-print(loop_1(1.4))
-print(loop_2(np.array([1.4])))
-graph_test()
