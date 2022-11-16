@@ -100,12 +100,12 @@ def cooled_monte_carlo_density(n_lattice,
     
         # Evaluate averages and errors
 
-        action_av, action_err = mc.stat_av_var(action_cooling, 
+        action_av, action_err = utility_custom.stat_av_var(action_cooling, 
                                                action2_cooling, 
                                                n_cooling)
         
 
-        n_total, n_total_err = mc.stat_av_var(n_total_instantons_sum,
+        n_total, n_total_err = utility_custom.stat_av_var(n_total_instantons_sum,
                                               n2_total_instantons_sum,
                                               n_cooling)
 
