@@ -112,8 +112,6 @@ def configuration_heating(x_delta_config, tau_array, tau_centers_ia,
                 + gaussian_potential(x_new, tau_array[i],
                                      tau_centers_ia)
             ) * ip.dtau
-
-=======
     
     n_lattice = tau_array.size
     
