@@ -67,7 +67,8 @@ def monte_carlo_ao(n_lattice,  # size of the grid
     # Evaluate averages and other stuff, maybe we can create a function
 
     utility_custom.\
-        output_correlation_functions_and_log(x_cor_sums,
+        output_correlation_functions_and_log(n_points,
+                                             x_cor_sums,
                                              x2_cor_sums,
                                              (n_mc_sweeps-n_equil) * n_meas,
                                              output_path)
