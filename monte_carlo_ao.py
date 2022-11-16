@@ -1,11 +1,14 @@
+'''
+Monte carlo approach
+to the anharmonic quantum
+oscillator
+'''
 
 import random as rnd
 import numpy as np
 
 import utility_custom
 import utility_monte_carlo as mc
-
-import input_parameters as ip
 
 
 def monte_carlo_ao(n_lattice,  # size of the grid
@@ -14,7 +17,6 @@ def monte_carlo_ao(n_lattice,  # size of the grid
                    n_points,  #
                    n_meas,  #
                    i_cold):  # cold/hot start):
-    
     '''Solve the anharmonic oscillator through
     Monte Carlo technique on an Euclidian Axis'''
 
@@ -34,22 +36,21 @@ def monte_carlo_ao(n_lattice,  # size of the grid
 
     x_config = mc.initialize_lattice(n_lattice, i_cold)
 
-
     # Monte Carlo sweeps: Principal cycle
 
     # Equilibration cycle
-    for i_equil in range(n_equil):
-
+    for _ in range(n_equil):
+        
         mc.metropolis_question(x_config)
 
         # Rest of the MC sweeps
     with open(output_path + '/ground_state_histogram.dat', 'wb') as hist_writer:
-        for i_mc in range(n_mc_sweeps - n_equil):
+        for _ in range(n_mc_sweeps - n_equil):
 
             mc.metropolis_question(x_config)
 
             np.save(hist_writer, x_config[0:(n_lattice - 1)])
-            for k_meas in range(n_meas):
+            for _ in range(n_meas):
                 i_p0 = int((n_lattice - n_points) * rnd.uniform(0., 1.))
                 x_0 = x_config[i_p0]
                 for i_point in range(n_points):
@@ -65,64 +66,10 @@ def monte_carlo_ao(n_lattice,  # size of the grid
 
     # Evaluate averages and other stuff, maybe we can create a function
 
-    x_cor_av = np.zeros((3, n_points))
-    x_cor_err = np.zeros((3, n_points))
-    
-    for i_stat in range(3):
-        x_cor_av[i_stat] , x_cor_err[i_stat] = \
-            mc.stat_av_var(x_cor_sums[i_stat],
-                           x2_cor_sums[i_stat],
-                           n_meas * (n_mc_sweeps - n_equil)
-                           )
-            
-        
-        with open(output_path + f'/average_x_cor_{i_stat + 1}.txt', 'w') as av_writer:
-            np.savetxt(av_writer, x_cor_av[i_stat])
-            
-        with open(output_path + f'/error_x_cor_{i_stat + 1}.txt', 'w') as err_writer:
-            np.savetxt(err_writer, x_cor_err[i_stat])
-
-
-    derivative_log_corr_funct = np.zeros((3, n_points - 1))
-    derivative_log_corr_funct_err = np.zeros((3, n_points - 1))
-
-    for i_stat in range(3):
-
-        if i_stat != 1:
-
-            derivative_log_corr_funct[i_stat], derivative_log_corr_funct_err[i_stat] = \
-                mc.log_central_der_alg(x_cor_av[i_stat], x_cor_err[i_stat], ip.dtau)
-
-        else:
-            # In the case of log <x^2x^2> the constant part <x^2>
-            # is circa the average for the greatest tau
-
-            # subtraction of the constant term (<x^2>)^2 in <x(0)^2x(t)^2>
-            cor_funct_err = np.sqrt(np.square(x_cor_err[i_stat])
-                                    + pow(x_cor_err[i_stat, n_points - 1], 2))
-
-            derivative_log_corr_funct[i_stat], derivative_log_corr_funct_err[i_stat] = \
-                mc.log_central_der_alg(
-                    x_cor_av[i_stat] - x_cor_av[i_stat, n_points - 1],
-                    cor_funct_err,
-                    ip.dtau)
-            
-            # Save into files
-
-        # w/o cooling
-        with open(output_path + f'/average_der_log_{i_stat + 1}.txt', 'w') as av_writer:
-            np.savetxt(av_writer, derivative_log_corr_funct[i_stat])
-
-        with open(output_path + f'/error_der_log_{i_stat + 1}.txt', 'w') as err_writer:
-            np.savetxt(err_writer, derivative_log_corr_funct_err[i_stat])
-
-
-    # time array
-    with open(output_path + '/tau_array.txt', 'w') as tau_writer:
-
-        np.savetxt(tau_writer, np.linspace(0, n_points * ip.dtau, n_points, False))
+    utility_custom.\
+        output_correlation_functions_and_log(x_cor_sums,
+                                             x2_cor_sums,
+                                             (n_mc_sweeps-n_equil) * n_meas,
+                                             output_path)
 
     return 1
-
-
-

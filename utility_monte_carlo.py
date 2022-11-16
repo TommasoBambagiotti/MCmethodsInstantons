@@ -2,6 +2,7 @@ import numpy as np
 import random as rnd
 import input_parameters as ip
 
+
 def potential_alpha(x_position,
                     a_alpha):
     if (a_alpha > -0.01):
@@ -12,6 +13,106 @@ def potential_alpha(x_position,
     else:
         return pow(x_position * x_position -
                    ip.x_potential_minimum * ip.x_potential_minimum, 2)
+
+
+def anh_potential(x_position, a_alpha):
+
+    potential_1 = pow(x_position * x_position -
+                      ip.x_potential_minimum * ip.x_potential_minimum, 2)
+
+    potential_0 = pow(ip.w_omega0 * x_position, 2) / 4.0
+
+    return a_alpha * (potential_1 - potential_0) + potential_0
+
+
+def gaussian_potential(x_position, a_alpha):
+
+    potential_0 = 1.0 / 2.0 * x_position[2] * pow((x_position[1] - x_position[0]), 2) \
+                     + anh_potential(x_position[0], 1)
+
+    potential_1 = pow((x_position[1] * x_position[1] - ip.x_potential_minimum * ip.x_potential_minimum),2)
+
+    return a_alpha * (potential_1 - potential_0) + potential_0
+
+
+def metropolis_question_density_switching(
+                                        x_config,
+                                        x_0_config,
+                                        f_potential,
+                                        sector, # 0-instanton sector or 1-instanton sector
+                                        a_alpha=1):
+
+    n_lattice = x_config.size - 1
+    tau_fixed = n_lattice / 2
+
+    for i in range(1, n_lattice):
+
+        # expanding about the classical config
+
+        second_der_0 = second_derivative_action(x_0_config[i])
+
+        x_position = np.array([x_0_config[i], x_config[i], second_der_0])
+
+        # for i = n_lattice/2 x is fixed
+
+        if (i == tau_fixed) and (sector == 1):
+
+            x_save = x_config[i]
+
+        action_loc_old = (
+                                 pow((x_config[i] - x_config[i - 1]) / (2 * ip.dtau), 2)
+                                 + pow((x_config[i + 1] - x_config[i]) / (2 * ip.dtau), 2)
+                                 + f_potential(x_position, a_alpha)
+                         ) * ip.dtau
+        # Jacobian (constrain)
+
+        if (i == tau_fixed) and (sector == 1):
+
+            jacobian = (x_config[i] - x_config[i-1]) / ip.dtau
+            action_jac = np.exp(abs(jacobian))
+            action_loc_old = action_loc_old - action_jac
+
+        x_new = x_config[i] + rnd.gauss(0, ip.delta_x)
+        x_position[1] = x_new
+
+        action_loc_new = (
+                                 pow((x_new - x_config[i - 1]) / (2 * ip.dtau), 2)
+                                 + pow((x_config[i + 1] - x_new) / (2 * ip.dtau), 2)
+                                 + f_potential(x_position, a_alpha)
+                         ) * ip.dtau
+
+        if (i == tau_fixed) and (sector == 1):
+
+            jacobian = (x_config[i] - x_config[i-1]) / ip.dtau
+            action_jac = np.exp(abs(jacobian))
+            action_loc_new = action_loc_new - action_jac
+
+        delta_action = action_loc_new - action_loc_old
+
+        # we put a bound on the value of delta_S
+        # because we need the exp.
+        delta_action = max(delta_action, -70.0)
+        delta_action = min(delta_action, 70.0)
+
+        # Metropolis question:
+        if np.exp(-delta_action) > rnd.uniform(0., 1.):
+            x_config[i] = x_new
+
+        # for i = n_lattice/2 lattice is fixed
+        if (i == tau_fixed) and (sector == 1):
+
+            x_config[i] = x_save
+
+    # NEW BOUNDARY CONDITIONS
+    if sector == 0:
+
+        # PBC
+        periodic_boundary_conditions(x_config)
+
+    elif sector == 1:
+
+        # APBC
+        anti_periodic_boundary_conditions(x_config)
 
 
 def metropolis_question(x_config,
@@ -49,73 +150,52 @@ def metropolis_question(x_config,
 
 
 def return_action(x_config):
-    
     n_lattice = x_config.size - 1
     action = 0.0
-    
+
     for i_pos in range(1, n_lattice):
-        action += (pow((x_config[i_pos] - x_config[i_pos - 1]) / (2 * ip.dtau), 2) 
-            + pow(x_config[i_pos] * x_config[i_pos] -
-                ip.x_potential_minimum * ip.x_potential_minimum, 2)
-            ) * ip.dtau
-        
+        action += (pow((x_config[i_pos] - x_config[i_pos - 1]) / (2 * ip.dtau), 2)
+                   + pow(x_config[i_pos] * x_config[i_pos] -
+                         ip.x_potential_minimum * ip.x_potential_minimum, 2)
+                   ) * ip.dtau
+
     return action
 
 
 def initialize_lattice(n_lattice,
-                       i_cold):
-    if i_cold is True:
+                       i_cold=False,
+                       classical_config=False):
+
+    if (i_cold is True) and (not classical_config):
+
         x_config = np.repeat(-ip.x_potential_minimum, n_lattice + 1)
-    else:
+
+    elif (i_cold is False) and (not classical_config):
+
         x_config = np.random.uniform(-ip.x_potential_minimum,
                                      ip.x_potential_minimum,
                                      n_lattice + 1)
-        x_config[n_lattice - 1] = x_config[0]
-        x_config[n_lattice] = x_config[1]
+
+        #PBC
+        #x_config[n_lattice - 1] = x_config[0]
+        #x_config[n_lattice] = x_config[1]
+        periodic_boundary_conditions(x_config)
+
+    elif classical_config is True:
+
+        x_config = np.zeros(n_lattice+1)
+        tau_inst = (ip.dtau*n_lattice)/2
+
+        for i in range(0, n_lattice+1):
+
+            x_config[i] = instanton_classical_configuration(i, tau_inst)
+
+        #APBC
+        #x_config[1] = - x_config[n_lattice]
+        #x_config[0] = x_config[n_lattice-1]
+        anti_periodic_boundary_conditions(x_config)
 
     return x_config
-
-
-def stat_av_var(observable, observable_sqrd, n_data):
-    '''Evaluate the average and the variance of the average of a set of data,
-    expressed in an array, directly as the sum and the sum of squares.
-    We use the formula Var[<O>] = (<O^2> - <O>^2)/N'''
-
-    if (type(observable) is np.ndarray) and (type(observable_sqrd) is np.ndarray):
-        if observable.size != observable_sqrd.size:
-            return None, None
-
-
-    observable_av = observable / n_data
-    observable_var = observable_sqrd / (n_data * n_data)
-    observable_var -= (np.square(observable_av) / n_data)
-
-    return observable_av, np.sqrt(observable_var)
-
-
-def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
-    '''Log derivative of the correlation functions.
-    We can not use the analytic formula because
-    we do not know the energy eignevalues.'''
-
-    if corr_funct.size != corr_funct_err.size:
-        return None, None
-
-    n_array = corr_funct.size
-    # Reference method
-    derivative_log = np.empty((n_array - 1), float)
-    derivative_log_err = np.empty((n_array - 1), float)
-
-    for i_array in range(n_array - 1):
-        derivative_log[i_array] = - (corr_funct[i_array + 1] - corr_funct[i_array]) \
-                                  / (corr_funct[i_array] * delta_step)
-
-        derivative_log_err[i_array] = pow(
-            pow(corr_funct_err[i_array + 1] / corr_funct[i_array], 2)
-            + pow(corr_funct_err[i_array] * corr_funct[i_array + 1]
-                  / pow(corr_funct[i_array], 2), 2), 1 / 2) / delta_step
-
-    return derivative_log, derivative_log_err
 
 
 def configuration_cooling(x_cold_config,
@@ -132,43 +212,37 @@ def configuration_cooling(x_cold_config,
                                      x_potential_minimum * x_potential_minimum, 2)
                          ) * ip.dtau
         for j in range(1, n_trials):  # perchè??
-    
-            x_new = x_cold_config[i] + rnd.gauss(0, ip.delta_x * 0.1)
-    
-            action_loc_new = (
-                                    pow((x_new - x_cold_config[i - 1]) / (2 * ip.dtau), 2) +
-                                    pow((x_cold_config[i + 1] - x_new) / (2 * ip.dtau), 2) +
-                                    pow(x_new * x_new -
-                                        x_potential_minimum * x_potential_minimum, 2)
-                             ) * ip.dtau
-    
-            if ((action_loc_new - action_loc_old) < 0):
-                    x_cold_config[i] = x_new
 
+            x_new = x_cold_config[i] + rnd.gauss(0, ip.delta_x * 0.1)
+
+            action_loc_new = (
+                                     pow((x_new - x_cold_config[i - 1]) / (2 * ip.dtau), 2) +
+                                     pow((x_cold_config[i + 1] - x_new) / (2 * ip.dtau), 2) +
+                                     pow(x_new * x_new -
+                                         x_potential_minimum * x_potential_minimum, 2)
+                             ) * ip.dtau
+
+            if ((action_loc_new - action_loc_old) < 0):
+                x_cold_config[i] = x_new
 
     x_cold_config[0] = x_cold_config[n_lattice - 1]
     x_cold_config[n_lattice] = x_cold_config[1]
 
 
-
-
-def find_instantons(x,n_lattice,dt):
+def find_instantons(x, n_lattice, dt):
 
     pos_roots = 0
     neg_roots = 0
     pos_roots_position = np.zeros(1)
     neg_roots_position = np.zeros(1)
 
-    #print(f'x_pos ={x[i_zero]} with i_zero = {i_zero}')
-
-    if x[0] == 0:
+    if x[0] < 1e-10 and x[0] > -1e-10:
 
         if x[1] - x[0] > 0:
             pos_roots += 1
             pos_roots_position = np.append(pos_roots_position, 0)
             i_zero = 1
             x_pos = x[i_zero]
-
 
         elif x[1] - x[0] < 0:
 
@@ -181,22 +255,56 @@ def find_instantons(x,n_lattice,dt):
         i_zero = 0
         x_pos = x[i_zero]
 
-    for i in range(i_zero+1,n_lattice):
+    for i in range(i_zero+1, n_lattice):
 
-
-        if x_pos*x[i] < 0 :
+        if x_pos*x[i] < 0:
 
             if x[i]-x[i-1] > 0:
                 pos_roots += 1
-                #pos_roots_position = np.append(pos_roots_position, (i*dt+(i-1)*dt)/2)
+                pos_roots_position = np.append(
+                    pos_roots_position, 
+                    -x[i-1] * (dt)\
+                    /(x[i] - x[i-1]) + (i-1)*dt
+                    )
                 x_pos = x[i]
 
             elif x[i]-x[i-1] < 0:
 
                 neg_roots += 1
-                neg_roots_position = np.append(neg_roots_position,(i*dt+(i-1)*dt)/2)
+                neg_roots_position = np.append(
+                    neg_roots_position, 
+                    -x[i-1] * (dt)\
+                    /(x[i] - x[i-1]) + (i-1)*dt
+                    )
                 x_pos = x[i]
-    #a = np.delete(pos_roots_position, 0)
-    #b = np.delete(neg_roots_position, 0)
+                
+                
+    a = np.delete(pos_roots_position, 0)
+    b = np.delete(neg_roots_position, 0)
 
-    return pos_roots,neg_roots, a ,b
+    return pos_roots, neg_roots, a ,b
+
+
+def instanton_classical_configuration(tau_pos,tau_0):
+
+    return ip.x_potential_minimum * np.tanh(2 * ip.x_potential_minimum * (ip.dtau*tau_pos - tau_0))
+
+def second_derivative_action(x_0):
+
+    return 12 * x_0 * x_0 - 4 * ip.x_potential_minimum * ip.x_potential_minimum
+
+def periodic_boundary_conditions(x_config):
+
+    n_lattice = x_config.size - 1
+
+    x_config[0] = x_config[n_lattice - 1]
+    x_config[n_lattice] = x_config[1]
+
+def anti_periodic_boundary_conditions(x_config):
+
+    n_lattice = x_config.size - 1
+
+    x_config[0] = - x_config[n_lattice - 1]
+    x_config[n_lattice] = - x_config[1]
+
+
