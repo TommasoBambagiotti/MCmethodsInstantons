@@ -87,7 +87,13 @@ def configuration_heating(x_delta_config, tau_array, tau_centers_ia,
 
     for i in range(1, n_lattice):
 
+<<<<<<< Updated upstream
         if (i in tau_centers_ia_index) is False:
+=======
+        if (i in tau_centers_ia_index) is True:
+            continue
+        else:
+>>>>>>> Stashed changes
             action_loc_old = (
                 pow((x_delta_config[i] -
                     x_delta_config[i - 1]) / (2 * ip.dtau), 2)
