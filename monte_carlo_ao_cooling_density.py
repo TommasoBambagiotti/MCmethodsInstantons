@@ -50,8 +50,6 @@ def cooled_monte_carlo_density(n_lattice,
         action_cooling = np.zeros((n_cooling_sweeps), float)
         action2_cooling = np.zeros((n_cooling_sweeps), float)
         
-        # zero crossing density
-        hist_writer = open(output_path + '/zcr_cooling.txt', 'w')
         
         # Monte Carlo sweeps: Principal cycle
 
@@ -59,9 +57,6 @@ def cooled_monte_carlo_density(n_lattice,
 
         for i_equil in range(n_equil):
             mc.metropolis_question(x_config)
-
-        # np.savetxt(output_path +
-        #            f'/config_equil_{i_minimum + 1}.txt', x_config)
 
         # Rest of the MC sweeps
 
@@ -105,17 +100,6 @@ def cooled_monte_carlo_density(n_lattice,
                     action_cooling[i_cooling] += action_temp
                     action2_cooling[i_cooling] += pow(action_temp, 2)
                 
-                if n_instantons == n_anti_instantons and n_instantons != 0:
-                    
-                    for i in range(n_instantons):
-                        if i == 0:
-                            zero_m = neg_roots[-1] - n_lattice * ip.dtau
-                        else:
-                            zero_m = neg_roots[i-1]
-                        z_ia = min(np.abs(neg_roots[i] - pos_roots[i]),
-                                   np.abs(pos_roots[i] - zero_m))
-                        
-                        hist_writer.write(str(z_ia) + '\n')            
     
         # Evaluate averages and errors
 
@@ -127,12 +111,6 @@ def cooled_monte_carlo_density(n_lattice,
         n_total, n_total_err = mc.stat_av_var(n_total_instantons_sum,
                                               n2_total_instantons_sum,
                                               n_cooling)
-
-        np.savetxt(output_path + '/tau_array_conf.txt',
-                   np.linspace(0.0, n_lattice * ip.dtau, n_lattice))
-        np.savetxt(output_path + '/configuration.txt', x_config[0:-1])
-        np.savetxt(output_path + '/configuration_cooled.txt',
-                   x_cold_config[0:-1])
 
         np.savetxt(output_path + f'/n_total_{i_minimum + 1}.txt', n_total)
 
@@ -159,7 +137,6 @@ def cooled_monte_carlo_density(n_lattice,
                   encoding='utf-8') as act_writer:
             np.savetxt(act_writer, action_err)
 
-    hist_writer.close()
 
     with open(output_path + '/n_cooling.txt', 'w',
               encoding='utf-8') as n_inst_writer:

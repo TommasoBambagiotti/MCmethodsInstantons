@@ -34,7 +34,7 @@ def zero_crossing_cooling_density(n_lattice,
     x_config = mc.initialize_lattice(n_lattice, i_cold)
 
     # zero crossing density
-    hist_writer = open(output_path + '/zcr_cooling.txt', 'w')
+    hist_writer = open(output_path + '/zcr_cooling.txt', 'a')
 
     # Equilibration cycle
 
@@ -68,20 +68,36 @@ def zero_crossing_cooling_density(n_lattice,
                                    ip.dtau)
 
             # total zero crossings
-
-            if n_instantons == n_anti_instantons and n_instantons != 0:
-
-                for i in range(n_instantons):
-                    if i == 0:
-                        zero_m = neg_roots[-1] - n_lattice * ip.dtau
-                    else:
-                        zero_m = neg_roots[i-1]
+            if n_instantons != 0:
+                if pos_roots[0] < neg_roots[0]:
                     
-                    z_ia = min(np.abs(neg_roots[i] - pos_roots[i]),
-                                   np.abs(pos_roots[i] - zero_m))
-
-                    hist_writer.write(str(z_ia) + '\n')
-
+                    for i in range(n_instantons):
+                        
+                        if i == 0:
+                            zero_m = neg_roots[-1] - n_lattice * ip.dtau
+                        else:
+                            zero_m = neg_roots[i-1]
+                        
+                        z_ia = min(np.abs(neg_roots[i] - pos_roots[i]),
+                                       np.abs(pos_roots[i] - zero_m))
+        
+                        hist_writer.write(str(z_ia) + '\n')
+                        
+                elif pos_roots[0] > neg_roots[0]:
+                    for i in range(n_instantons):
+                        if i == 0:
+                            zero_p = pos_roots[-1] - n_lattice * ip.dtau
+                        else:
+                            zero_p = pos_roots[i-1]
+                        
+                        z_ia = min(np.abs(pos_roots[i] - neg_roots[i]),
+                                       np.abs(neg_roots[i] - zero_p))
+                        
+                        hist_writer.write(str(z_ia) + '\n')
+                        
+                else:
+                    continue
+                
     hist_writer.close()
 
     return 0
