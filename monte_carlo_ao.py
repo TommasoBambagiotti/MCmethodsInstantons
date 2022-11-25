@@ -4,7 +4,6 @@ to the anharmonic quantum
 oscillator
 '''
 
-import random as rnd
 import numpy as np
 
 import utility_custom
@@ -16,7 +15,10 @@ def monte_carlo_ao(n_lattice,  # size of the grid
                    n_mc_sweeps,  # monte carlo sweeps
                    n_points,  #
                    n_meas,  #
-                   i_cold):  # cold/hot start):
+                   i_cold,
+                   x_potential_minimum=1.4,
+                   dtau=0.05,
+                   delta_x=0.5):  # cold/hot start):
     '''Solve the anharmonic oscillator through
     Monte Carlo technique on an Euclidian Axis'''
 
@@ -34,35 +36,34 @@ def monte_carlo_ao(n_lattice,  # size of the grid
 
     # x position along the tau axis
 
-    x_config = mc.initialize_lattice(n_lattice, i_cold)
+    x_config = mc.initialize_lattice(n_lattice,
+                                     x_potential_minimum,
+                                     i_cold)
 
     # Monte Carlo sweeps: Principal cycle
 
     # Equilibration cycle
     for _ in range(n_equil):
-        
-        mc.metropolis_question(x_config)
+
+        mc.metropolis_question(x_config,
+                               x_potential_minimum,
+                               dtau,
+                               delta_x)
 
         # Rest of the MC sweeps
-    with open(output_path + '/ground_state_histogram.dat', 'wb') as hist_writer:
-        for _ in range(n_mc_sweeps - n_equil):
+    # with open(output_path + '/ground_state_histogram.txt', 'wb') as hist_writer:
+    for i_mc in range(n_mc_sweeps - n_equil):
+        if i_mc % 100 == 0:
+            print(f'{i_mc} in {n_mc_sweeps - n_equil}')
 
-            mc.metropolis_question(x_config)
+        mc.metropolis_question(x_config,
+                               x_potential_minimum,
+                               dtau,
+                               delta_x)
 
-            np.save(hist_writer, x_config[0:(n_lattice - 1)])
-            for _ in range(n_meas):
-                i_p0 = int((n_lattice - n_points) * rnd.uniform(0., 1.))
-                x_0 = x_config[i_p0]
-                for i_point in range(n_points):
-                    x_1 = x_config[i_p0 + i_point]
-
-                    x_cor_sums[0, i_point] += x_0 * x_1
-                    x_cor_sums[1, i_point] += pow(x_0 * x_1, 2)
-                    x_cor_sums[2, i_point] += pow(x_0 * x_1, 3)
-
-                    x2_cor_sums[0, i_point] += pow(x_0 * x_1, 2)
-                    x2_cor_sums[1, i_point] += pow(x_0 * x_1, 4)
-                    x2_cor_sums[2, i_point] += pow(x_0 * x_1, 6)
+        #np.savetxt(hist_writer, x_config[0:(n_lattice - 1)])
+        utility_custom.correlation_measurments(n_lattice, n_meas, n_points,
+                                               x_config, x_cor_sums, x2_cor_sums)
 
     # Evaluate averages and other stuff, maybe we can create a function
 

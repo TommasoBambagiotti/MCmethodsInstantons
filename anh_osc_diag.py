@@ -89,7 +89,7 @@ def log_corr_funct_analytic(energy_density,
 
 def free_energy(energy_eigenvalues, output_path):
 
-    temperature_array = np.linspace(0.08, 2.0, 99)
+    temperature_array = np.linspace(0.01, 2.0, 99)
 
     free_energy_array = np.empty(temperature_array.size)
     z_partition_function = 0.0

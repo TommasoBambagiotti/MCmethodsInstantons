@@ -13,6 +13,9 @@ def instantons_density_switching(n_lattice,
                                  dtau=0.05,
                                  delta_x=0.5):
 
+    '''
+    '''
+    
     output_path = './output_data/output_monte_carlo_density_switching'
     utility_custom.output_control(output_path)
 
@@ -166,10 +169,10 @@ def instantons_density_switching(n_lattice,
                         np.sum(potential_1-potential_0)
 
                     delta_s_alpha[i_sector,
-                                  i_switching] += delta_s_alpha_temp#/beta
+                                  i_switching] += delta_s_alpha_temp/beta
                     # error
                     delta_s2_alpha[i_sector,
-                                   i_switching] += np.square(delta_s_alpha_temp)#/beta
+                                   i_switching] += np.square(delta_s_alpha_temp)/beta
 
                     if i_mc == n_mc_sweeps-1:
                         print(f'delta V alpha {i_sector} for {i_switching}:')
