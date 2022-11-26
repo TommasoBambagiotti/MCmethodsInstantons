@@ -1,7 +1,8 @@
 import numpy as np
-#from numba import jit, njit
+from numba import njit
 
-#@jit(nopython=True)
+
+@njit
 def potential_anh_oscillator(x_position,
                              x_potential_minimum):
 
@@ -9,14 +10,14 @@ def potential_anh_oscillator(x_position,
                      - x_potential_minimum * x_potential_minimum)
 
 
-#@jit(nopython=True)
+@njit
 def potential_0_switching(x_position,
                           x_potential_minimum):
 
     return np.square(x_position * (4 * x_potential_minimum))/4.
 
 
-#@jit(nopython=True)
+@njit
 def potential_alpha(x_position,
                     x_potential_minimum,
                     alpha):
@@ -30,7 +31,7 @@ def potential_alpha(x_position,
     return alpha * (potential_1 - potential_0) + potential_0
 
 
-#@njit
+@njit
 def gaussian_potential(x_position,
                        x_potential_minimum,
                        a_alpha):
@@ -46,7 +47,7 @@ def gaussian_potential(x_position,
     return a_alpha * (potential_1 - potential_0) + potential_0
 
 
-#@jit(nopython=True)
+@njit
 def metropolis_question_density_switching(x_config,
                                           x_0_config,
                                           second_der_0,
@@ -58,6 +59,7 @@ def metropolis_question_density_switching(x_config,
                                           a_alpha=1):
 
     tau_fixed = int((x_config.size - 1) / 2)
+    
 
     for i in range(1, x_config.size - 1):
         # for i = n_lattice/2 x is fixed
@@ -65,10 +67,9 @@ def metropolis_question_density_switching(x_config,
             continue
 
         # expanding about the classical config
-
-
-        x_position = np.array([x_0_config[i], x_config[i], second_der_0[i]])
-
+        
+        x_position = np.array([x_0_config[i], x_config[i], second_der_0[i-1]])
+        
         action_loc_old = (np.square(x_config[i] - x_config[i - 1])
                           + np.square(x_config[i + 1] - x_config[i])) / (4 * dtau)\
             + dtau * f_potential(x_position,
@@ -81,12 +82,12 @@ def metropolis_question_density_switching(x_config,
 
             jacobian = (x_config[tau_fixed+1] -
                         x_config[tau_fixed-1]) / (2*dtau)
-            if np.abs(jacobian)  < 0.001:
-                jacobian = 0.0
+            if np.abs(jacobian) < 0.001:
+                jacobian = 0.001
             action_jac = np.log(np.abs(jacobian))
             action_loc_old = action_loc_old - action_jac
 
-        x_new = x_config[i] + np.random.gauss(0, delta_x)
+        x_new = x_config[i] + np.random.normal(0, delta_x)
         x_position[1] = x_new
 
         action_loc_new = (np.square(x_new - x_config[i-1])
@@ -98,8 +99,8 @@ def metropolis_question_density_switching(x_config,
         if (i == tau_fixed-1) and (sector == 1):
 
             jacobian = (x_config[tau_fixed+1] - x_new) / (2*dtau)
-            if np.abs(jacobian)  < 0.001:
-                jacobian = 0.0
+            if np.abs(jacobian) < 0.001:
+                jacobian = 0.001
             action_jac = np.log(np.abs(jacobian))
 
             action_loc_new = action_loc_new - action_jac
@@ -107,8 +108,8 @@ def metropolis_question_density_switching(x_config,
         if (i == tau_fixed+1) and (sector == 1):
 
             jacobian = (x_new - x_config[tau_fixed-1]) / (2*dtau)
-            if np.abs(jacobian)  < 0.001:
-                jacobian = 0.0
+            if np.abs(jacobian) < 0.001:
+                jacobian = 0.001
             action_jac = np.log(np.abs(jacobian))
 
             action_loc_new = action_loc_new - action_jac
@@ -131,7 +132,7 @@ def metropolis_question_density_switching(x_config,
         anti_periodic_boundary_conditions(x_config)
 
 
-#@jit(nopython=True)
+@njit
 def metropolis_question(x_config,
                         x_potential_minimum,
                         dtau,
@@ -160,7 +161,7 @@ def metropolis_question(x_config,
     x_config[-1] = x_config[1]
 
 
-#@jit(nopython=True)
+@njit
 def metropolis_question_switching(x_config,
                                   x_potential_minimum,
                                   dtau,
@@ -192,7 +193,7 @@ def metropolis_question_switching(x_config,
     x_config[-1] = x_config[1]
 
 
-#@jit(nopython=True)
+@njit
 def return_action(x_config,
                   x_potential_minimum,
                   dtau):
@@ -205,7 +206,7 @@ def return_action(x_config,
 
     return np.sum(action)
 
-
+@njit
 def initialize_lattice(n_lattice,
                        x_potential_minimum,
                        i_cold=False,
@@ -238,16 +239,16 @@ def initialize_lattice(n_lattice,
         x_config = instanton_classical_configuration(tau_array,
                                                      tau_inst,
                                                      x_potential_minimum)
-    
+
         # APBC
         #x_config[1] = - x_config[n_lattice]
         #x_config[0] = x_config[n_lattice-1]
         anti_periodic_boundary_conditions(x_config)
-    
+
         return x_config
 
 
-#@jit(nopython=True)
+@njit
 def configuration_cooling(x_cold_config,
                           x_potential_minimum,
                           dtau,
@@ -268,7 +269,7 @@ def configuration_cooling(x_cold_config,
                               + np.square(x_cold_config[i+1] - x_new))/(4. * dtau)\
                 + dtau * potential_anh_oscillator(x_new,
                                                   x_potential_minimum)
-          
+
             if action_loc_new < action_loc_old:
                 x_cold_config[i] = x_new
 
@@ -276,7 +277,7 @@ def configuration_cooling(x_cold_config,
     x_cold_config[-1] = x_cold_config[1]
 
 
-#@jit(nopython=True)
+@njit
 def find_instantons(x, dt):
 
     pos_roots = 0
@@ -285,7 +286,6 @@ def find_instantons(x, dt):
     neg_roots_position = np.array([0.0])
     #pos_roots_position = []
     #neg_roots_position = []
-   
 
     if np.abs(x[0]) < 1e-7:
         x[0] = 0.0
@@ -345,7 +345,7 @@ def find_instantons(x, dt):
     return pos_roots, neg_roots, \
         a, b
 
-
+@njit 
 def instanton_classical_configuration(tau_pos,
                                       tau_0,
                                       x_potential_minimum):
@@ -353,20 +353,20 @@ def instanton_classical_configuration(tau_pos,
     return x_potential_minimum * np.tanh(2 * x_potential_minimum * (tau_pos - tau_0))
 
 
-#@jit(nopython=True)
+@njit
 def second_derivative_action(x_0, x_potential_minimum):
 
     return 12 * x_0 * x_0 - 4 * x_potential_minimum * x_potential_minimum
 
 
-#@jit(nopython=True)
+@njit
 def periodic_boundary_conditions(x_config):
 
     x_config[0] = x_config[- 2]
     x_config[-1] = x_config[1]
 
 
-#@jit(nopython=True)
+@njit
 def anti_periodic_boundary_conditions(x_config):
 
     x_config[0] = - x_config[-2]
