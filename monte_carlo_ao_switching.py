@@ -1,17 +1,21 @@
-"""
-
-"""
 import time
 import numpy as np
-
 import utility_monte_carlo as mc
 import utility_custom
 
 
 def free_energy_harmonic_osc(beta, x_potential_minimum):
-    '''
-    Return the Free Helmoltz energy for an harmonic oscillator
-    '''
+    """
+
+    Parameters
+    ----------
+    beta :
+    x_potential_minimum :
+
+    Returns
+    -------
+
+    """
     return -np.divide(np.log(2.0 * np.sinh(beta * 4.0 * x_potential_minimum / 2.0)), beta)
 
 
@@ -23,12 +27,25 @@ def monte_carlo_ao_switching(n_lattice,  # size of the grid
                              x_potential_minimum,
                              dtau,
                              delta_x):  # cold/hot start
-    '''
-    Find the free energy of an anharmonic oscillator through
+    """Find the free energy of an anharmonic oscillator through
     Monte Carlo technique on an Euclidian Axis and the adiabatic
     switching
-    '''
 
+    Parameters
+    ----------
+    n_lattice :
+    n_equil :
+    n_mc_sweeps :
+    n_switching :
+    i_cold :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+
+    Returns
+    -------
+
+    """
     # Variables for switching algorithm
     d_alpha = 1.0 / n_switching
     a_alpha = 0.0
@@ -124,7 +141,22 @@ def monte_carlo_virial_theorem(n_lattice,  # size of the grid
                                x_potential_minimum,
                                dtau,
                                delta_x):
+    """
 
+    Parameters
+    ----------
+    n_lattice :
+    n_equil :
+    n_mc_sweeps :
+    i_cold :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+
+    Returns
+    -------
+
+    """
     # x position along the tau axis
     x_config = mc.initialize_lattice(n_lattice,
                                      x_potential_minimum,
@@ -174,7 +206,24 @@ def free_energy_anharm(n_beta,
                        x_potential_minimum=1.4,
                        dtau=0.05,
                        delta_x=0.5):
+    """
 
+    Parameters
+    ----------
+    n_beta :
+    beta_max :
+    n_equil :
+    n_mc_sweeps :
+    n_switching :
+    i_cold :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+
+    Returns
+    -------
+
+    """
     # Control output filepath
     output_path = './output_data/output_monte_carlo_switching'
     utility_custom.output_control(output_path)

@@ -4,7 +4,6 @@ Liquid model
 '''
 import numpy as np
 import time
-
 import utility_custom
 import utility_monte_carlo as mc
 import utility_rilm as rilm
@@ -19,7 +18,20 @@ def inst_int_liquid_model(n_lattice,  # size of the grid
                           dx_update,
                           x_potential_minimum = 1.4,
                           dtau = 0.05):
-    
+    """
+
+    Parameters
+    ----------
+    n_lattice :
+    n_mc_sweeps :
+    n_points :
+    n_meas :
+    tau_core :
+    action_core :
+    dx_update :
+    x_potential_minimum :
+    dtau :
+    """
     # Control output filepath
     output_path = './output_data/output_iilm/iilm'
     utility_custom.output_control(output_path)

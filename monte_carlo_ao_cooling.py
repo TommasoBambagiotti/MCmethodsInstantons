@@ -21,7 +21,26 @@ def cooled_monte_carlo(
         x_potential_minimum=1.4,
         dtau=0.05,
         delta_x=0.5):
+    """
 
+    Parameters
+    ----------
+    n_lattice :
+    n_equil :
+    n_mc_sweeps :
+    n_points :
+    n_meas :
+    i_cold :
+    n_sweeps_btw_cooling :
+    n_cooling_sweeps :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+
+    Returns
+    -------
+
+    """
     # number of total cooling processes
     n_cooling = 0
 

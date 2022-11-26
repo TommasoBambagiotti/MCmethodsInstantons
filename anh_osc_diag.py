@@ -1,6 +1,3 @@
-'''
-
-'''
 import numpy as np
 from numpy import math
 from numpy import linalg as LA
@@ -10,7 +7,17 @@ import utility_custom
 
 def psi_simple_model(x_position,
                      x_potential_minimum):
+    """
 
+    Parameters
+    ----------
+    x_position :
+    x_potential_minimum :
+
+    Returns
+    -------
+
+    """
     psi_plus_minimum = pow((2.0 * x_potential_minimum / np.pi), 1 / 4) \
         * np.exp(-x_potential_minimum * pow(x_position - x_potential_minimum, 2))
 
@@ -23,7 +30,18 @@ def psi_simple_model(x_position,
 def hermite_pol_coeff(x_position,
                       norm,
                       n_array):
+    """
 
+    Parameters
+    ----------
+    x_position :
+    norm :
+    n_array :
+
+    Returns
+    -------
+
+    """
     hermite_coeff = np.zeros((n_array))
 
     for n in range(n_array):
@@ -42,6 +60,18 @@ def hermite_pol_coeff(x_position,
 def corr_functs_analytic(energy_density,
                          tau_array,
                          energy_eigenvalues):
+    """
+
+    Parameters
+    ----------
+    energy_density :
+    tau_array :
+    energy_eigenvalues :
+
+    Returns
+    -------
+
+    """
     i_tau = 0
     j_energy = 0
     correlation_funct = np.zeros(tau_array.size)
@@ -56,7 +86,17 @@ def corr_functs_analytic(energy_density,
 
 
 def log_corr_funct_forward_difference(corr_funct, dtau):
+    """
 
+    Parameters
+    ----------
+    corr_funct :
+    dtau :
+
+    Returns
+    -------
+
+    """
     fd_der_log_corr_funct = np.zeros(corr_funct.size - 1)
     for i in range(corr_funct.size - 1):
         fd_der_log_corr_funct[i] = - (np.log(corr_funct[i+1])-np.log(corr_funct[i]))/dtau
@@ -68,7 +108,19 @@ def log_corr_funct_analytic(energy_density,
                             tau_array,
                             energy_eigenvalues,
                             correlation_function):
+    """
 
+    Parameters
+    ----------
+    energy_density :
+    tau_array :
+    energy_eigenvalues :
+    correlation_function :
+
+    Returns
+    -------
+
+    """
     i_tau = 0
     j_energy = 0
     an_log_corr_funct = np.zeros(tau_array.size)
@@ -88,7 +140,13 @@ def log_corr_funct_analytic(energy_density,
 
 
 def free_energy(energy_eigenvalues, output_path):
+    """
 
+    Parameters
+    ----------
+    energy_eigenvalues :
+    output_path :
+    """
     temperature_array = np.linspace(0.01, 2.0, 99)
 
     free_energy_array = np.empty(temperature_array.size)
@@ -111,7 +169,14 @@ def free_energy(energy_eigenvalues, output_path):
 def anharmonic_oscillator_diag(x_potential_minimum,
                                n_dim,
                                freq_har_osc):
+    """
 
+    Parameters
+    ----------
+    x_potential_minimum :
+    n_dim :
+    freq_har_osc :
+    """
     # Output control
     output_path = './output_data/output_diag'
     utility_custom.output_control(output_path)

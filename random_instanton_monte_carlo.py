@@ -4,7 +4,6 @@ gas model
 '''
 
 import numpy as np
-
 import utility_custom
 import utility_rilm as rilm
 
@@ -16,7 +15,18 @@ def random_instanton_liquid_model(n_lattice,  # size of the grid
                                   n_ia = 0,
                                   x_potential_minimum = 1.4,
                                   dtau = 0.05):
+    """
 
+    Parameters
+    ----------
+    n_lattice :
+    n_mc_sweeps :
+    n_points :
+    n_meas :
+    n_ia :
+    x_potential_minimum :
+    dtau :
+    """
     # Control output filepath
     output_path = './output_data/output_rilm'
     utility_custom.output_control(output_path)

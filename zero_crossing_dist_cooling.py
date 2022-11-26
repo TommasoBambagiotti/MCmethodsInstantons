@@ -6,7 +6,6 @@ after N-cooling sweeps
 
 import time
 import numpy as np
-
 import utility_monte_carlo as mc
 import utility_custom
 
@@ -20,7 +19,24 @@ def zero_crossing_cooling_density(n_lattice,
                                   x_potential_minimum=1.4,
                                   dtau=0.05,
                                   delta_x=0.5):
+    """
 
+    Parameters
+    ----------
+    n_lattice :
+    n_equil :
+    n_mc_sweeps :
+    i_cold :
+    n_sweeps_btw_cooling :
+    n_cooling_sweeps :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+
+    Returns
+    -------
+
+    """
     start = time.time()
     if n_mc_sweeps < n_equil:
         print("too few Monte Carlo sweeps/ N_equilib > N_Monte_Carlo")

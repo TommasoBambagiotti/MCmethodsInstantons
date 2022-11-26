@@ -1,19 +1,44 @@
 import numpy as np
-#from numba import jit
+# from numba import jit
 
 import utility_custom
 
-#@jit(nopython=True)
+
+# @jit(nopython=True)
 def centers_setup(tau_array, n_ia, n_lattice, dtau=0.05):
+    """
+
+    Parameters
+    ----------
+    tau_array :
+    n_ia :
+    n_lattice :
+    dtau :
+
+    Returns
+    -------
+
+    """
     tau_centers_ia = np.random.uniform(0, n_lattice * dtau, size=n_ia)
     tau_centers_ia = np.sort(tau_centers_ia)
 
     return tau_centers_ia
 
 
-#@jit(nopython=True)
+# @jit(nopython=True)
 def centers_setup_gauss(tau_array, n_ia, n_lattice):
+    """
 
+    Parameters
+    ----------
+    tau_array :
+    n_ia :
+    n_lattice :
+
+    Returns
+    -------
+
+    """
     tau_centers_ia_index = np.random.randint(0, n_lattice, size=n_ia)
     tau_centers_ia_index = np.sort(tau_centers_ia_index)
 
@@ -25,12 +50,24 @@ def centers_setup_gauss(tau_array, n_ia, n_lattice):
     return tau_centers_ia, tau_centers_ia_index
 
 
-#@jit(nopython=True)
+# @jit(nopython=True)
 def ansatz_instanton_conf(tau_centers_ia,
                           tau_array,
                           x_potential_minimum,
                           dtau):
+    """
 
+    Parameters
+    ----------
+    tau_centers_ia :
+    tau_array :
+    x_potential_minimum :
+    dtau :
+
+    Returns
+    -------
+
+    """
     # if tau_centers_ia.size == 0:
     #     x_ansatz = np.repeat(-ip.x_potential_minimum, tau_array.size + 1)
     #     return x_ansatz
@@ -40,8 +77,8 @@ def ansatz_instanton_conf(tau_centers_ia,
     top_charge = 1
     for tau_ia in np.nditer(tau_centers_ia):
         x_ansatz += top_charge * x_potential_minimum \
-            * np.tanh(2 * x_potential_minimum
-                      * (tau_array - tau_ia))
+                    * np.tanh(2 * x_potential_minimum
+                              * (tau_array - tau_ia))
 
         top_charge *= -1
 
@@ -54,42 +91,70 @@ def ansatz_instanton_conf(tau_centers_ia,
     return x_ansatz
 
 
-#@jit(nopython=True)
+# @jit(nopython=True)
 def gaussian_potential(x_pos, tau, tau_ia_centers, x_potential_minimum):
+    """
+
+    Parameters
+    ----------
+    x_pos :
+    tau :
+    tau_ia_centers :
+    x_potential_minimum :
+
+    Returns
+    -------
+
+    """
     potential = 0.0
     for tau_ia in np.nditer(tau_ia_centers):
         potential += -3.0 / (2.0 * np.power(np.cosh(2 * x_potential_minimum
                                                     * (tau - tau_ia)), 2))
     potential += 1
     potential *= 4.0 * x_potential_minimum \
-        * x_potential_minimum * x_pos * x_pos
+                 * x_potential_minimum * x_pos * x_pos
 
     return potential
 
-#@jit(nopython=True)
+
+# @jit(nopython=True)
 def hard_core_action(n_lattice,
                      tau_centers_ia,
                      tau_core,
                      action_core,
                      action_0,
                      dtau):
+    """
 
+    Parameters
+    ----------
+    n_lattice :
+    tau_centers_ia :
+    tau_core :
+    action_core :
+    action_0 :
+    dtau :
+
+    Returns
+    -------
+
+    """
     action = 0.0
 
     for i_ia in range(0, tau_centers_ia.size):
         if i_ia == 0:
             zero_crossing_m = tau_centers_ia[-1] - n_lattice * dtau
         else:
-            zero_crossing_m = tau_centers_ia[i_ia-1]
+            zero_crossing_m = tau_centers_ia[i_ia - 1]
 
         action += action_0 * action_core * np.exp(-(tau_centers_ia[i_ia]
-                                         - zero_crossing_m)
-                                       / tau_core)
+                                                    - zero_crossing_m)
+                                                  / tau_core)
 
     return action
 
 
-#@jit(nopython=True)
+# @jit(nopython=True)
 def configuration_heating(x_delta_config,
                           tau_array,
                           tau_centers_ia,
@@ -97,7 +162,18 @@ def configuration_heating(x_delta_config,
                           x_potential_minimum,
                           dtau,
                           delta_x):
+    """
 
+    Parameters
+    ----------
+    x_delta_config :
+    tau_array :
+    tau_centers_ia :
+    tau_centers_ia_index :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+    """
     n_lattice = tau_array.size
 
     for i in range(1, n_lattice):
@@ -106,16 +182,21 @@ def configuration_heating(x_delta_config,
             continue
         else:
             action_loc_old = (
-                np.square(x_delta_config[i] - x_delta_config[i - 1])
-                + np.square(x_delta_config[i + 1] - x_delta_config[i])
-            ) / (4 * dtau)\
-                + dtau * gaussian_potential(x_delta_config[i], tau_array[i],
-                                            tau_centers_ia,
-                                            x_potential_minimum)
+                                     np.square(
+                                         x_delta_config[i] - x_delta_config[
+                                             i - 1])
+                                     + np.square(
+                                 x_delta_config[i + 1] - x_delta_config[i])
+                             ) / (4 * dtau) \
+                             + dtau * gaussian_potential(x_delta_config[i],
+                                                         tau_array[i],
+                                                         tau_centers_ia,
+                                                         x_potential_minimum)
 
-            if (i+1) in tau_centers_ia_index or (i-1) in tau_centers_ia_index:
-                der = (x_delta_config[i+1] -
-                       x_delta_config[i-1]) / (2.0 * dtau)
+            if (i + 1) in tau_centers_ia_index or (
+                    i - 1) in tau_centers_ia_index:
+                der = (x_delta_config[i + 1] -
+                       x_delta_config[i - 1]) / (2.0 * dtau)
                 if der > -0.001 and der < 0.001:
                     der = 1.0
                 action_loc_old += -np.log(np.abs(der))
@@ -123,21 +204,21 @@ def configuration_heating(x_delta_config,
             x_new = x_delta_config[i] + np.random.gauss(0, delta_x)
 
             action_loc_new = (
-                np.square(x_new - x_delta_config[i - 1])
-                + np.square(x_delta_config[i + 1] - x_new)
-            ) / (4 * dtau)\
-                + dtau * gaussian_potential(x_new, tau_array[i],
-                                            tau_centers_ia,
-                                            x_potential_minimum)
+                                     np.square(x_new - x_delta_config[i - 1])
+                                     + np.square(x_delta_config[i + 1] - x_new)
+                             ) / (4 * dtau) \
+                             + dtau * gaussian_potential(x_new, tau_array[i],
+                                                         tau_centers_ia,
+                                                         x_potential_minimum)
 
-            if (i-1) in tau_centers_ia_index:
+            if (i - 1) in tau_centers_ia_index:
                 der = (x_delta_config[i + 1] - x_new) / (2.0 * dtau)
                 if der > -0.001 and der < 0.001:
                     der = 1.0
 
                 action_loc_new += - np.log(np.abs(der))
 
-            elif (i+1) in tau_centers_ia_index:
+            elif (i + 1) in tau_centers_ia_index:
                 der = (x_new - x_delta_config[i - 1]) / (2.0 * dtau)
                 if der > -0.001 and der < 0.001:
                     der = 1.0
@@ -152,7 +233,7 @@ def configuration_heating(x_delta_config,
     x_delta_config[n_lattice] = x_delta_config[1]
 
 
-#@jit(nopython=True)
+# @jit(nopython=True)
 def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           n_points,  #
                           n_meas,
@@ -161,7 +242,23 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           x2_cor_sums,
                           x_potential_minimum,
                           dtau):
+    """
 
+    Parameters
+    ----------
+    n_ia :
+    n_points :
+    n_meas :
+    tau_array :
+    x_cor_sums :
+    x2_cor_sums :
+    x_potential_minimum :
+    dtau :
+
+    Returns
+    -------
+
+    """
     # Center of instantons and anti instantons
     tau_centers_ia = centers_setup(tau_array, n_ia, tau_array.size)
 
@@ -181,7 +278,7 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     return tau_centers_ia
 
 
-#@jit(nopython=True)
+# @jit(nopython=True)
 def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                                  n_heating,
                                  n_points,  #
@@ -192,7 +289,21 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                                  x_potential_minimum,
                                  dtau,
                                  delta_x):
+    """
 
+    Parameters
+    ----------
+    n_ia :
+    n_heating :
+    n_points :
+    n_meas :
+    tau_array :
+    x_cor_sums :
+    x2_cor_sums :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+    """
     # Center of instantons and anti instantons
     tau_centers_ia, tau_centers_ia_index = centers_setup_gauss(
         tau_array, n_ia, tau_array.size)
@@ -204,7 +315,6 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     x_delta_config = np.zeros((tau_array.size + 1))
     # Heating sweeps
     for _ in range(n_heating):
-
         configuration_heating(x_delta_config,
                               tau_array,
                               tau_centers_ia,
@@ -216,9 +326,8 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
         x_ansatz_heated = x_ansatz + x_delta_config
 
     utility_custom.correlation_measurments(tau_array.size,
-                                            n_meas,
-                                            n_points,
-                                            x_ansatz_heated,
-                                            x_cor_sums,
-                                            x2_cor_sums)
-
+                                           n_meas,
+                                           n_points,
+                                           x_ansatz_heated,
+                                           x_cor_sums,
+                                           x2_cor_sums)

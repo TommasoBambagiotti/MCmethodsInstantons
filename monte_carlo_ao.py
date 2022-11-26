@@ -5,7 +5,6 @@ oscillator
 '''
 
 import numpy as np
-
 import utility_custom
 import utility_monte_carlo as mc
 
@@ -19,9 +18,25 @@ def monte_carlo_ao(n_lattice,  # size of the grid
                    x_potential_minimum=1.4,
                    dtau=0.05,
                    delta_x=0.5):  # cold/hot start):
-    '''Solve the anharmonic oscillator through
-    Monte Carlo technique on an Euclidian Axis'''
+    """Solve the anharmonic oscillator through Monte Carlo technique on
+       an Euclidian Axis
 
+    Parameters
+    ----------
+    n_lattice :
+    n_equil :
+    n_mc_sweeps :
+    n_points :
+    n_meas :
+    i_cold :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+
+    Returns
+    -------
+
+    """
     if n_mc_sweeps < n_equil:
         print("too few Monte Carlo sweeps/ N_equilib > N_Monte_Carlo")
         return 0

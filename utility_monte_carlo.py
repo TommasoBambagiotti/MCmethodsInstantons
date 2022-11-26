@@ -5,7 +5,17 @@ from numba import njit
 @njit
 def potential_anh_oscillator(x_position,
                              x_potential_minimum):
+    """
 
+    Parameters
+    ----------
+    x_position :
+    x_potential_minimum :
+
+    Returns
+    -------
+
+    """
     return np.square(x_position * x_position
                      - x_potential_minimum * x_potential_minimum)
 
@@ -13,15 +23,36 @@ def potential_anh_oscillator(x_position,
 @njit
 def potential_0_switching(x_position,
                           x_potential_minimum):
+    """
 
-    return np.square(x_position * (4 * x_potential_minimum))/4.
+    Parameters
+    ----------
+    x_position :
+    x_potential_minimum :
+
+    Returns
+    -------
+
+    """
+    return np.square(x_position * (4 * x_potential_minimum)) / 4.
 
 
 @njit
 def potential_alpha(x_position,
                     x_potential_minimum,
                     alpha):
+    """
 
+    Parameters
+    ----------
+    x_position :
+    x_potential_minimum :
+    alpha :
+
+    Returns
+    -------
+
+    """
     potential_0 = potential_0_switching(x_position,
                                         x_potential_minimum)
 
@@ -35,11 +66,22 @@ def potential_alpha(x_position,
 def gaussian_potential(x_position,
                        x_potential_minimum,
                        a_alpha):
+    """
 
-    potential_0 = 1.0 / 2.0 * x_position[2]\
-        * np.square(x_position[1] - x_position[0]) \
-        + potential_anh_oscillator(x_position[0],
-                                   x_potential_minimum)
+    Parameters
+    ----------
+    x_position :
+    x_potential_minimum :
+    a_alpha :
+
+    Returns
+    -------
+
+    """
+    potential_0 = 1.0 / 2.0 * x_position[2] \
+                  * np.square(x_position[1] - x_position[0]) \
+                  + potential_anh_oscillator(x_position[0],
+                                             x_potential_minimum)
 
     potential_1 = potential_anh_oscillator(x_position[1],
                                            x_potential_minimum)
@@ -57,9 +99,21 @@ def metropolis_question_density_switching(x_config,
                                           delta_x,
                                           sector,  # 0-instanton sector or 1-instanton sector
                                           a_alpha=1):
+    """
 
+    Parameters
+    ----------
+    x_config :
+    x_0_config :
+    second_der_0 :
+    f_potential :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+    sector :
+    a_alpha :
+    """
     tau_fixed = int((x_config.size - 1) / 2)
-    
 
     for i in range(1, x_config.size - 1):
         # for i = n_lattice/2 x is fixed
@@ -67,21 +121,21 @@ def metropolis_question_density_switching(x_config,
             continue
 
         # expanding about the classical config
-        
-        x_position = np.array([x_0_config[i], x_config[i], second_der_0[i-1]])
-        
+
+        x_position = np.array([x_0_config[i], x_config[i], second_der_0[i - 1]])
+
         action_loc_old = (np.square(x_config[i] - x_config[i - 1])
-                          + np.square(x_config[i + 1] - x_config[i])) / (4 * dtau)\
-            + dtau * f_potential(x_position,
-                                 x_potential_minimum,
-                                 a_alpha)
+                          + np.square(x_config[i + 1] - x_config[i])) / (4 * dtau) \
+                         + dtau * f_potential(x_position,
+                                              x_potential_minimum,
+                                              a_alpha)
 
         # Jacobian (constrain)
 
         if (i == tau_fixed + 1) or (i == tau_fixed - 1) and (sector == 1):
 
-            jacobian = (x_config[tau_fixed+1] -
-                        x_config[tau_fixed-1]) / (2*dtau)
+            jacobian = (x_config[tau_fixed + 1] -
+                        x_config[tau_fixed - 1]) / (2 * dtau)
             if np.abs(jacobian) < 0.001:
                 jacobian = 0.001
             action_jac = np.log(np.abs(jacobian))
@@ -90,24 +144,24 @@ def metropolis_question_density_switching(x_config,
         x_new = x_config[i] + np.random.normal(0, delta_x)
         x_position[1] = x_new
 
-        action_loc_new = (np.square(x_new - x_config[i-1])
-                          + np.square(x_config[i+1] - x_new)) / (4 * dtau)\
-            + dtau * f_potential(x_position,
-                                 x_potential_minimum,
-                                 a_alpha)
+        action_loc_new = (np.square(x_new - x_config[i - 1])
+                          + np.square(x_config[i + 1] - x_new)) / (4 * dtau) \
+                         + dtau * f_potential(x_position,
+                                              x_potential_minimum,
+                                              a_alpha)
 
-        if (i == tau_fixed-1) and (sector == 1):
+        if (i == tau_fixed - 1) and (sector == 1):
 
-            jacobian = (x_config[tau_fixed+1] - x_new) / (2*dtau)
+            jacobian = (x_config[tau_fixed + 1] - x_new) / (2 * dtau)
             if np.abs(jacobian) < 0.001:
                 jacobian = 0.001
             action_jac = np.log(np.abs(jacobian))
 
             action_loc_new = action_loc_new - action_jac
 
-        if (i == tau_fixed+1) and (sector == 1):
+        if (i == tau_fixed + 1) and (sector == 1):
 
-            jacobian = (x_new - x_config[tau_fixed-1]) / (2*dtau)
+            jacobian = (x_new - x_config[tau_fixed - 1]) / (2 * dtau)
             if np.abs(jacobian) < 0.001:
                 jacobian = 0.001
             action_jac = np.log(np.abs(jacobian))
@@ -137,28 +191,35 @@ def metropolis_question(x_config,
                         x_potential_minimum,
                         dtau,
                         delta_x):
+    """
 
+    Parameters
+    ----------
+    x_config :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+    """
     for i in range(1, x_config.size - 1):
-        action_loc_old = (np.square(x_config[i] - x_config[i-1])
-                          + np.square(x_config[i+1] - x_config[i]))/(4. * dtau)\
-            + dtau * potential_anh_oscillator(x_config[i],
-                                              x_potential_minimum)
+        action_loc_old = (np.square(x_config[i] - x_config[i - 1])
+                          + np.square(x_config[i + 1] - x_config[i])) / (4. * dtau) \
+                         + dtau * potential_anh_oscillator(x_config[i],
+                                                           x_potential_minimum)
 
         x_new = x_config[i] + delta_x * \
-            (2*np.random.uniform(0.0, 1.0) - 1.)
+                (2 * np.random.uniform(0.0, 1.0) - 1.)
 
-        action_loc_new = (np.square(x_new - x_config[i-1])
-                          + np.square(x_config[i+1] - x_new))/(4. * dtau)\
-            + dtau * potential_anh_oscillator(x_new,
-                                              x_potential_minimum)
+        action_loc_new = (np.square(x_new - x_config[i - 1])
+                          + np.square(x_config[i + 1] - x_new)) / (4. * dtau) \
+                         + dtau * potential_anh_oscillator(x_new,
+                                                           x_potential_minimum)
 
-        delta_action_exp = np.exp(action_loc_old-action_loc_new)
+        delta_action_exp = np.exp(action_loc_old - action_loc_new)
 
         if delta_action_exp > np.random.uniform(0., 1.):
             x_config[i] = x_new
 
-    x_config[0] = x_config[-2]
-    x_config[-1] = x_config[1]
+    periodic_boundary_conditions(x_config)
 
 
 @njit
@@ -167,44 +228,64 @@ def metropolis_question_switching(x_config,
                                   dtau,
                                   delta_x,
                                   alpha):
+    """
 
+    Parameters
+    ----------
+    x_config :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+    alpha :
+    """
     for i in range(1, x_config.size - 1):
-        action_loc_old = (np.square(x_config[i] - x_config[i-1])
-                          + np.square(x_config[i+1] - x_config[i]))/(4. * dtau)\
-            + dtau * potential_alpha(x_config[i],
-                                     x_potential_minimum,
-                                     alpha)
+        action_loc_old = (np.square(x_config[i] - x_config[i - 1])
+                          + np.square(x_config[i + 1] - x_config[i])) / (4. * dtau) \
+                         + dtau * potential_alpha(x_config[i],
+                                                  x_potential_minimum,
+                                                  alpha)
 
         x_new = x_config[i] + delta_x * \
-            (2*np.random.uniform(0.0, 1.0) - 1.)
+                (2 * np.random.uniform(0.0, 1.0) - 1.)
 
-        action_loc_new = (np.square(x_new - x_config[i-1])
-                          + np.square(x_config[i+1] - x_new))/(4. * dtau)\
-            + dtau * potential_alpha(x_new,
-                                     x_potential_minimum,
-                                     alpha)
+        action_loc_new = (np.square(x_new - x_config[i - 1])
+                          + np.square(x_config[i + 1] - x_new)) / (4. * dtau) \
+                         + dtau * potential_alpha(x_new,
+                                                  x_potential_minimum,
+                                                  alpha)
 
-        delta_action_exp = np.exp(action_loc_old-action_loc_new)
+        delta_action_exp = np.exp(action_loc_old - action_loc_new)
 
         if delta_action_exp > np.random.uniform(0., 1.):
             x_config[i] = x_new
 
-    x_config[0] = x_config[-2]
-    x_config[-1] = x_config[1]
+    periodic_boundary_conditions(x_config)
 
 
 @njit
 def return_action(x_config,
                   x_potential_minimum,
                   dtau):
+    """
 
+    Parameters
+    ----------
+    x_config :
+    x_potential_minimum :
+    dtau :
+
+    Returns
+    -------
+
+    """
     action = 0.0
 
-    action = np.square(x_config[1:-1] - x_config[0:-2])/(4. * dtau)\
-        + dtau * potential_anh_oscillator(x_config[1:-1],
-                                          x_potential_minimum)
+    action = np.square(x_config[1:-1] - x_config[0:-2]) / (4. * dtau) \
+             + dtau * potential_anh_oscillator(x_config[1:-1],
+                                               x_potential_minimum)
 
     return np.sum(action)
+
 
 @njit
 def initialize_lattice(n_lattice,
@@ -212,7 +293,20 @@ def initialize_lattice(n_lattice,
                        i_cold=False,
                        classical_config=False,
                        dtau=0.05):
+    """
 
+    Parameters
+    ----------
+    n_lattice :
+    x_potential_minimum :
+    i_cold :
+    classical_config :
+    dtau :
+
+    Returns
+    -------
+
+    """
     if (i_cold is True) and (not classical_config):
         x_config = np.zeros((n_lattice + 1))
         for i in range(n_lattice + 1):
@@ -227,22 +321,22 @@ def initialize_lattice(n_lattice,
                                      size=n_lattice + 1)
 
         # PBC
-        #x_config[n_lattice - 1] = x_config[0]
-        #x_config[n_lattice] = x_config[1]
+        # x_config[n_lattice - 1] = x_config[0]
+        # x_config[n_lattice] = x_config[1]
         periodic_boundary_conditions(x_config)
 
         return x_config
 
     elif classical_config is True:
-        tau_inst = (dtau*n_lattice)/2
+        tau_inst = (dtau * n_lattice) / 2
         tau_array = np.linspace(0, n_lattice * dtau, n_lattice + 1)
         x_config = instanton_classical_configuration(tau_array,
                                                      tau_inst,
                                                      x_potential_minimum)
 
         # APBC
-        #x_config[1] = - x_config[n_lattice]
-        #x_config[0] = x_config[n_lattice-1]
+        # x_config[1] = - x_config[n_lattice]
+        # x_config[0] = x_config[n_lattice-1]
         anti_periodic_boundary_conditions(x_config)
 
         return x_config
@@ -253,46 +347,65 @@ def configuration_cooling(x_cold_config,
                           x_potential_minimum,
                           dtau,
                           delta_x):
+    """
+
+    Parameters
+    ----------
+    x_cold_config :
+    x_potential_minimum :
+    dtau :
+    delta_x :
+    """
     n_trials = 10
 
     for i in range(1, x_cold_config.size - 1):
-        action_loc_old = (np.square(x_cold_config[i] - x_cold_config[i-1])
-                          + np.square(x_cold_config[i+1] - x_cold_config[i]))/(4. * dtau)\
-            + dtau * potential_anh_oscillator(x_cold_config[i],
-                                              x_potential_minimum)
+        action_loc_old = (np.square(x_cold_config[i] - x_cold_config[i - 1])
+                          + np.square(x_cold_config[i + 1] - x_cold_config[i])) / (4. * dtau) \
+                         + dtau * potential_anh_oscillator(x_cold_config[i],
+                                                           x_potential_minimum)
 
         for _ in range(n_trials):
             x_new = x_cold_config[i] + delta_x * \
-                (2*np.random.uniform(0.0, 1.0) - 1.)
+                    (2 * np.random.uniform(0.0, 1.0) - 1.)
 
-            action_loc_new = (np.square(x_new - x_cold_config[i-1])
-                              + np.square(x_cold_config[i+1] - x_new))/(4. * dtau)\
-                + dtau * potential_anh_oscillator(x_new,
-                                                  x_potential_minimum)
+            action_loc_new = (np.square(x_new - x_cold_config[i - 1])
+                              + np.square(x_cold_config[i + 1] - x_new)) / (4. * dtau) \
+                             + dtau * potential_anh_oscillator(x_new,
+                                                               x_potential_minimum)
 
             if action_loc_new < action_loc_old:
                 x_cold_config[i] = x_new
 
-    x_cold_config[0] = x_cold_config[-2]
-    x_cold_config[-1] = x_cold_config[1]
+    periodic_boundary_conditions(x_cold_config)
+
 
 
 @njit
 def find_instantons(x, dt):
+    """
 
+    Parameters
+    ----------
+    x :
+    dt :
+
+    Returns
+    -------
+
+    """
     pos_roots = 0
     neg_roots = 0
     pos_roots_position = np.array([0.0])
     neg_roots_position = np.array([0.0])
-    #pos_roots_position = []
-    #neg_roots_position = []
+    # pos_roots_position = []
+    # neg_roots_position = []
 
     if np.abs(x[0]) < 1e-7:
         x[0] = 0.0
 
     x_pos = x[0]
 
-    for i in range(1, x.size-1):
+    for i in range(1, x.size - 1):
         if np.abs(x[i]) < 1e-7:
             x[i] = 0.0
 
@@ -301,14 +414,14 @@ def find_instantons(x, dt):
                 neg_roots_position = np.append(
                     neg_roots_position,
                     -x_pos * (dt)
-                    / (x[i] - x_pos) + (i-1) * dt
+                    / (x[i] - x_pos) + (i - 1) * dt
                 )
             elif x_pos < 0.:
                 pos_roots += 1
                 pos_roots_position = np.append(
                     pos_roots_position,
                     -x_pos * (dt)
-                    / (x[i] - x_pos) + dt * (i-1)
+                    / (x[i] - x_pos) + dt * (i - 1)
                 )
             else:
                 continue
@@ -320,7 +433,7 @@ def find_instantons(x, dt):
                 pos_roots_position = np.append(
                     pos_roots_position,
                     -x_pos * (dt)
-                    / (x[i] - x_pos) + dt * (i-1)
+                    / (x[i] - x_pos) + dt * (i - 1)
                 )
 
             elif x[i] < x_pos:
@@ -328,7 +441,7 @@ def find_instantons(x, dt):
                 neg_roots_position = np.append(
                     neg_roots_position,
                     -x_pos * (dt)
-                    / (x[i] - x_pos) + (i-1) * dt
+                    / (x[i] - x_pos) + (i - 1) * dt
                 )
 
         x_pos = x[i]
@@ -343,31 +456,63 @@ def find_instantons(x, dt):
     # b = np.array(neg_roots_position, float)
 
     return pos_roots, neg_roots, \
-        a, b
+           a, b
 
-@njit 
+
+@njit
 def instanton_classical_configuration(tau_pos,
                                       tau_0,
                                       x_potential_minimum):
+    """
 
+    Parameters
+    ----------
+    tau_pos :
+    tau_0 :
+    x_potential_minimum :
+
+    Returns
+    -------
+
+    """
     return x_potential_minimum * np.tanh(2 * x_potential_minimum * (tau_pos - tau_0))
 
 
 @njit
 def second_derivative_action(x_0, x_potential_minimum):
+    """
 
+    Parameters
+    ----------
+    x_0 :
+    x_potential_minimum :
+
+    Returns
+    -------
+
+    """
     return 12 * x_0 * x_0 - 4 * x_potential_minimum * x_potential_minimum
 
 
 @njit
 def periodic_boundary_conditions(x_config):
+    """
 
+    Parameters
+    ----------
+    x_config :
+    """
     x_config[0] = x_config[- 2]
     x_config[-1] = x_config[1]
 
 
 @njit
 def anti_periodic_boundary_conditions(x_config):
+    """
 
+    Parameters
+    ----------
+    x_config :
+    """
     x_config[0] = - x_config[-2]
     x_config[-1] = - x_config[1]
