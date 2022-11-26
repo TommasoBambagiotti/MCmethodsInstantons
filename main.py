@@ -1,5 +1,4 @@
 # This is a sample Python script.
-import cProfile
 
 import anh_osc_diag
 import monte_carlo_ao
@@ -23,8 +22,8 @@ if __name__ == '__main__':
     while not stop_exec:
 
         print(f'diagonalize\n'
-              f'monte_carlo_simulation\n'
-              f'free_energy_int\n'
+              f'monte_carlo\n'
+              f'free\n'
               f'cooling\n'
               f'cool0\n'
               f'density\n'
@@ -40,45 +39,54 @@ if __name__ == '__main__':
 
         if call in ['diagonalize']:
             anh_osc_diag.anharmonic_oscillator_diag(1.4, 50, 4 * 1.4)
-        elif call in ['monte_carlo_simulation']:
+        elif call in ['monte_carlo']:
             monte_carlo_ao.monte_carlo_ao(
                                         800,  # n_lattice
                                         100,  # n_equil
-                                        40000,  # n_mc_sweeps
-                                        20,  # n_point
+                                        100000,  # n_mc_sweeps
+                                        30,  # n_point
                                         5,  # n_meas
                                         False)
-        elif call in ['free_energy_int']:
+        elif call in ['free']:
             monte_carlo_ao_switching.\
-                free_energy_anharm(1,8.0,100,50000,20,False)
+                free_energy_anharm(4,
+                                   40.0,
+                                   100,
+                                   100000,
+                                   20,
+                                   False)
+            
             
         elif call in ['cooling']:
             monte_carlo_ao_cooling.cooled_monte_carlo(
                                         800,  # n_lattice
                                         100,  # n_equil
-                                        50000,  # n_mc_sweeps
+                                        150000,  # n_mc_sweeps
                                         20,  # n_points
                                         5,  # n_meas
                                         False,  # cold start
-                                        20,  # number of mc configurations between successive cooled configurations
+                                        10,  # number of mc configurations between successive cooled configurations
                                         200)  # number of mc cooling sweeps
 
         elif call in ['density']:
             monte_carlo_ao_cooling_density.cooled_monte_carlo_density(800,
-                                                                      200,
+                                                                      100,
                                                                       100000,
                                                                       False,
-                                                                      50,
-                                                                      200,
-                                                                      3)
+                                                                      20,
+                                                                      10,
+                                                                      12,
+                                                                      0.5)
 
         elif call in ['density_switch']:
             monte_carlo_ao_density_switching.\
                 instantons_density_switching(100,
                                              100,
-                                             10000,
-                                             20)
-
+                                             200000,
+                                             20,
+                                             4,
+                                             1.3)
+                
         elif call in ['rilm']:
             random_instanton_monte_carlo.\
             random_instanton_liquid_model(800,
@@ -90,35 +98,37 @@ if __name__ == '__main__':
         elif call in ['heating']:
             random_instanton_monte_carlo_heating.\
                 random_instanton_liquid_model_heating(800,
-                                                      5000,
+                                                      100000,
                                                       20,
                                                       5, 
                                                       10)
 
         elif call in ['streamline']:
-            streamline_iilm.print_sum_ansatz_ia(800)
             streamline_iilm.streamline_method_iilm(1.8,
-                                                   0.001,
-                                                   50,
-                                                   70000)
+                                                    0.001,
+                                                    50,
+                                                    800,
+                                                    70001)
+            
 
         elif call in ['iilm']:
             instanton_interactive_liquid_model.inst_int_liquid_model(800,
-                                                                     10000,
-                                                                     20,
+                                                                     100000,
+                                                                     30,
                                                                      5,
                                                                      0.3,
                                                                      3.0,
-                                                                     1.0)
+                                                                     0.5)
 
         elif call in ['cool0']:
             zero_crossing_dist_cooling.\
                 zero_crossing_cooling_density(800,
                                               100,
-                                              500000,
+                                              600000,
                                               False,
                                               5,
                                               10)
+                
         elif call in ['print']:
             call2 = input()
             if call2 in ['a']:
@@ -126,15 +136,15 @@ if __name__ == '__main__':
             elif call2 in ['b']:
                 graph_print.print_graph_cool_conf()
             elif call2 in ['c']:
-                graph_print.print_graph_mc()
+                graph_print.print_graph('output_monte_carlo')
             elif call2 in ['d']:
-                graph_print.print_graph_cool()
+                graph_print.print_graph('output_cooled_monte_carlo')
             elif call2 in ['e']:
                 graph_print.print_density()
             elif call2 in ['f']:
-                graph_print.print_graph_rilm()
+                graph_print.print_graph('output_rilm')
             elif call2 in ['g']:
-                graph_print.print_graph_rilm_heating()
+                graph_print.print_graph('output_rilm_heating')
             elif call2 in ['h']:
                 graph_print.print_graph_heat()
             elif call2 in ['i']:
@@ -148,7 +158,9 @@ if __name__ == '__main__':
             elif call2 in ['m']:
                 graph_print.print_tau_centers()
             elif call2 in ['n']:
-                graph_print.print_iilm_graph()
+                graph_print.print_graph('output_iilm/iilm')
+            elif call2 in ['o']:
+                graph_print.print_cool_density()
                 
         elif call in ['exit']:
             stop_exec = 1

@@ -4,8 +4,7 @@ import struct
 import matplotlib.pyplot as plt
 
 import utility_custom
-import utility_monte_carlo as mc
-import input_parameters as ip
+
 
 filepath = './output_graph'
 utility_custom.output_control(filepath)
@@ -28,11 +27,26 @@ def print_graph_free_energy():
     f_energy_err = np.loadtxt('./output_data/output_monte_carlo_switching/free_energy_mc_err.txt',
                               float, delimiter=' ')
 
+    vir = np.loadtxt('./output_data/output_monte_carlo_switching/free_energy_vir.txt',
+                     float, delimiter=' ')
+
+    vir_err = np.loadtxt('./output_data/output_monte_carlo_switching/free_energy_vir_err.txt',
+                         float, delimiter=' ')
+
     ax1.errorbar(temperature_array,
                  f_energy,
                  f_energy_err,
                  color='b',
                  fmt='.',
+                 capsize=2.5,
+                 elinewidth=0.5)
+
+    ax1.errorbar(temperature_array,
+                 vir,
+                 vir_err,
+                 linestyle='',
+                 marker='.',
+                 color='red',
                  capsize=2.5,
                  elinewidth=0.5)
 
@@ -52,30 +66,9 @@ def print_graph_free_energy():
     plt.show()
 
 
-def print_graph_cool_conf():
+def print_graph(folder):
 
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig = plt.figure(1, facecolor="#f1f1f1")
-    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    tau_array = np.loadtxt('./output_data/output_cooled_monte_carlo/tau_array.txt',
-                           float, delimiter=' ')
-    config = np.loadtxt('./output_data/output_cooled_monte_carlo/configuration.txt',
-                        float, delimiter=' ')
-    config_cool = np.loadtxt('./output_data/output_cooled_monte_carlo/configuration_cooled.txt',
-                             float, delimiter=' ')
-
-    ax.plot(tau_array, config, color='blue')
-    ax.plot(tau_array, config_cool, color='red')
-
-    fig.savefig(filepath + '/cooling.png', dpi=300)
-
-    plt.show()
-
-
-def print_graph_mc():
+    utility_custom.output_control(filepath + '/' + folder)
 
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
@@ -84,24 +77,24 @@ def print_graph_mc():
 
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    tau_array = np.loadtxt('./output_data/output_monte_carlo/tau_array.txt',
+    tau_array = np.loadtxt('./output_data/' + folder + '/tau_array.txt',
                            float, delimiter=' ')
-    corr1 = np.loadtxt('./output_data/output_monte_carlo/average_x_cor_1.txt',
+    corr1 = np.loadtxt('./output_data/' + folder + '/average_x_cor_1.txt',
                        float, delimiter=' ')
 
-    corr2 = np.loadtxt('./output_data/output_monte_carlo/average_x_cor_2.txt',
+    corr2 = np.loadtxt('./output_data/' + folder + '/average_x_cor_2.txt',
                        float, delimiter=' ')
 
-    corr3 = np.loadtxt('./output_data/output_monte_carlo/average_x_cor_3.txt',
+    corr3 = np.loadtxt('./output_data/' + folder + '/average_x_cor_3.txt',
                        float, delimiter=' ')
 
-    corr_err1 = np.loadtxt('./output_data/output_monte_carlo/error_x_cor_1.txt',
+    corr_err1 = np.loadtxt('./output_data/' + folder + '/error_x_cor_1.txt',
                            float, delimiter=' ')
 
-    corr_err2 = np.loadtxt('./output_data/output_monte_carlo/error_x_cor_2.txt',
+    corr_err2 = np.loadtxt('./output_data/' + folder + '/error_x_cor_2.txt',
                            float, delimiter=' ')
 
-    corr_err3 = np.loadtxt('./output_data/output_monte_carlo/error_x_cor_3.txt',
+    corr_err3 = np.loadtxt('./output_data/' + folder + '/error_x_cor_3.txt',
                            float, delimiter=' ')
 
     tau_array_2 = np.loadtxt('./output_data/output_diag/tau_array.txt',
@@ -158,28 +151,28 @@ def print_graph_mc():
                  capsize=2.5,
                  elinewidth=0.5)
 
-    fig1.savefig(filepath + '/x_corr.png', dpi=300)
+    fig1.savefig(filepath + '/' + folder + '/x_corr.png', dpi=300)
 
     fig2 = plt.figure(2, facecolor="#f1f1f1")
 
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    dcorr1 = np.loadtxt('./output_data/output_monte_carlo/average_der_log_1.txt',
+    dcorr1 = np.loadtxt('./output_data/' + folder + '/average_der_log_1.txt',
                         float, delimiter=' ')
 
-    dcorr2 = np.loadtxt('./output_data/output_monte_carlo/average_der_log_2.txt',
+    dcorr2 = np.loadtxt('./output_data/' + folder + '/average_der_log_2.txt',
                         float, delimiter=' ')
 
-    dcorr3 = np.loadtxt('./output_data/output_monte_carlo/average_der_log_3.txt',
+    dcorr3 = np.loadtxt('./output_data/' + folder + '/average_der_log_3.txt',
                         float, delimiter=' ')
 
-    dcorr_err1 = np.loadtxt('./output_data/output_monte_carlo/error_der_log_1.txt',
+    dcorr_err1 = np.loadtxt('./output_data/' + folder + '/error_der_log_1.txt',
                             float, delimiter=' ')
 
-    dcorr_err2 = np.loadtxt('./output_data/output_monte_carlo/error_der_log_2.txt',
+    dcorr_err2 = np.loadtxt('./output_data/' + folder + '/error_der_log_2.txt',
                             float, delimiter=' ')
 
-    dcorr_err3 = np.loadtxt('./output_data/output_monte_carlo/error_der_log_3.txt',
+    dcorr_err3 = np.loadtxt('./output_data/' + folder + '/error_der_log_3.txt',
                             float, delimiter=' ')
 
     dcorr1_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct.txt',
@@ -235,172 +228,11 @@ def print_graph_mc():
                  capsize=2.5,
                  elinewidth=0.5)
 
-    fig2.savefig(filepath + '/der_corr.png', dpi=300)
+    ax2.set_ylim(-0.1, 5.0)
+
+    fig2.savefig(filepath + '/' + folder + '/der_corr.png', dpi=300)
 
     plt.show()
-
-
-def print_graph_cool():
-
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    corr1_c = np.loadtxt('./output_data/output_cooled_monte_carlo/average_x_cor_cold_1.txt',
-                         float, delimiter=' ')
-
-    corr2_c = np.loadtxt('./output_data/output_cooled_monte_carlo/average_x_cor_cold_2.txt',
-                         float, delimiter=' ')
-
-    corr3_c = np.loadtxt('./output_data/output_cooled_monte_carlo/average_x_cor_cold_3.txt',
-                         float, delimiter=' ')
-
-    corr_err1_c = np.loadtxt('./output_data/output_cooled_monte_carlo/error_x_cor_cold_1.txt',
-                             float, delimiter=' ')
-
-    corr_err2_c = np.loadtxt('./output_data/output_cooled_monte_carlo/error_x_cor_cold_2.txt',
-                             float, delimiter=' ')
-
-    corr_err3_c = np.loadtxt('./output_data/output_cooled_monte_carlo/error_x_cor_cold_3.txt',
-                             float, delimiter=' ')
-
-    tau_array_2 = np.loadtxt('./output_data/output_diag/tau_array.txt',
-                             float, delimiter=' ')
-
-    corr1_d = np.loadtxt('./output_data/output_diag/corr_function.txt',
-                         float, delimiter=' ')
-
-    corr2_d = np.loadtxt('./output_data/output_diag/corr_function2.txt',
-                         float, delimiter=' ')
-
-    corr3_d = np.loadtxt('./output_data/output_diag/corr_function3.txt',
-                         float, delimiter=' ')
-
-    tau_array_c = np.linspace(0.0, 20 * 0.05, 20, False)
-
-    ax1.plot(tau_array_2[0:41],
-             corr1_d[0:41],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:41],
-             corr2_d[0:41],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:41],
-             corr3_d[0:41],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.errorbar(tau_array_c,
-                 corr1_c,
-                 corr_err1_c,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array_c,
-                 corr2_c,
-                 corr_err2_c,
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array_c,
-                 corr3_c,
-                 corr_err3_c,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    fig1.savefig(filepath + '/x_corr_cold.png', dpi=300)
-
-    fig2 = plt.figure(2, facecolor="#f1f1f1")
-
-    ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    dcorr1_c = np.loadtxt('./output_data/output_cooled_monte_carlo/average_der_log_cold_1.txt',
-                          float, delimiter=' ')
-
-    dcorr2_c = np.loadtxt('./output_data/output_cooled_monte_carlo/average_der_log_cold_2.txt',
-                          float, delimiter=' ')
-
-    dcorr3_c = np.loadtxt('./output_data/output_cooled_monte_carlo/average_der_log_cold_3.txt',
-                          float, delimiter=' ')
-
-    dcorr_err1_c = np.loadtxt('./output_data/output_cooled_monte_carlo/error_der_log_cold_1.txt',
-                              float, delimiter=' ')
-
-    dcorr_err2_c = np.loadtxt('./output_data/output_cooled_monte_carlo/error_der_log_cold_2.txt',
-                              float, delimiter=' ')
-
-    dcorr_err3_c = np.loadtxt('./output_data/output_cooled_monte_carlo/error_der_log_cold_3.txt',
-                              float, delimiter=' ')
-
-    dcorr1_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct.txt',
-                          float, delimiter=' ')
-
-    dcorr2_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct2.txt',
-                          float, delimiter=' ')
-
-    dcorr3_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct3.txt',
-                          float, delimiter=' ')
-
-    ax2.plot(tau_array_2[0:61],
-             dcorr1_d[0:61],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:61],
-             dcorr2_d[0:61],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:61],
-             dcorr3_d[0:61],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.errorbar(tau_array_c[0:-1],
-                 dcorr1_c,
-                 dcorr_err1_c,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array_c[0:-5],
-                 dcorr2_c[0:-4],
-                 dcorr_err2_c[0:-4],
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array_c[0:-1],
-                 dcorr3_c,
-                 dcorr_err3_c,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.set_ylim(-1.0, 10.0)
-
-    fig2.savefig(filepath + '/der_corr_cold.png', dpi=300)
 
 
 def print_density():
@@ -411,79 +243,43 @@ def print_density():
     fig3 = plt.figure(3, facecolor="#f1f1f1")
     ax3 = fig3.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
+    potential_minima = np.loadtxt(
+        'output_data/output_cooled_monte_carlo/potential_minima.txt',
+        delimiter=' ')
 
+    n_cooling = np.loadtxt(
+        './output_data/output_cooled_monte_carlo/n_cooling.txt',
+        delimiter=' ')
 
-    # n_cooling = np.loadtxt(
-    #     './output_data/output_cooled_monte_carlo/n_cooling.txt')
-    n_instantons1 = np.loadtxt(
-        './output_data/output_cooled_monte_carlo/n_instantons_1.txt')
-    n_instantons_err1 = np.loadtxt(
-        './output_data/output_cooled_monte_carlo/n_instantons_1_err.txt')
-    n_instantons2 = np.loadtxt(
-        './output_data/output_cooled_monte_carlo/n_instantons_2.txt')
-    n_instantons_err2 = np.loadtxt(
-        './output_data/output_cooled_monte_carlo/n_instantons_2_err.txt')
-    n_instantons3 = np.loadtxt(
-        './output_data/output_cooled_monte_carlo/n_instantons_3.txt')
-    n_instantons_err3 = np.loadtxt(
-        './output_data/output_cooled_monte_carlo/n_instantons_3_err.txt')
+    i = 1
+    for pot in np.nditer(potential_minima):
+        n_instantons = np.loadtxt(
+            f'./output_data/output_cooled_monte_carlo/n_instantons_{i}.txt')
+        n_instantons_err = np.loadtxt(
+            f'./output_data/output_cooled_monte_carlo/n_instantons_{i}_err.txt')
 
-    n_cooling = np.linspace(1 , n_instantons1.size, n_instantons1.size)
+        ax3.errorbar(n_cooling,
+                      n_instantons,
+                      n_instantons_err,
+                      fmt='.',
+                      capsize=2.5,
+                      elinewidth=0.5,
+                      label=f'$\eta = {pot}$')
 
-    # n_instantons1 *= 2
-    # n_instantons2 *= 2
-    # n_instantons3 *= 2
-    ax3.errorbar(n_cooling,
-                 n_instantons1,
-                 n_instantons_err1,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5,
-                 label=r'$\eta = 1.4$')
+        s0 = 4 / 3 * pow(pot, 3)
 
-    ax3.errorbar(n_cooling,
-                 n_instantons2,
-                 n_instantons_err2,
-                 color='r',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5,
-                 label=r'$\eta = 1.5$')
-
-    ax3.errorbar(n_cooling,
-                 n_instantons3,
-                 n_instantons_err3,
-                 color='orange',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5,
-                 label=r'$\eta = 1.6$')
-
-    ax3.legend()
-
-    # potential_minima = np.loadtxt('./output_data/output_cooled_monte_carlo/potential_minima.txt',
-    #                               float, delimiter=' ')
-
-    loop_1 = np.zeros(3, float)
-    loop_2 = np.zeros(3, float)
-    color_array = ['blue', 'red', 'orange']
-
-    c = 0
-    for l in [1.4,1.5, 1.6]: #np.nditer(np.array([1.4, 1.5, 1.6])):
-
-        s0 = 4 / 3 * pow(l, 3)
-
-        loop_1 = 8 * pow(l, 5 / 2) \
+        loop_1 = 8 * pow(pot, 5 / 2) \
             * pow(2 / np.pi, 1/2) * np.exp(-s0)
 
-        loop_2 = 8 * pow(l, 5 / 2) \
+        loop_2 = 8 * pow(pot, 5 / 2) \
             * pow(2 / np.pi, 1/2) * np.exp(-s0 - 71 / (72 * s0))
 
-        ax3.hlines([loop_1, loop_2], 0, 200, color_array[c],
-                   ['dashed', 'solid'], linewidth=0.5)
-        c += 1
+        ax3.hlines([loop_1, loop_2], 0, n_cooling[-1], color='green',
+                    linestyle=['dashed', 'solid'], linewidth=0.5)
 
+        i += 1
+
+    ax3.legend()
     ax3.set_xscale('log')
 
     ax3.set_yscale('log')
@@ -493,58 +289,30 @@ def print_density():
     fig4 = plt.figure(4, facecolor="#f1f1f1")
     ax4 = fig4.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    action1 = np.loadtxt('./output_data/output_cooled_monte_carlo/action_1.txt',
-                         float,
-                         delimiter=' ')
-    action1_err = np.loadtxt('./output_data/output_cooled_monte_carlo/action_err_1.txt',
-                              float,
-                              delimiter=' ')
-    action2 = np.loadtxt('./output_data/output_cooled_monte_carlo/action_2.txt',
-                         float,
-                         delimiter=' ')
-    action2_err = np.loadtxt('./output_data/output_cooled_monte_carlo/action_err_2.txt',
-                              float,
-                              delimiter=' ')
+    i = 1
+    for pot in np.nditer(potential_minima):
+        action = np.loadtxt(f'./output_data/output_cooled_monte_carlo/action_{i}.txt',
+                            float,
+                            delimiter=' ')
+        action_err = np.loadtxt(
+            f'./output_data/output_cooled_monte_carlo/action_err_{i}.txt',
+            float,
+            delimiter=' ')
 
-    action3 = np.loadtxt('./output_data/output_cooled_monte_carlo/action_3.txt',
-                         float,
-                         delimiter=' ')
-    action3_err = np.loadtxt('./output_data/output_cooled_monte_carlo/action_err_3.txt',
-                              float,
-                              delimiter=' ')
+        ax4.errorbar(n_cooling,
+                     action,
+                     action_err,
+                     fmt='.',
+                     capsize=2.5,
+                     elinewidth=0.5,
+                     label=f'$\eta = {pot}$')
 
-    c = 0
-    for l1 in {1.4,1.5,1.6}:
-        print(l1)
-        s0 = (4 / 3) * pow(l1, 3)
+        s0 = 4 / 3 * pow(pot, 3)
 
-        ax4.hlines(s0, 0, 200, color_array[c], 'dashed',
-                    linewidth = 0.8)
-        c+=1
+        ax4.hlines(s0, 0, n_cooling[-1], color='green',
+                   linestyle='dashed', linewidth=0.8)
 
-    ax4.errorbar(n_cooling, action1, action1_err,
-                  linestyle='',
-                  color='b',
-                  marker='x',
-                  capsize=2.5,
-                  elinewidth=0.5,
-                  label=r'$\eta = 1.4$')
-
-    ax4.errorbar(n_cooling, action2, action2_err,
-                  linestyle='',
-                  color='r',
-                  marker='x',
-                  capsize=2.5,
-                  elinewidth=0.5,
-                  label=r'$\eta = 1.5$')
-    ax4.errorbar(n_cooling, action3, action3_err,
-                  color='orange',
-                  linestyle='',
-                  marker='x',
-                  capsize=2.5,
-                  elinewidth=0.5,
-                  label=r'$\eta = 1.6$')
-
+        i += 1
 
     ax4.legend()
     ax4.set_xscale('log')
@@ -555,170 +323,6 @@ def print_density():
     plt.show()
 
 
-def print_graph_rilm():
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    tau_array = np.loadtxt('./output_data/output_rilm/tau_array.txt',
-                           float, delimiter=' ')
-    corr1 = np.loadtxt('./output_data/output_rilm/average_x_cor_1.txt',
-                       float, delimiter=' ')
-
-    corr2 = np.loadtxt('./output_data/output_rilm/average_x_cor_2.txt',
-                       float, delimiter=' ')
-
-    corr3 = np.loadtxt('./output_data/output_rilm/average_x_cor_3.txt',
-                       float, delimiter=' ')
-
-    corr_err1 = np.loadtxt('./output_data/output_rilm/error_x_cor_1.txt',
-                           float, delimiter=' ')
-
-    corr_err2 = np.loadtxt('./output_data/output_rilm/error_x_cor_2.txt',
-                           float, delimiter=' ')
-
-    corr_err3 = np.loadtxt('./output_data/output_rilm/error_x_cor_3.txt',
-                           float, delimiter=' ')
-
-    tau_array_2 = np.loadtxt('./output_data/output_diag/tau_array.txt',
-                             float, delimiter=' ')
-
-    corr1_d = np.loadtxt('./output_data/output_diag/corr_function.txt',
-                         float, delimiter=' ')
-
-    corr2_d = np.loadtxt('./output_data/output_diag/corr_function2.txt',
-                         float, delimiter=' ')
-
-    corr3_d = np.loadtxt('./output_data/output_diag/corr_function3.txt',
-                         float, delimiter=' ')
-
-    ax1.plot(tau_array_2[0:60],
-             corr1_d[0:60],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:60],
-             corr2_d[0:60],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:60],
-             corr3_d[0:60],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.errorbar(tau_array,
-                 corr1,
-                 corr_err1,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array,
-                 corr2,
-                 corr_err2,
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array,
-                 corr3,
-                 corr_err3,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    fig1.savefig(filepath + '/x_corr_rilm.png', dpi=300)
-
-    fig2 = plt.figure(2, facecolor="#f1f1f1")
-
-    ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    dcorr1 = np.loadtxt('./output_data/output_rilm/average_der_log_1.txt',
-                        float, delimiter=' ')
-
-    dcorr2 = np.loadtxt('./output_data/output_rilm/average_der_log_2.txt',
-                        float, delimiter=' ')
-
-    dcorr3 = np.loadtxt('./output_data/output_rilm/average_der_log_3.txt',
-                        float, delimiter=' ')
-
-    dcorr_err1 = np.loadtxt('./output_data/output_rilm/error_der_log_1.txt',
-                            float, delimiter=' ')
-
-    dcorr_err2 = np.loadtxt('./output_data/output_rilm/error_der_log_2.txt',
-                            float, delimiter=' ')
-
-    dcorr_err3 = np.loadtxt('./output_data/output_rilm/error_der_log_3.txt',
-                            float, delimiter=' ')
-
-    dcorr1_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct.txt',
-                          float, delimiter=' ')
-
-    dcorr2_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct2.txt',
-                          float, delimiter=' ')
-
-    dcorr3_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct3.txt',
-                          float, delimiter=' ')
-
-    ax2.set_ylim(-1.0, 6.0)
-
-    ax2.plot(tau_array_2[0:60],
-             dcorr1_d[0:60],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:60],
-             dcorr2_d[0:60],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:60],
-             dcorr3_d[0:60],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr1,
-                 dcorr_err1,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr2,
-                 dcorr_err2,
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr3,
-                 dcorr_err3,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    fig2.savefig(filepath + '/der_corr_rilm.png', dpi=300)
-
-    plt.show()
-    
-
 def print_rilm_conf():
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
@@ -726,181 +330,18 @@ def print_rilm_conf():
     fig1 = plt.figure(1, facecolor="#f1f1f1")
 
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-    
-    conf  = np.loadtxt('./output_data/output_rilm/conf_test.txt',
-                           float, delimiter=' ')
-    
+
+    conf = np.loadtxt('./output_data/output_rilm/conf_test.txt',
+                      float, delimiter=' ')
+
     tau = np.loadtxt('./output_data/output_rilm/tau_test.txt',
-                           float, delimiter=' ')
+                     float, delimiter=' ')
 
     ax1.plot(tau, conf)
-    
-    plt.show()
-    
-def print_graph_rilm_heating():
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    tau_array = np.loadtxt('./output_data/output_rilm_heating/tau_array.txt',
-                           float, delimiter=' ')
-    corr1 = np.loadtxt('./output_data/output_rilm_heating/average_x_cor_1.txt',
-                       float, delimiter=' ')
-
-    corr2 = np.loadtxt('./output_data/output_rilm_heating/average_x_cor_2.txt',
-                       float, delimiter=' ')
-
-    corr3 = np.loadtxt('./output_data/output_rilm_heating/average_x_cor_3.txt',
-                       float, delimiter=' ')
-
-    corr_err1 = np.loadtxt('./output_data/output_rilm_heating/error_x_cor_1.txt',
-                           float, delimiter=' ')
-
-    corr_err2 = np.loadtxt('./output_data/output_rilm_heating/error_x_cor_2.txt',
-                           float, delimiter=' ')
-
-    corr_err3 = np.loadtxt('./output_data/output_rilm_heating/error_x_cor_3.txt',
-                           float, delimiter=' ')
-
-    tau_array_2 = np.loadtxt('./output_data/output_diag/tau_array.txt',
-                             float, delimiter=' ')
-
-    corr1_d = np.loadtxt('./output_data/output_diag/corr_function.txt',
-                         float, delimiter=' ')
-
-    corr2_d = np.loadtxt('./output_data/output_diag/corr_function2.txt',
-                         float, delimiter=' ')
-
-    corr3_d = np.loadtxt('./output_data/output_diag/corr_function3.txt',
-                         float, delimiter=' ')
-
-    ax1.plot(tau_array_2[0:60],
-             corr1_d[0:60],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:60],
-             corr2_d[0:60],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:60],
-             corr3_d[0:60],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.errorbar(tau_array,
-                 corr1,
-                 corr_err1,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array,
-                 corr2,
-                 corr_err2,
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array,
-                 corr3,
-                 corr_err3,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    fig1.savefig(filepath + '/x_corr_rilm_heat.png', dpi=300)
-
-    fig2 = plt.figure(2, facecolor="#f1f1f1")
-
-    ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    dcorr1 = np.loadtxt('./output_data/output_rilm_heating/average_der_log_1.txt',
-                        float, delimiter=' ')
-
-    dcorr2 = np.loadtxt('./output_data/output_rilm_heating/average_der_log_2.txt',
-                        float, delimiter=' ')
-
-    dcorr3 = np.loadtxt('./output_data/output_rilm_heating/average_der_log_3.txt',
-                        float, delimiter=' ')
-
-    dcorr_err1 = np.loadtxt('./output_data/output_rilm_heating/error_der_log_1.txt',
-                            float, delimiter=' ')
-
-    dcorr_err2 = np.loadtxt('./output_data/output_rilm_heating/error_der_log_2.txt',
-                            float, delimiter=' ')
-
-    dcorr_err3 = np.loadtxt('./output_data/output_rilm_heating/error_der_log_3.txt',
-                            float, delimiter=' ')
-
-    dcorr1_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct.txt',
-                          float, delimiter=' ')
-
-    dcorr2_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct2.txt',
-                          float, delimiter=' ')
-
-    dcorr3_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct3.txt',
-                          float, delimiter=' ')
-
-    ax2.set_ylim(-1.0, 6.0)
-
-    ax2.plot(tau_array_2[0:60],
-             dcorr1_d[0:60],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:60],
-             dcorr2_d[0:60],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:60],
-             dcorr3_d[0:60],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr1,
-                 dcorr_err1,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr2,
-                 dcorr_err2,
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr3,
-                 dcorr_err3,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    fig2.savefig(filepath + '/der_corr_rilm_heat.png', dpi=300)
 
     plt.show()
 
-    
+
 def print_graph_heat():
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
@@ -923,6 +364,174 @@ def print_graph_heat():
     plt.show()
 
 
+def print_stream():
+
+    plt.style.use('ggplot')
+    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
+
+    fig1 = plt.figure(1, facecolor="#f1f1f1")
+
+    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+
+    tau = np.loadtxt('./output_data/output_iilm/streamline/tau_array.txt',
+                     float, delimiter=' ')
+
+    for i in range(3):
+        conf = np.loadtxt(f'./output_data/output_iilm/streamline/streamline_{i}.txt',
+                          float, delimiter=' ')
+        ax1.plot(tau, conf)
+        #print(mc.return_action(conf)/ip.action_0)
+
+    plt.show()
+
+
+def print_zcr_hist():
+
+    plt.style.use('ggplot')
+    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
+
+    fig = plt.figure(1, facecolor="#f1f1f1")
+    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+
+    zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float,
+                     delimiter=' ')
+
+    zcr_cooling = np.loadtxt('./output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
+                             float, delimiter=' ')
+
+    zcr_int = np.loadtxt('./output_data/output_iilm/iilm/zcr_hist.txt',
+                             float, delimiter=' ')
+    
+    print(zcr_int.size)
+    print(zcr.size)
+    print(zcr_cooling.size)
+
+    ax.hist(zcr, 39, (0.1, 4.), histtype='step', color = 'red')
+    ax.hist(zcr_int, 39, (0.1, 4.), histtype='step', color = 'orange')#, density='True')
+    ax.hist(zcr_cooling, 39, (0.1, 4.), histtype='step',
+            color='blue')#, density='True')
+
+    fig.savefig(filepath + '/zcr_histogram.png', dpi=300)
+
+    plt.show()
+
+
+def print_tau_centers():
+
+    plt.style.use('ggplot')
+    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
+
+    fig = plt.figure(1, facecolor="#f1f1f1")
+    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+
+    n_conf = np.loadtxt('./output_data/output_iilm/iilm/n_conf.txt',
+                        float, delimiter=' ')
+
+    for n in range(12):
+        tau = np.loadtxt(f'./output_data/output_iilm/iilm/center_{n+1}.txt',
+                         float, delimiter=' ')
+
+        if (n % 2) == 0:
+            ax.plot(n_conf, tau, color='blue',
+                    linewidth=0.4)
+        else:
+            ax.plot(n_conf, tau, color='red',
+                    linewidth=0.4)
+
+    fig.savefig(filepath + '/iilm_config.png', dpi=300)
+    plt.show()
+
+
+def print_cool_density():
+
+    plt.style.use('ggplot')
+    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
+
+    fig = plt.figure(1, facecolor="#f1f1f1")
+    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+
+    potential_minima = np.loadtxt('output_data/output_cooled_monte_carlo/potential_minima.txt',
+                                  delimiter=' ')
+
+    dens = np.zeros(potential_minima.size)
+    dens_err = np.zeros(potential_minima.size)
+
+    i = 1
+    for pot in np.nditer(potential_minima):
+        j = 0
+        with open(f'output_data/output_cooled_monte_carlo/n_instantons_{i}.txt', 'r')\
+                as reader:
+            for line in reader:
+
+                if j == 8:
+                    line = reader.readline()
+                    dens[i-1] = float(line)
+                j += 1
+        j = 0
+        with open(f'output_data/output_cooled_monte_carlo/n_instantons_{i}_err.txt', 'r')\
+                as reader:
+            for line in reader:
+                if j == 8:
+                    dens_err[i-1] = float(line)
+                j += 1
+
+        i += 1
+    ax.errorbar(potential_minima, 
+                dens, 
+                dens_err, 
+                color='blue', 
+                marker='s',
+                linestyle='',
+                capsize=2.5,
+                elinewidth=0.5,
+                label = 'cooling')
+
+    potential = np.linspace(0.1, 2.0)
+    action = 4/3 * np.power(potential, 3)
+
+    loop_1 = 8 * np.sqrt(2/np.pi)\
+        * np.power(potential, 5/2) * np. exp(-action)
+
+    loop_2 = loop_1 * np.exp(-71/72/action)
+
+    ax.plot(potential, loop_1,
+            linestyle='--', color='green', label = '1-loop')
+
+    ax.plot(potential, loop_2,
+            linestyle='-', color='green', label = '2-loop')
+
+
+    potential_minima = np.loadtxt(
+        'output_data/output_monte_carlo_density_switching/potential_minima.txt',
+                                  delimiter=' ')
+    
+    dens = np.loadtxt(
+        'output_data/output_monte_carlo_density_switching/total_density.txt')
+    
+    dens_err = np.loadtxt(
+        'output_data/output_monte_carlo_density_switching/total_density_err.txt')
+
+    ax.errorbar(
+        potential_minima,
+        dens,
+        dens_err,
+        color = 'red',
+        marker='s',
+        linestyle='',
+        capsize=2.5,
+        elinewidth=0.5,
+        label = 'Monte Carlo')
+
+    ax.legend()
+    ax.set_xlim(0.0, 1.75)
+    ax.set_ylim(0.03, 2.)
+
+    ax.set_yscale('log')
+
+    fig.savefig(filepath + '/density.png', dpi = 300)
+
+    plt.show()
+
 def print_iilm():
     
     plt.style.use('ggplot')
@@ -935,10 +544,26 @@ def print_iilm():
     tau_ia = np.loadtxt('./output_data/output_iilm/streamline/delta_tau_ia.txt',
                            float, delimiter=' ')
     
+    zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float,
+                     delimiter=' ')
+    zcr_cooling = np.loadtxt('./output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
+                             float, delimiter=' ')
+    
+    hist_1, _ = np.histogram(zcr, 40, range =(0.,4.))
+    hist_2, _ = np.histogram(zcr_cooling, 40, range =(0.,4.))
+    
+    # bisogna implementare un modo per capire già quanto vale il potentiale?
+    # tipo costruire l'istogramma già nella funzione zero_... 
+    action_ia = -np.log(hist_2[0:10]/hist_1[0:10])/(4/3*np.power(1.4,3))
+    
+    
     act_int = np.loadtxt('./output_data/output_iilm/streamline/streamline_action_int.txt',
                             float, delimiter = ' ')
     
     array_ia = np.loadtxt('./output_data/output_iilm/streamline/array_ia.txt',
+                           float, delimiter=' ')
+    
+    array_ia_0 = np.loadtxt('./output_data/output_iilm/streamline/array_ia_0.txt',
                            float, delimiter=' ')
     
     array_int = np.loadtxt('./output_data/output_iilm/streamline/array_int.txt',
@@ -947,261 +572,49 @@ def print_iilm():
     array_int_core = np.loadtxt('./output_data/output_iilm/streamline/array_int_core.txt',
                             float, delimiter = ' ')
     
+    array_int_zero_cross = np.loadtxt('./output_data/output_iilm/streamline/array_int_zero_cross.txt',
+                            float, delimiter = ' ')
+    
     
     ax1.plot(tau_ia, 
              act_int,
              marker = '^',
              linestyle ='',
-             color = 'green'
+             color = 'green',
+             label = 'streamline'
              )
     
     ax1.plot(array_ia,
              array_int,
-             color = 'b')
+             color = 'blue',
+             label = 'sum ansatz')
     
     ax1.plot(array_ia,
              array_int_core,
-             color = 'orange')
+             color = 'orange',
+             label = 'core repulsion'
+             )
     
-    ax1.set_ylim(-2.05, 0.05)
+    ax1.plot(array_ia_0,
+             array_int_zero_cross,
+             color = 'red',
+             marker = 's',
+             linestyle = '',
+             label = 'zcr sum ansatz'
+             )
+    
+    ax1.plot(np.linspace(0.1, 1.0, 10, False),
+             action_ia,
+             marker = 's',
+             linestyle = '',
+             color = 'cyan',
+             label = 'monte carlo cooling')
+    
+    ax1.legend()
+    
+    ax1.set_ylim(-2.0,0.5)
     ax1.set_xlim(-0.05, 2.0)
     
     fig1.savefig(filepath + '/iilm.png', dpi = 300)
-    
-    plt.show()
-    
-def print_stream():
-    
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-    
-    tau = np.loadtxt('./output_data/output_iilm/streamline/tau_array.txt',
-                           float, delimiter=' ')
-    
-    for i in range(3):
-        conf = np.loadtxt(f'./output_data/output_iilm/streamline/streamline_{i}.txt',
-                           float, delimiter=' ')
-        ax1.plot(tau, conf)
-        print(mc.return_action(conf)/ip.action_0)
-        
-    plt.show()
-    
-    
-def print_zcr_hist():
-    
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig = plt.figure(1, facecolor="#f1f1f1")
-    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-    
-    zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float, 
-                     delimiter =' ')
-    
-    zcr_cooling = np.loadtxt('./output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
-                             float, delimiter =' ')
-    
-    print(zcr.size)
-    print(zcr_cooling.size)
-    
-    ax.hist(zcr, 390, (0.1, 4.), histtype = 'step',density='True')
-    ax.hist(zcr_cooling, 390, (0.1,4.), histtype = 'step', color ='blue', density='True')
-    
-    fig.savefig(filepath + '/zcr_histogram.png', dpi = 300)
-    
-    plt.show()
-    
-    
-def print_tau_centers():
-    
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig = plt.figure(1, facecolor="#f1f1f1")
-    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    n_conf = np.loadtxt('./output_data/output_iilm/iilm/n_conf.txt',
-                             float, delimiter =' ')
-
-    for n in range(12):
-        tau = np.loadtxt(f'./output_data/output_iilm/iilm/center_{n+1}.txt',
-                                 float, delimiter =' ')
-
-        if (n % 2) == 0:
-            ax.plot(n_conf, tau, color = 'blue',
-                    linewidth = 0.4)
-        else:
-            ax.plot(n_conf, tau, color = 'red',
-                    linewidth = 0.4)
-
-    fig.savefig(filepath + '/iilm_config.png', dpi = 300)
-    plt.show()
-    
-    
-def print_iilm_graph():
-    
-    plt.style.use('ggplot')
-    plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
-
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    corr1_c = np.loadtxt('./output_data/output_iilm/iilm/average_x_cor_1.txt',
-                         float, delimiter=' ')
-
-    corr2_c = np.loadtxt('./output_data/output_iilm/iilm/average_x_cor_2.txt',
-                         float, delimiter=' ')
-
-    corr3_c = np.loadtxt('./output_data/output_iilm/iilm/average_x_cor_3.txt',
-                         float, delimiter=' ')
-
-    corr_err1_c = np.loadtxt('./output_data/output_iilm/iilm/error_x_cor_1.txt',
-                             float, delimiter=' ')
-
-    corr_err2_c = np.loadtxt('./output_data/output_iilm/iilm/error_x_cor_2.txt',
-                             float, delimiter=' ')
-
-    corr_err3_c = np.loadtxt('./output_data/output_iilm/iilm/error_x_cor_3.txt',
-                             float, delimiter=' ')
-
-    tau_array_2 = np.loadtxt('./output_data/output_diag/tau_array.txt',
-                             float, delimiter=' ')
-
-    corr1_d = np.loadtxt('./output_data/output_diag/corr_function.txt',
-                         float, delimiter=' ')
-
-    corr2_d = np.loadtxt('./output_data/output_diag/corr_function2.txt',
-                         float, delimiter=' ')
-
-    corr3_d = np.loadtxt('./output_data/output_diag/corr_function3.txt',
-                         float, delimiter=' ')
-
-    tau_array_c = np.linspace(0.0, 20 * 0.05, 20, False)
-
-    ax1.plot(tau_array_2[0:41],
-             corr1_d[0:41],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:41],
-             corr2_d[0:41],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.plot(tau_array_2[0:41],
-             corr3_d[0:41],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax1.errorbar(tau_array_c,
-                 corr1_c,
-                 corr_err1_c,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array_c,
-                 corr2_c,
-                 corr_err2_c,
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax1.errorbar(tau_array_c,
-                 corr3_c,
-                 corr_err3_c,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    fig1.savefig(filepath + '/x_corr_cold.png', dpi=300)
-
-    fig2 = plt.figure(2, facecolor="#f1f1f1")
-
-    ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    dcorr1_c = np.loadtxt('./output_data/output_iilm/iilm/average_der_log_1.txt',
-                          float, delimiter=' ')
-
-    dcorr2_c = np.loadtxt('./output_data/output_iilm/iilm/average_der_log_2.txt',
-                          float, delimiter=' ')
-
-    dcorr3_c = np.loadtxt('./output_data/output_iilm/iilm/average_der_log_3.txt',
-                          float, delimiter=' ')
-
-    dcorr_err1_c = np.loadtxt('./output_data/output_iilm/iilm/error_der_log_1.txt',
-                              float, delimiter=' ')
-
-    dcorr_err2_c = np.loadtxt('./output_data/output_iilm/iilm/error_der_log_2.txt',
-                              float, delimiter=' ')
-
-    dcorr_err3_c = np.loadtxt('./output_data/output_iilm/iilm/error_der_log_3.txt',
-                              float, delimiter=' ')
-
-    dcorr1_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct.txt',
-                          float, delimiter=' ')
-
-    dcorr2_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct2.txt',
-                          float, delimiter=' ')
-
-    dcorr3_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct3.txt',
-                          float, delimiter=' ')
-
-    ax2.plot(tau_array_2[0:61],
-             dcorr1_d[0:61],
-             color='b',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:61],
-             dcorr2_d[0:61],
-             color='r',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.plot(tau_array_2[0:61],
-             dcorr3_d[0:61],
-             color='g',
-             linewidth=0.8,
-             linestyle=':')
-
-    ax2.errorbar(tau_array_c[0:-1],
-                 dcorr1_c,
-                 dcorr_err1_c,
-                 color='b',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array_c[0:-5],
-                 dcorr2_c[0:-4],
-                 dcorr_err2_c[0:-4],
-                 color='red',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.errorbar(tau_array_c[0:-1],
-                 dcorr3_c,
-                 dcorr_err3_c,
-                 color='green',
-                 fmt='.',
-                 capsize=2.5,
-                 elinewidth=0.5)
-
-    ax2.set_ylim(-1.0, 10.0)
-
-    fig2.savefig(filepath + '/der_corr.png', dpi=300)
     
     plt.show()
