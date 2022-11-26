@@ -8,6 +8,7 @@ import os
 import shutil
 import pathlib as pt
 import numpy as np
+from prettytable import PrettyTable
 #from numba import njit
 
 
@@ -116,6 +117,59 @@ def clear_folder(output_path):
         except Exception as error_message:
             print('Failed to delete %s. Reason: %s' %
                   (file_path, error_message))
+
+def graphical_ui(which_gui):
+
+    gui = PrettyTable()
+
+    if which_gui in ['main']:
+
+        gui.field_names = ['Program', 'Execution #']
+        gui.add_row(['Anh. oscill. diagonalization', '0'])
+        gui.add_row(['Anh. oscill. Montecarlo simulation', '1'])
+        gui.add_row(['Anh. oscill. free en.', '2'])
+        gui.add_row(['Inst. cooling', '3'])
+        gui.add_row(['Inst. density cooling', '4'])
+        gui.add_row(['Inst. density switching', '5'])
+        gui.add_row(['Inst. liquid model', '6'])
+        gui.add_row(['Inst. liquid model heating', '7'])
+        gui.add_row(['Streamline method', '8'])
+        gui.add_row(['Inst. inter. liquid model', '9'])
+        gui.add_row(['Inst. zero crossing dist.', '10'])
+        gui.add_row(['Plots', '11'])
+        gui.add_row(['Exit', 'exit'])
+
+        print(gui)
+
+        print('Which (Execution #)?\n')
+
+        return input()
+
+    elif which_gui in ['plots']:
+
+        gui.field_names = ['Plot', 'Plot #']
+        gui.add_row(['', 'a'])
+        gui.add_row(['', 'b'])
+        gui.add_row(['', 'c'])
+        gui.add_row(['', 'd'])
+        gui.add_row(['', 'e'])
+        gui.add_row(['', 'g'])
+        gui.add_row(['', 'h'])
+        gui.add_row(['', 'i'])
+        gui.add_row(['', 'j'])
+        gui.add_row(['', 'k'])
+        gui.add_row(['', 'l'])
+        gui.add_row(['', 'm'])
+        gui.add_row(['', 'n'])
+        gui.add_row(['', 'o'])
+        gui.add_row(['Exit', 'exit'])
+        print(gui)
+        print('Which (Plot #)?\n')
+
+        return input()
+
+
+
 
 # Monte carlo correlation functions
 
