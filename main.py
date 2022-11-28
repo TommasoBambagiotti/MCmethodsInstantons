@@ -21,7 +21,7 @@ if __name__ == '__main__':
         call = graphical_ui('main')
 
         if call in ['0']:
-            anh_osc_diag.anharmonic_oscillator_diag(1.4, 50, 4 * 1.4)
+            anh_osc_diag.anharmonic_oscillator_diag(50, 1.4, 4 * 1.4)
         elif call in ['1']:
             monte_carlo_ao.monte_carlo_ao(800,
                                           100,
@@ -58,7 +58,7 @@ if __name__ == '__main__':
             monte_carlo_ao_density_switching. \
                 instantons_density_switching(100,
                                              100,
-                                             200000,
+                                             100000,
                                              20,
                                              4,
                                              1.3)
