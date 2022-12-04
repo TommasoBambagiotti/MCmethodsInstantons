@@ -1,23 +1,26 @@
 import numpy as np
 # from numba import jit
-
 import utility_custom
 
 
 # @jit(nopython=True)
 def centers_setup(tau_array, n_ia, n_lattice, dtau=0.05):
-    """
+    """Generate a random ensemble of instantons/anti-instantons.
 
     Parameters
     ----------
     tau_array :
-    n_ia :
-    n_lattice :
+    n_ia : int
+        Number of instanton/anti-instanton
+    n_lattice : int
+        Number of lattice points.
     dtau :
+        Lattice spacing, default=0.05.
 
     Returns
     -------
-
+    ndarray
+        Instanton/anti-instanton centers.
     """
     tau_centers_ia = np.random.uniform(0, n_lattice * dtau, size=n_ia)
     tau_centers_ia = np.sort(tau_centers_ia)
@@ -27,22 +30,30 @@ def centers_setup(tau_array, n_ia, n_lattice, dtau=0.05):
 
 # @jit(nopython=True)
 def centers_setup_gauss(tau_array, n_ia, n_lattice):
-    """
+    """Generate a random ensemble of instantons/anti-instantons.
 
     Parameters
     ----------
-    tau_array :
-    n_ia :
-    n_lattice :
+    tau_array : ndarray
+        Euclidean time axis.
+    n_ia : int
+        Number of instantons/anti-instantons
+    n_lattice : int
+        Number of lattice point in euclidean time.
 
     Returns
     -------
+    tau_centers_ia : ndarray
+        Instantons/anti-instantons centers.
+
+    tau_centers_ia_index : ndarray
+        Instantons/anti-instantons time axis indexes.
 
     """
     tau_centers_ia_index = np.random.randint(0, n_lattice, size=n_ia)
     tau_centers_ia_index = np.sort(tau_centers_ia_index)
 
-    tau_centers_ia = np.zeros((n_ia))
+    tau_centers_ia = np.zeros(n_ia)
     for i_tau in range(n_ia):
         tau_centers_ia[i_tau] = \
             tau_array[tau_centers_ia_index[i_tau]]
@@ -55,24 +66,29 @@ def ansatz_instanton_conf(tau_centers_ia,
                           tau_array,
                           x_potential_minimum,
                           dtau):
-    """
+    """Generate a path according to the sum ansatz.
 
     Parameters
     ----------
-    tau_centers_ia :
-    tau_array :
-    x_potential_minimum :
-    dtau :
+    tau_centers_ia : ndarray
+        Instantons/anti-instantons ensemble.
+    tau_array : ndarray
+        Euclidean time axis.
+    x_potential_minimum : float
+        Position of the minimum(a) of the anharmonic potential.
+    dtau : float
+        Lattice spacing.
 
     Returns
     -------
-
+    x_ansatz : ndarray
+        Configuration path.
     """
     # if tau_centers_ia.size == 0:
     #     x_ansatz = np.repeat(-ip.x_potential_minimum, tau_array.size + 1)
     #     return x_ansatz
 
-    x_ansatz = np.zeros((tau_array.size), float)
+    x_ansatz = np.zeros(tau_array.size, float)
 
     top_charge = 1
     for tau_ia in np.nditer(tau_centers_ia):
@@ -84,7 +100,7 @@ def ansatz_instanton_conf(tau_centers_ia,
 
     x_ansatz -= x_potential_minimum
 
-    # Border periodic conditions
+    # Boundary periodic conditions
     x_ansatz[0] = x_ansatz[-1]
     x_ansatz = np.append(x_ansatz, x_ansatz[1])
 
@@ -93,18 +109,24 @@ def ansatz_instanton_conf(tau_centers_ia,
 
 # @jit(nopython=True)
 def gaussian_potential(x_pos, tau, tau_ia_centers, x_potential_minimum):
-    """
+    """Compute the gaussian potential for an ensemble of instantons/anti-
+    instantons.
 
     Parameters
     ----------
-    x_pos :
-    tau :
-    tau_ia_centers :
-    x_potential_minimum :
+    x_pos : ndarray
+        Spatial configuration.
+    tau : ndarray
+        Euclidean time axis.
+    tau_ia_centers : ndarray
+        instantons/anti-instantons positions.
+    x_potential_minimum : float
+        Position of the minimum(a) of the anharmonic potential.
 
     Returns
     -------
-
+    potential : ndarray
+        Gaussian potential.
     """
     potential = 0.0
     for tau_ia in np.nditer(tau_ia_centers):
@@ -124,19 +146,26 @@ def hard_core_action(n_lattice,
                      action_core,
                      action_0,
                      dtau):
-    """
+    """Compute the action for a short range repulsive hard core interaction.
 
     Parameters
     ----------
-    n_lattice :
-    tau_centers_ia :
-    tau_core :
+    n_lattice : int
+        Number of lattice point in euclidean time.
+    tau_centers_ia : ndarray
+        Instanton/anti-instanton positions.
+    tau_core : float
+        Range of hard core interaction.
     action_core :
+        Strength of hard core interaction.
     action_0 :
-    dtau :
+    dtau : float
+        Lattice spacing.
 
     Returns
     -------
+    action : float
+        Hard core interaction action.
 
     """
     action = 0.0
@@ -162,17 +191,29 @@ def configuration_heating(x_delta_config,
                           x_potential_minimum,
                           dtau,
                           delta_x):
-    """
+    """Metropolis algorithm for Markov chain Monte Carlo simulations of an
+    ensemble of instantons whose total action is computed using heating.
 
     Parameters
     ----------
-    x_delta_config :
-    tau_array :
-    tau_centers_ia :
-    tau_centers_ia_index :
-    x_potential_minimum :
-    dtau :
-    delta_x :
+    x_delta_config : ndarray
+        Fluctuation path.
+    tau_array : ndarray
+        Euclidean time axis.
+    tau_centers_ia : ndarray
+        Instanton/anti-instanton positions.
+    tau_centers_ia_index : ndarray
+        Instantons/anti-instantons time axis indexes.
+    x_potential_minimum : float
+        Position of the minimum(a) of the anharmonic potential.
+    dtau : float
+        Lattice spacing.
+    delta_x : float
+        Width of Gaussian distribution for Metropolis update.
+
+    Returns
+    ----------
+    None
     """
     n_lattice = tau_array.size
 
@@ -197,7 +238,7 @@ def configuration_heating(x_delta_config,
                     i - 1) in tau_centers_ia_index:
                 der = (x_delta_config[i + 1] -
                        x_delta_config[i - 1]) / (2.0 * dtau)
-                if der > -0.001 and der < 0.001:
+                if -0.001 < der < 0.001:
                     der = 1.0
                 action_loc_old += -np.log(np.abs(der))
 
@@ -213,14 +254,14 @@ def configuration_heating(x_delta_config,
 
             if (i - 1) in tau_centers_ia_index:
                 der = (x_delta_config[i + 1] - x_new) / (2.0 * dtau)
-                if der > -0.001 and der < 0.001:
+                if -0.001 < der < 0.001:
                     der = 1.0
 
                 action_loc_new += - np.log(np.abs(der))
 
             elif (i + 1) in tau_centers_ia_index:
                 der = (x_new - x_delta_config[i - 1]) / (2.0 * dtau)
-                if der > -0.001 and der < 0.001:
+                if -0.001 < der < 0.001:
                     der = 1.0
                 action_loc_new += - np.log(np.abs(der))
 
@@ -242,22 +283,32 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           x2_cor_sums,
                           x_potential_minimum,
                           dtau):
-    """
+    """Compute correlation functions using the sum ansatz path and generate
+    a random distribution of instantons/anti-instantons.
 
     Parameters
     ----------
-    n_ia :
-    n_points :
-    n_meas :
-    tau_array :
-    x_cor_sums :
-    x2_cor_sums :
-    x_potential_minimum :
-    dtau :
+    n_ia : int
+        Number of instantons/anti-instantons.
+    n_points : int
+        Number of points on which correlation functions are computed.
+    n_meas : int
+        Number of measurement.
+    tau_array : ndarray
+        Euclidean time axis.
+    x_cor_sums : ndarray
+        Path spatial positions to be averaged.
+    x2_cor_sums : ndarray
+        Position squared to be averaged.
+    x_potential_minimum : float
+        Position of the minimum(a) of the anharmonic potential.
+    dtau : float
+        Lattice spacing.
 
     Returns
     -------
-
+    tau_centers_ia : ndarray
+        Instantons/anti-instantons centers.
     """
     # Center of instantons and anti instantons
     tau_centers_ia = centers_setup(tau_array, n_ia, tau_array.size)
@@ -279,9 +330,9 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
 
 
 # @jit(nopython=True)
-def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
+def rilm_heated_monte_carlo_step(n_ia,
                                  n_heating,
-                                 n_points,  #
+                                 n_points,
                                  n_meas,
                                  tau_array,
                                  x_cor_sums,
@@ -289,20 +340,40 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                                  x_potential_minimum,
                                  dtau,
                                  delta_x):
-    """
+    """Compute correlation functions for a random instanton ensemble using
+    heating method.
+
+    This function compute quantum correction to the semi-classical instant-
+    on path using the heating method, where fluctuations are summed to the
+    semi-classical solution. Quantum fluctuations are computed using the
+    Metropolis Algorithm with a Gaussian potential.
 
     Parameters
     ----------
-    n_ia :
-    n_heating :
-    n_points :
-    n_meas :
-    tau_array :
-    x_cor_sums :
-    x2_cor_sums :
-    x_potential_minimum :
-    dtau :
-    delta_x :
+    n_ia : int
+        Number of instantons/anti-instantons.
+    n_heating : int
+        Number of heating sweeps.
+    n_points : int
+        Number of points on which correlation functions are computed.
+    n_meas : int
+        Number of measurement of correlation functions in a MC sweep.
+    tau_array : ndarray
+        Euclidean time axis.
+    x_cor_sums : ndarray
+        Spatial configuration.
+    x2_cor_sums : ndarray
+        Spatial configuration squared.
+    x_potential_minimum : float
+        Position of the minimum(a) of the anharmonic potential.
+    dtau : float
+        Lattice spacing.
+    delta_x : float
+        Width of Gaussian distribution for Metropolis update.
+
+    Returns
+    ----------
+    None
     """
     # Center of instantons and anti instantons
     tau_centers_ia, tau_centers_ia_index = centers_setup_gauss(

@@ -11,7 +11,6 @@ def potential_anh_oscillator(x_position,
     ----------
     x_position : ndarray
         Space coordinates.
-
     x_potential_minimum : float
         Position of the minimum(a) of the potential.
 
@@ -37,7 +36,6 @@ def potential_0_switching(x_position,
     ----------
     x_position : ndarray
         Space coordinates.
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
 
@@ -63,10 +61,8 @@ def potential_alpha(x_position,
     ----------
     x_position : ndarray
         Space coordinates.
-
     x_potential_minimum : float
         Position of the minimum(a) of the potential.
-
     alpha : float
         Switching algorithm integration step.
 
@@ -103,10 +99,8 @@ def gaussian_potential(x_position,
         First element is the classical configuration around which the pot-
         ential is expanded. Second element is the current spatial configur-
         ation.
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
-
     a_alpha : float
         Switching algorithm integration step.
 
@@ -152,28 +146,20 @@ def metropolis_question_density_switching(x_config,
     ----------
     x_config : ndarray
         System (spatial) configuration.
-
     x_0_config : ndarray
         Classical configuration.
-
     second_der_0 : float
         Second derivative of the action.
-
     f_potential : function
         Potential (in coordinates space).
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
-
     dtau : float
         Lattice spacing.
-
     delta_x : float
         Width of Gaussian distribution for Metropolis update.
-
     sector : {0,1}
         0 for the vacuum sector, 1 for the one instanton sector.
-
     a_alpha : float
         Switching algorithm integration step.
 
@@ -283,16 +269,12 @@ def metropolis_question(x_config,
     ----------
     x_config : ndarray
         System (spatial) configuration.
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
-
     f_potential : function
         Potential (in coordinates space).
-
     dtau : float
         Lattice spacing.
-
     delta_x : float
         Width of Gaussian distribution for Metropolis update.
 
@@ -347,19 +329,14 @@ def metropolis_question_switching(x_config,
     ----------
     x_config : ndarray
         System (spatial) configuration.
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
-
     f_potential : function
         Potential (in configurations space).
-
     dtau : float
         Lattice spacing.
-
     delta_x : float
         Width of Gaussian distribution for Metropolis update.
-
     alpha : float
         Switching algorithm integration step.
 
@@ -410,16 +387,12 @@ def configuration_cooling(x_cold_config,
     ----------
     x_cold_config : ndarray
         System (spatial) configuration.
-
     x_potential_minimum : flaot
         Position of the minimum(a) of the anharmonic potential.
-
     f_potential : function
         Potential (in configurations space).
-
     dtau : float
         Lattice spacing.
-
     delta_x :
         Width of Gaussian distribution for Metropolis update.
 
@@ -470,13 +443,10 @@ def return_action(x_config,
     ----------
     x_config : ndarray
         Spatial configuration.
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
-
     dtau : float
         Lattice spacing.
-
     Returns
     -------
     float
@@ -505,23 +475,19 @@ def initialize_lattice(n_lattice,
     ----------
     n_lattice : int
         Number of lattice point in euclidean time.
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
-
     i_cold : bool, default=False
         True for cold start, False for hot start.
-
     classical_config : bool, default=False
         True for classical instanton configuration, False otherwise.
-
     dtau : float, default=0.05
         Lattice spacing.
+
     Returns
     ----------
     ndarray
         Initialized configuration.
-
     """
     if (i_cold is True) and (not classical_config):
         x_config = np.zeros((n_lattice + 1))
@@ -563,7 +529,6 @@ def find_instantons(x, dt):
     ----------
     x : ndarray
         Spatial configuration.
-
     dt : ndarray
         Euclidean time axis.
 
@@ -571,13 +536,10 @@ def find_instantons(x, dt):
     -------
     pos_roots : int
         Number of instantons.
-
     neg_roots : int
         Number of anti-instantons.
-
     a : array
         Instanton positions.
-
     b : array
         Anti-instanton positions.
     """
@@ -654,10 +616,8 @@ def instanton_classical_configuration(tau_pos,
     ----------
     tau_pos : ndarray
         Time axis.
-
     tau_0 : float
         Instanton position (in euclidean time).
-
     x_potential_minimum : float
         Position of the minimum(a) of the anharmonic potential.
 
@@ -665,7 +625,6 @@ def instanton_classical_configuration(tau_pos,
     -------
     ndarray
         Action.
-
     """
     return x_potential_minimum * np.tanh(
         2 * x_potential_minimum * (tau_pos - tau_0))

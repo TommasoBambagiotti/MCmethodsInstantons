@@ -13,42 +13,34 @@ def monte_carlo_ao(n_lattice,
                    dtau=0.05,
                    delta_x=0.5):
 
-    """Solve the anharmonic oscillator through Monte Carlo technique on
-       an Euclidean Axis.
+    """Compute spatial correlation functions for the anharmonic oscillator
+    with Monte Carlo simulations.
 
-    This program compute euclidean correlation functions for the anharmon-
+    This function compute euclidean correlation functions for the anharmon-
     ic oscillator using path integral Monte Carlo simulations. At every
     Monte Carlo sweep the system path is determined using the Metropolis-
-    -Hastings algorithm; finally results are saved into files.
+    Hastings algorithm; finally results are saved into files.
     We use a system of unit of measurements where h_bar=1, m=1/2 and
     lambda=1.
 
     Parameters
     ----------
     n_lattice : int
-        Number of lattice point in euclidean time
-
+        Number of lattice point in euclidean time.
     n_equil : int
-        Number of equilibration Monte Carlo sweeps
-
+        Number of equilibration Monte Carlo sweeps.
     n_mc_sweeps : int
-        Number of Monte Carlo sweeps
-
+        Number of Monte Carlo sweeps.
     n_points : int
-        Number of points on which correlation functions are computed
-
+        Number of points on which correlation functions are computed.
     n_meas : int
-        Number of measurement of correlation functions in a MC sweep
-
+        Number of measurement of correlation functions in a MC sweep.
     i_cold : bool
-        True for cold start, False for hot start
-
+        True for cold start, False for hot start.
     x_potential_minimum : float, default=1.4
         Position of the minimum(a) of the anharmonic potential.
-
     dtau : float, default=0.05
         Lattice spacing.
-
     delta_x : float, default=0.5
         Width of Gaussian distribution for Metropolis update.
 
@@ -79,6 +71,7 @@ def monte_carlo_ao(n_lattice,
     for _ in range(n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
+                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 
@@ -89,6 +82,7 @@ def monte_carlo_ao(n_lattice,
 
         mc.metropolis_question(x_config,
                                x_potential_minimum,
+                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 

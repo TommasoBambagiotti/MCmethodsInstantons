@@ -22,6 +22,9 @@ def cooled_monte_carlo_density(n_lattice,
                                delta_x=0.5):
     """
 
+    We use a system of unit of measurements where h_bar=1, m=1/2 and
+    lambda=1.
+
     Parameters
     ----------
     n_lattice :
