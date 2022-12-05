@@ -1,10 +1,10 @@
 import numpy as np
-# from numba import jit
+from numba import jit
 import utility_custom
 
 
-# @jit(nopython=True)
-def centers_setup(tau_array, n_ia, n_lattice, dtau=0.05):
+#@jit(nopython=True)
+def centers_setup(n_ia, n_lattice, dtau=0.05):
     """Generate a random ensemble of instantons/anti-instantons.
 
     Parameters
@@ -28,7 +28,7 @@ def centers_setup(tau_array, n_ia, n_lattice, dtau=0.05):
     return tau_centers_ia
 
 
-# @jit(nopython=True)
+#@jit(nopython=True)
 def centers_setup_gauss(tau_array, n_ia, n_lattice):
     """Generate a random ensemble of instantons/anti-instantons.
 
@@ -61,11 +61,10 @@ def centers_setup_gauss(tau_array, n_ia, n_lattice):
     return tau_centers_ia, tau_centers_ia_index
 
 
-# @jit(nopython=True)
+#@jit(nopython=True)
 def ansatz_instanton_conf(tau_centers_ia,
                           tau_array,
-                          x_potential_minimum,
-                          dtau):
+                          x_potential_minimum):
     """Generate a path according to the sum ansatz.
 
     Parameters
@@ -107,7 +106,7 @@ def ansatz_instanton_conf(tau_centers_ia,
     return x_ansatz
 
 
-# @jit(nopython=True)
+#@jit(nopython=True)
 def gaussian_potential(x_pos, tau, tau_ia_centers, x_potential_minimum):
     """Compute the gaussian potential for an ensemble of instantons/anti-
     instantons.
@@ -139,7 +138,7 @@ def gaussian_potential(x_pos, tau, tau_ia_centers, x_potential_minimum):
     return potential
 
 
-# @jit(nopython=True)
+#@jit(nopython=True)
 def hard_core_action(n_lattice,
                      tau_centers_ia,
                      tau_core,
@@ -183,7 +182,7 @@ def hard_core_action(n_lattice,
     return action
 
 
-# @jit(nopython=True)
+#@jit(nopython=True)
 def configuration_heating(x_delta_config,
                           tau_array,
                           tau_centers_ia,
@@ -242,7 +241,7 @@ def configuration_heating(x_delta_config,
                     der = 1.0
                 action_loc_old += -np.log(np.abs(der))
 
-            x_new = x_delta_config[i] + np.random.gauss(0, delta_x)
+            x_new = x_delta_config[i] + np.random.normal(0, delta_x)
 
             action_loc_new = (
                                      np.square(x_new - x_delta_config[i - 1])
@@ -274,7 +273,7 @@ def configuration_heating(x_delta_config,
     x_delta_config[n_lattice] = x_delta_config[1]
 
 
-# @jit(nopython=True)
+#@jit(nopython=True)
 def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           n_points,  #
                           n_meas,
@@ -311,13 +310,12 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
         Instantons/anti-instantons centers.
     """
     # Center of instantons and anti instantons
-    tau_centers_ia = centers_setup(tau_array, n_ia, tau_array.size)
+    tau_centers_ia = centers_setup(n_ia, tau_array.size)
 
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia,
                                      tau_array,
-                                     x_potential_minimum,
-                                     dtau)
+                                     x_potential_minimum)
 
     utility_custom.correlation_measurments(tau_array.size,
                                            n_meas,
@@ -329,7 +327,7 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     return tau_centers_ia
 
 
-# @jit(nopython=True)
+#@jit(nopython=True)
 def rilm_heated_monte_carlo_step(n_ia,
                                  n_heating,
                                  n_points,
@@ -381,7 +379,7 @@ def rilm_heated_monte_carlo_step(n_ia,
 
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array,
-                                     x_potential_minimum, dtau)
+                                     x_potential_minimum)
     # Difference from the classical solution
     x_delta_config = np.zeros((tau_array.size + 1))
     # Heating sweeps
