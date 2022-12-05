@@ -1,9 +1,3 @@
-'''
-Solve the action problem using
-the streamline method as a valid
-alternative of the classical sum ansatz
-'''
-
 import numpy as np
 import utility_rilm as rilm
 import utility_custom
@@ -13,27 +7,36 @@ import utility_monte_carlo as mc
 def print_sum_ansatz_ia(n_lattice,
                         x_potential_minimum,
                         dtau):
-    """Dependence of the interactive action
-    with respect to the instanton-anti instanton
-    separation, in the near repulsive case
+    """Dependence of the interactive action with respect to the instanton-
+    anti-instanton separation, in the near repulsive case. Results are sa-
+    ved into files.
 
     Parameters
     ----------
-    n_lattice :
-    x_potential_minimum :
-    dtau :
+    n_lattice : int
+        Number of lattice point in euclidean time.
+    x_potential_minimum : float
+        Position of the minimum(a) of the anharmonic potential.
+    dtau : float
+        Lattice spacing.
+
+    Returns
+    ----------
+    None
     """
     output_path = './output_data/output_iilm/streamline'
     utility_custom.output_control(output_path)
 
     n_inst = int(n_lattice / 4)
 
+    # Action
     array_ia = np.zeros(n_inst)
     array_int_core = np.zeros(n_inst)
     array_int = np.zeros(n_inst)
     array_ia_0_list = []
     array_int_zero_cross_list = []
 
+    # Semi-classical action for one instanton
     action_0 = 4 / 3 * np.power(x_potential_minimum, 3)
 
     for n_a in range(n_inst, 2 * n_inst):
@@ -117,6 +120,7 @@ def print_sum_ansatz_ia(n_lattice,
     array_int_zero_cross /= 4 / 3 * np.power(x_potential_minimum, 3)
     array_int_zero_cross -= 2
 
+    # Save action into files
     np.savetxt(output_path + '/array_ia.txt', array_ia)
     np.savetxt(output_path + '/array_ia_0.txt', array_ia_0)
     np.savetxt(output_path + '/array_int.txt', array_int)
@@ -124,26 +128,42 @@ def print_sum_ansatz_ia(n_lattice,
     np.savetxt(output_path + '/array_int_zero_cross.txt', array_int_zero_cross)
 
 
-# Save, for completeness, also the action density
-
 def streamline_method_iilm(r_initial_sep,
                            stream_time_step,
                            n_lattice_half,
                            n_lattice,
                            n_streamline,
+                           print_valley=False,
                            x_potential_minimum=1.4,
                            dtau=0.05):
-    """
+    """Solve the streamline equation for an instanton/anti-instanton
+    pair.
+
+    The streamline equation is solved using the descent method.
+    We use a system of unit of measurements where h_bar=1, m=1/2 and
+    lambda=1.
 
     Parameters
     ----------
     r_initial_sep :
+        Initial instanton/anti-inst. pair separation.
     stream_time_step :
-    n_lattice_half :
-    n_lattice :
-    n_streamline :
-    x_potential_minimum :
-    dtau :
+        Streamline time step.
+    n_lattice_half : int
+        Effective number of lattice points.
+    n_lattice : int
+        Number of lattice point in euclidean time.
+    n_streamline : int
+        Number of iteration in descent method.
+    print_valley : bool, default=False
+        If True, save into files streamline paths.
+    x_potential_minimum : float
+        Position of the minimum(a) of the anharmonic potential.
+    dtau : float
+        Lattice spacing.
+    Returns
+    ----------
+    None
     """
     print_sum_ansatz_ia(n_lattice,
                         x_potential_minimum,
@@ -170,6 +190,7 @@ def streamline_method_iilm(r_initial_sep,
     x_config = np.append(x_config, x_config[-1])
 
     action_density = np.zeros(2 * n_lattice_half, float)
+
     # Derivative in streamline parameter
     lambda_derivative = np.zeros(2 * n_lattice_half)
 
@@ -219,9 +240,7 @@ def streamline_method_iilm(r_initial_sep,
         n_i, n_a, pos_root, neg_root = mc.find_instantons(
             x_config[2:-2], dtau)
 
-        if i_s > 63000 \
-                and i_s < 64000 \
-                and i_s % 20 == 0:
+        if 63000 < i_s < 64000 and i_s % 20 == 0:
             if n_i == n_a \
                     and n_i != 0 \
                     and pos_root.size == n_i and neg_root.size == n_a:
@@ -234,23 +253,24 @@ def streamline_method_iilm(r_initial_sep,
                 act_writer.write(
                     str(interactive_action / ansatz_action) + '\n')
 
-        # if current_action > 0.0001:
-        #     if current_action / ansatz_action > 1.8:
-        #         np.savetxt(output_path + '/streamline_1.txt', x_config[2:-2])
-        #     if current_action / ansatz_action > 1.6:
-        #         np.savetxt(output_path + '/streamline_2.txt', x_config[2:-2])
-        # if current_action / ansatz_action > 1.4:
-        #     np.savetxt(output_path + '/streamline_3.txt', x_config[2:-2])
-        # if current_action / ansatz_action > 1.2:
-        #     np.savetxt(output_path + '/streamline_4.txt', x_config[2:-2])
-        # if current_action / ansatz_action > 1.0:
-        #    np.savetxt(output_path + '/streamline_5.txt', x_config[2:-2])
-        # if current_action / ansatz_action > 0.8:
-        #     np.savetxt(output_path + '/streamline_6.txt', x_config[2:-2])
-        # if current_action / ansatz_action > 0.5:
-        #      np.savetxt(output_path + '/streamline_7.txt', x_config[2:-2])
-        # if current_action / ansatz_action > 0.2:
-        #     np.savetxt(output_path + '/streamline_8.txt', x_config[2:-2])
+        if print_valley is True:
+            if current_action > 0.0001:
+                if current_action / ansatz_action > 1.8:
+                    np.savetxt(output_path + '/stream_1.txt', x_config[2:-2])
+                elif current_action / ansatz_action > 1.6:
+                    np.savetxt(output_path + '/stream_2.txt', x_config[2:-2])
+                elif current_action / ansatz_action > 1.4:
+                    np.savetxt(output_path + '/stream_3.txt', x_config[2:-2])
+                elif current_action / ansatz_action > 1.2:
+                    np.savetxt(output_path + '/stream_4.txt', x_config[2:-2])
+                elif current_action / ansatz_action > 1.0:
+                    np.savetxt(output_path + '/stream_5.txt', x_config[2:-2])
+                elif current_action / ansatz_action > 0.8:
+                    np.savetxt(output_path + '/stream_6.txt', x_config[2:-2])
+                elif current_action / ansatz_action > 0.5:
+                    np.savetxt(output_path + '/stream_7.txt', x_config[2:-2])
+                elif current_action / ansatz_action > 0.2:
+                    np.savetxt(output_path + '/stream_8.txt', x_config[2:-2])
 
     tau_writer.close()
     act_writer.close()
