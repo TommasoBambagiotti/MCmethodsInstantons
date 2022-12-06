@@ -1,8 +1,5 @@
-
 import numpy as np
-import struct
 import matplotlib.pyplot as plt
-
 import utility_custom
 
 
@@ -11,6 +8,9 @@ utility_custom.output_control(filepath)
 
 
 def print_graph_free_energy():
+    """
+
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -67,7 +67,12 @@ def print_graph_free_energy():
 
 
 def print_graph(folder):
+    """
 
+    Parameters
+    ----------
+    folder :
+    """
     utility_custom.output_control(filepath + '/' + folder)
 
     plt.style.use('ggplot')
@@ -236,7 +241,9 @@ def print_graph(folder):
 
 
 def print_density():
+    """
 
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -324,6 +331,9 @@ def print_density():
 
 
 def print_rilm_conf():
+    """
+
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -343,6 +353,9 @@ def print_rilm_conf():
 
 
 def print_graph_heat():
+    """
+
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -365,7 +378,9 @@ def print_graph_heat():
 
 
 def print_stream():
+    """
 
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -386,7 +401,9 @@ def print_stream():
 
 
 def print_zcr_hist():
+    """
 
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -417,7 +434,9 @@ def print_zcr_hist():
 
 
 def print_tau_centers():
+    """
 
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -443,7 +462,9 @@ def print_tau_centers():
 
 
 def print_cool_density():
+    """
 
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 
@@ -533,7 +554,9 @@ def print_cool_density():
     plt.show()
 
 def print_iilm():
-    
+    """
+
+    """
     plt.style.use('ggplot')
     plt.rcParams.update({"text.usetex": True, "font.family": "Helvetica"})
 

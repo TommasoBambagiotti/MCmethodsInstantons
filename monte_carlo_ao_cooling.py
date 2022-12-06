@@ -21,7 +21,48 @@ def cooled_monte_carlo(
         x_potential_minimum=1.4,
         dtau=0.05,
         delta_x=0.5):
+    """Compute spatial correlation functions for the anharmonic oscil-
+    lator using Monte Carlo simulations for cooled configurations.
 
+    Correlation functions are computed for cooled configurations. Cooling
+    is a method to extract tunneling events removing short distance fluc-
+    tuations from configurations generated using the Metropolis algorithm.
+    In this method we accept only Metropolis update that lower the action.
+    Cooling is performed every n_sweeps_btw_cooling, and it is iterated
+    n_cooling_sweeps times. Finally, results are saved into files.
+    We use a system of unit of measurements where h_bar=1, m=1/2 and
+    lambda=1.
+
+    Parameters
+    ----------
+    n_lattice : int
+        Number of lattice point in euclidean time.
+    n_equil : int
+        Number of equilibration Monte Carlo sweeps.
+    n_mc_sweeps : int
+        Number of Monte Carlo sweeps.
+    n_points : int
+        Number of points on which correlation functions are computed.
+    n_meas : int
+        Number of measurement of correlation functions in a MC sweep.
+    i_cold : bool
+        True for cold start, False for hot start.
+    n_sweeps_btw_cooling : int
+        Number of Monte Carlo sweeps between two successive cooling.
+    n_cooling_sweeps : int
+        Total number of cooling sweeps to perform.
+    x_potential_minimum : float, default=1.4
+        Position of the minimum(a) of the anharmonic potential.
+    dtau : float, default=0.05
+        Lattice spacing.
+    delta_x : float, default=0.5
+        Width of Gaussian distribution for Metropolis update.
+
+    Returns
+    -------
+    int
+        Return 0 if n_mc_sweeps < n_equil, else return 1.
+    """
     # number of total cooling processes
     n_cooling = 0
 
@@ -46,6 +87,7 @@ def cooled_monte_carlo(
     for i_equil in range(n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
+                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 
@@ -53,6 +95,7 @@ def cooled_monte_carlo(
     for i_mc in range(n_mc_sweeps - n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
+                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 
@@ -74,6 +117,7 @@ def cooled_monte_carlo(
             for i_cooling in range(n_cooling_sweeps):
                 mc.configuration_cooling(x_cold_config,
                                          x_potential_minimum,
+                                         mc.potential_anh_oscillator,
                                          dtau,
                                          delta_x)
 

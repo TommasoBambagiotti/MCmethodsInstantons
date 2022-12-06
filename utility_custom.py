@@ -8,18 +8,33 @@ import os
 import shutil
 import pathlib as pt
 import numpy as np
-#from numba import njit
+from prettytable import PrettyTable
+
+
+# from numba import njit
 
 
 # MEAN and ERRORS--------------------------------------------------------------
 
 
 def stat_av_var(observable, observable_sqrd, n_data):
-    '''Evaluate the average and the variance of the average of a set of data,
+    """Evaluate the average and the variance of the average of a set of data,
     expressed in an array, directly as the sum and the sum of squares.
-    We use the formula Var[<O>] = (<O^2> - <O>^2)/N'''
+    We use the formula Var[<O>] = (<O^2> - <O>^2)/N
 
-    if isinstance(observable, np.ndarray) and isinstance(observable_sqrd, np.ndarray):
+    Parameters
+    ----------
+    observable :
+    observable_sqrd :
+    n_data :
+
+    Returns
+    -------
+
+    """
+    if isinstance(observable, np.ndarray) and \
+            isinstance(observable_sqrd, np.ndarray):
+
         if observable.size != observable_sqrd.size:
             return None, None
 
@@ -31,10 +46,20 @@ def stat_av_var(observable, observable_sqrd, n_data):
 
 
 def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
-    '''Log derivative of the correlation functions.
+    """Log derivative of the correlation functions.
     We can not use the analytic formula because
-    we do not know the energy eignevalues.'''
+    we do not know the energy eignevalues.
 
+    Parameters
+    ----------
+    corr_funct :
+    corr_funct_err :
+    delta_step :
+
+    Returns
+    -------
+
+    """
     if corr_funct.size != corr_funct_err.size:
         return None, None
 
@@ -44,8 +69,9 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
     derivative_log_err = np.empty((n_array - 1), float)
 
     for i_array in range(n_array - 1):
-        derivative_log[i_array] = - (corr_funct[i_array + 1] - corr_funct[i_array]) \
-            / (corr_funct[i_array] * delta_step)
+        derivative_log[i_array] = - (
+                    corr_funct[i_array + 1] - corr_funct[i_array]) \
+                                  / (corr_funct[i_array] * delta_step)
 
         derivative_log_err[i_array] = pow(
             pow(corr_funct_err[i_array + 1] / corr_funct[i_array], 2)
@@ -55,10 +81,20 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
     return derivative_log, derivative_log_err
 
 
-#@njit
+# @njit
 def correlation_measurments(n_lattice, n_meas, n_points,
                             x_config, x_cor_sums, x2_cor_sums):
+    """
 
+    Parameters
+    ----------
+    n_lattice :
+    n_meas :
+    n_points :
+    x_config :
+    x_cor_sums :
+    x2_cor_sums :
+    """
     for _ in range(n_meas):
         i_p0 = int((n_lattice - n_points) * np.random.uniform(0., 1.))
         x_0 = x_config[i_p0]
@@ -74,10 +110,19 @@ def correlation_measurments(n_lattice, n_meas, n_points,
             x2_cor_sums[2, i_point] += np.power(x_0 * x_1, 6)
 
 
-
 # OUTPUT-----------------------------------------------------------------------
 
 def output_control(path_dir):
+    """
+
+    Parameters
+    ----------
+    path_dir :
+
+    Returns
+    -------
+
+    """
     path_output = pt.Path(path_dir)
 
     for parent_path in path_output.parents:
@@ -102,7 +147,12 @@ def output_control(path_dir):
 
 
 def clear_folder(output_path):
+    """
 
+    Parameters
+    ----------
+    output_path :
+    """
     for filename in os.listdir(output_path):
 
         file_path = os.path.join(output_path, filename)
@@ -117,6 +167,67 @@ def clear_folder(output_path):
             print('Failed to delete %s. Reason: %s' %
                   (file_path, error_message))
 
+
+def graphical_ui(which_gui):
+    """
+
+    Parameters
+    ----------
+    which_gui :
+
+    Returns
+    -------
+
+    """
+    gui = PrettyTable()
+
+    if which_gui in ['main']:
+
+        gui.field_names = ['Program', 'Execution #']
+        gui.add_row(['Anh. oscill. diagonalization', '0'])
+        gui.add_row(['Anh. oscill. Montecarlo simulation', '1'])
+        gui.add_row(['Anh. oscill. free en.', '2'])
+        gui.add_row(['Inst. cooling', '3'])
+        gui.add_row(['Inst. density cooling', '4'])
+        gui.add_row(['Inst. density switching', '5'])
+        gui.add_row(['Inst. liquid model', '6'])
+        gui.add_row(['Inst. liquid model heating', '7'])
+        gui.add_row(['Streamline method', '8'])
+        gui.add_row(['Inst. inter. liquid model', '9'])
+        gui.add_row(['Inst. zero crossing dist.', '10'])
+        gui.add_row(['Plots', '11'])
+        gui.add_row(['Exit', 'exit'])
+
+        print(gui)
+
+        print('Which (Execution #)?\n')
+
+        return input()
+
+    elif which_gui in ['plots']:
+
+        gui.field_names = ['Plot', 'Plot #']
+        gui.add_row(['', 'a'])
+        gui.add_row(['', 'b'])
+        gui.add_row(['', 'c'])
+        gui.add_row(['', 'd'])
+        gui.add_row(['', 'e'])
+        gui.add_row(['', 'g'])
+        gui.add_row(['', 'h'])
+        gui.add_row(['', 'i'])
+        gui.add_row(['', 'j'])
+        gui.add_row(['', 'k'])
+        gui.add_row(['', 'l'])
+        gui.add_row(['', 'm'])
+        gui.add_row(['', 'n'])
+        gui.add_row(['', 'o'])
+        gui.add_row(['Exit', 'exit'])
+        print(gui)
+        print('Which (Plot #)?\n')
+
+        return input()
+
+
 # Monte carlo correlation functions
 
 
@@ -126,7 +237,21 @@ def output_correlation_functions_and_log(n_points,
                                          n_config,
                                          output_path,
                                          dtau=0.05):
+    """
 
+    Parameters
+    ----------
+    n_points :
+    x_cor_sums :
+    x2_cor_sums :
+    n_config :
+    output_path :
+    dtau :
+
+    Returns
+    -------
+
+    """
     if isinstance(x_cor_sums, np.ndarray) \
             and isinstance(x2_cor_sums, np.ndarray):
 
@@ -155,7 +280,8 @@ def output_correlation_functions_and_log(n_points,
 
             if i_stat != 1:
 
-                derivative_log_corr_funct[i_stat], derivative_log_corr_funct_err[i_stat] = \
+                derivative_log_corr_funct[i_stat], \
+                derivative_log_corr_funct_err[i_stat] = \
                     log_central_der_alg(
                         x_cor_av[i_stat], x_cor_err[i_stat], dtau)
 
@@ -167,7 +293,8 @@ def output_correlation_functions_and_log(n_points,
                 cor_funct_err = np.sqrt(np.square(x_cor_err[i_stat])
                                         + pow(x_cor_err[i_stat, -1], 2))
 
-                derivative_log_corr_funct[i_stat], derivative_log_corr_funct_err[i_stat] = \
+                derivative_log_corr_funct[i_stat], \
+                derivative_log_corr_funct_err[i_stat] = \
                     log_central_der_alg(
                         x_cor_av[i_stat] - x_cor_av[i_stat, -1],
                         cor_funct_err,
@@ -186,8 +313,9 @@ def output_correlation_functions_and_log(n_points,
         # time array
         with open(output_path + '/tau_array.txt', 'w',
                   encoding='utf8') as tau_writer:
-            np.savetxt(tau_writer, np.linspace(
-                0, np.size(x_cor_sums, 1) * dtau, np.size(x_cor_sums, 1), False))
+            np.savetxt(tau_writer,
+                       np.linspace(0, np.size(x_cor_sums, 1) * dtau,
+                                   np.size(x_cor_sums, 1), False))
 
         return 1
 
