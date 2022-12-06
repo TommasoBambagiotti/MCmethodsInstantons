@@ -48,7 +48,7 @@ def inst_int_liquid_model(n_lattice,  # size of the grid
     n_ia = int(np.rint(loop_2 * n_lattice * dtau))
 
     # Center of instantons and anti instantons
-    tau_centers_ia= rilm.centers_setup(tau_array, n_ia, tau_array.size)
+    tau_centers_ia= rilm.centers_setup(n_ia, tau_array.size)
 
     # Correlation functions
     x_cor_sums = np.zeros((3, n_points))
@@ -70,8 +70,7 @@ def inst_int_liquid_model(n_lattice,  # size of the grid
         
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,
-                                              x_potential_minimum,
-                                              dtau)
+                                              x_potential_minimum)
         
         action_old = mc.return_action(x_config,
                                       x_potential_minimum,
@@ -99,8 +98,7 @@ def inst_int_liquid_model(n_lattice,  # size of the grid
         
             x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                                        tau_array,
-                                                       x_potential_minimum,
-                                                       dtau)
+                                                       x_potential_minimum)
         
             action_new = mc.return_action(x_config,
                                           x_potential_minimum,
@@ -135,8 +133,7 @@ def inst_int_liquid_model(n_lattice,  # size of the grid
         
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,
-                                              x_potential_minimum,
-                                              dtau)    
+                                              x_potential_minimum)
            
         utility_custom.correlation_measurments(n_lattice,
                                                n_meas,
