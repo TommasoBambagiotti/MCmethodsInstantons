@@ -53,7 +53,7 @@ def cooled_monte_carlo_density(n_lattice,
     output_path = './output_data/output_cooled_monte_carlo'
     utility_custom.output_control(output_path)
 
-    potential_minima = np.zeros((n_minima), float)
+    potential_minima = []
 
     for i_minimum in range(n_minima):
         print(f'New monte carlo for minimum ='
@@ -64,7 +64,7 @@ def cooled_monte_carlo_density(n_lattice,
 
         x_potential_minimum = first_minimum + 0.1 * i_minimum
 
-        potential_minima[i_minimum] = x_potential_minimum
+        potential_minima.append('%.2f' % x_potential_minimum)
 
         # x position along the tau axis
         x_config = mc.initialize_lattice(n_lattice,
@@ -101,7 +101,7 @@ def cooled_monte_carlo_density(n_lattice,
 
             if i_mc % int((n_mc_sweeps - n_equil) / 10) == 0:
                 print(f'conf: {i_mc}\n'
-                    + f'Action: {mc.return_action(x_config, x_potential_minimum, dtau)}')
+                      + f'Action: {mc.return_action(x_config, x_potential_minimum, dtau)}')
 
             # COOLING
             if (i_mc % n_sweeps_btw_cooling) == 0:
@@ -122,7 +122,7 @@ def cooled_monte_carlo_density(n_lattice,
                                            dtau)
 
                     n_total_instantons_sum[i_cooling] += (
-                                n_instantons + n_anti_instantons)
+                        n_instantons + n_anti_instantons)
                     n2_total_instantons_sum[i_cooling] += np.square(
                         n_instantons + n_anti_instantons)
 
@@ -176,7 +176,8 @@ def cooled_monte_carlo_density(n_lattice,
             1, n_cooling_sweeps + 1, n_cooling_sweeps, False))
 
     with open(output_path + '/potential_minima.txt', 'w',
-              encoding='utf-8') as n_inst_writer:
-        np.savetxt(n_inst_writer, potential_minima)
+              encoding='utf-8') as pot_writer:
+        for potential in potential_minima:
+            pot_writer.write(potential + '\n')
 
     return 1
