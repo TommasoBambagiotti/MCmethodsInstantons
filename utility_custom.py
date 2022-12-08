@@ -8,10 +8,8 @@ import os
 import shutil
 import pathlib as pt
 import numpy as np
+from numba import njit
 from prettytable import PrettyTable
-
-
-# from numba import njit
 
 
 # MEAN and ERRORS--------------------------------------------------------------
@@ -81,7 +79,7 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
     return derivative_log, derivative_log_err
 
 
-# @njit
+@njit
 def correlation_measurments(n_lattice, n_meas, n_points,
                             x_config, x_cor_sums, x2_cor_sums):
     """
@@ -100,14 +98,15 @@ def correlation_measurments(n_lattice, n_meas, n_points,
         x_0 = x_config[i_p0]
         for i_point in range(n_points):
             x_1 = x_config[i_p0 + i_point]
+            x_01 = x_0 * x_1
+            
+            x_cor_sums[0, i_point] += x_01
+            x_cor_sums[1, i_point] += np.power(x_01, 2)
+            x_cor_sums[2, i_point] += np.power(x_01, 3)
 
-            x_cor_sums[0, i_point] += x_0 * x_1
-            x_cor_sums[1, i_point] += np.power(x_0 * x_1, 2)
-            x_cor_sums[2, i_point] += np.power(x_0 * x_1, 3)
-
-            x2_cor_sums[0, i_point] += np.power(x_0 * x_1, 2)
-            x2_cor_sums[1, i_point] += np.power(x_0 * x_1, 4)
-            x2_cor_sums[2, i_point] += np.power(x_0 * x_1, 6)
+            x2_cor_sums[0, i_point] += np.power(x_01, 2)
+            x2_cor_sums[1, i_point] += np.power(x_01, 4)
+            x2_cor_sums[2, i_point] += np.power(x_01, 6)
 
 
 # OUTPUT-----------------------------------------------------------------------
@@ -207,8 +206,8 @@ def graphical_ui(which_gui):
     elif which_gui in ['plots']:
 
         gui.field_names = ['Plot', 'Plot #']
-        gui.add_row(['', 'a'])
-        gui.add_row(['', 'b'])
+        gui.add_row(['Corr. Fun. Anh. oscill. Montecarlo', 'a'])
+        gui.add_row(['Free energy graph.', 'b'])
         gui.add_row(['', 'c'])
         gui.add_row(['', 'd'])
         gui.add_row(['', 'e'])
@@ -219,8 +218,7 @@ def graphical_ui(which_gui):
         gui.add_row(['', 'k'])
         gui.add_row(['', 'l'])
         gui.add_row(['', 'm'])
-        gui.add_row(['', 'n'])
-        gui.add_row(['', 'o'])
+        gui.add_row(['Groundstate', 'n'])
         gui.add_row(['Exit', 'exit'])
         print(gui)
         print('Which (Plot #)?\n')
