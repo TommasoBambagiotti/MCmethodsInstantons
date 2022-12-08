@@ -68,7 +68,7 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
 
     for i_array in range(n_array - 1):
         derivative_log[i_array] = - (
-                    corr_funct[i_array + 1] - corr_funct[i_array]) \
+                corr_funct[i_array + 1] - corr_funct[i_array]) \
                                   / (corr_funct[i_array] * delta_step)
 
         derivative_log_err[i_array] = pow(
@@ -99,7 +99,7 @@ def correlation_measurments(n_lattice, n_meas, n_points,
         for i_point in range(n_points):
             x_1 = x_config[i_p0 + i_point]
             x_01 = x_0 * x_1
-            
+
             x_cor_sums[0, i_point] += x_01
             x_cor_sums[1, i_point] += np.power(x_01, 2)
             x_cor_sums[2, i_point] += np.power(x_01, 3)
@@ -318,3 +318,54 @@ def output_correlation_functions_and_log(n_points,
         return 1
 
     return 0
+
+
+def cor_plot_setup(which_plot=None):
+
+    if which_plot in ['a']:
+        # montecarlo
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1.03,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1.1,
+                'y_inf_2': -1.0,
+                'y_sup_2': 5,
+                'cor1_s': 7,
+                'cor2_s': 17,
+                'cor3_s': 7,
+                'cor2_s_fig1': 7}
+    elif which_plot in ['c']:
+        # montecarlo cooling
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1.03,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1,
+                'y_inf_2': -1.0,
+                'y_sup_2': 5,
+                'cor1_s': 0,
+                'cor2_s': 8,
+                'cor3_s': 0,
+                'cor2_s_fig1': 0}
+    elif which_plot in ['e']:
+        #rilm
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1,
+                'y_inf_2': -1.0,
+                'y_sup_2': 5,
+                'cor1_s': 0,
+                'cor2_s': 7,
+                'cor3_s': 0,
+                'cor2_s_fig1': 0}
+    else:
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1.5,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1.5,
+                'y_inf_2': -1,
+                'y_sup_2': 5,
+                'cor1_s': 0,
+                'cor2_s': 0,
+                'cor3_s': 0,
+                'cor2_s_fig1': 0}

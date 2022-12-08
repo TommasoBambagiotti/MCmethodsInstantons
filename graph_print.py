@@ -4,6 +4,7 @@ import numpy as np
 import struct
 
 import matplotlib
+
 # matplotlib.use('pgf')
 # matplotlib.rcParams.update({
 #     "pgf.texsystem": "pdflatex",
@@ -16,16 +17,14 @@ import matplotlib
 
 plt.style.use('ggplot')
 
-
 filepath = './output_graph'
 utility_custom.output_control(filepath)
 
 
 def print_ground_state():
-
     filepath_loc = filepath + '/ground_state'
     utility_custom.output_control(filepath_loc)
-    utility_custom.clear_folder(filepath_loc)    
+    utility_custom.clear_folder(filepath_loc)
 
     fig1 = plt.figure(1,
                       facecolor="#f1f1f1",
@@ -37,16 +36,19 @@ def print_ground_state():
     ax1.set_xlabel(f'$x (arb. un.)$')
     ax1.set_ylabel(f'$|\psi|^2$')
 
-    hist = np.loadtxt('./output_data/output_monte_carlo/ground_state_histogram.txt',
-                      float, delimiter=' ')
+    hist = np.loadtxt(
+        './output_data/output_monte_carlo/ground_state_histogram.txt',
+        float, delimiter=' ')
 
     x_array = np.loadtxt('./output_data/output_diag/x_position_array.txt',
                          float, delimiter=' ')
-    psi_ground_state = np.loadtxt('./output_data/output_diag/psi_ground_state.txt',
-                                  float, delimiter=' ')
+    psi_ground_state = np.loadtxt(
+        './output_data/output_diag/psi_ground_state.txt',
+        float, delimiter=' ')
 
-    psi_simple_model = np.loadtxt('./output_data/output_diag/psi_simple_model.txt',
-                                  float, delimiter=' ')
+    psi_simple_model = np.loadtxt(
+        './output_data/output_diag/psi_simple_model.txt',
+        float, delimiter=' ')
 
     ax1.set_ylim(0.0, 0.55)
     ax1.hist(hist, 100, (-3, 3), color='blue', label=f'Monte Carlo sim.',
@@ -65,7 +67,6 @@ def print_ground_state():
 
 
 def print_graph_free_energy():
-
     fig1 = plt.figure(1,
                       facecolor="#f1f1f1",
                       figsize=(5, 5))
@@ -75,18 +76,23 @@ def print_graph_free_energy():
     ax1.set_ylabel("F")
     ax1.set_xlabel("Temperature")
 
-    temperature_array = np.loadtxt('./output_data/output_monte_carlo_switching/temperature.txt',
-                                   float, delimiter=' ')
-    f_energy = np.loadtxt('./output_data/output_monte_carlo_switching/free_energy_mc.txt',
-                          float, delimiter=' ')
-    f_energy_err = np.loadtxt('./output_data/output_monte_carlo_switching/free_energy_mc_err.txt',
-                              float, delimiter=' ')
+    temperature_array = np.loadtxt(
+        './output_data/output_monte_carlo_switching/temperature.txt',
+        float, delimiter=' ')
+    f_energy = np.loadtxt(
+        './output_data/output_monte_carlo_switching/free_energy_mc.txt',
+        float, delimiter=' ')
+    f_energy_err = np.loadtxt(
+        './output_data/output_monte_carlo_switching/free_energy_mc_err.txt',
+        float, delimiter=' ')
 
-    vir = np.loadtxt('./output_data/output_monte_carlo_switching/free_energy_vir.txt',
-                     float, delimiter=' ')
+    vir = np.loadtxt(
+        './output_data/output_monte_carlo_switching/free_energy_vir.txt',
+        float, delimiter=' ')
 
-    vir_err = np.loadtxt('./output_data/output_monte_carlo_switching/free_energy_vir_err.txt',
-                         float, delimiter=' ')
+    vir_err = np.loadtxt(
+        './output_data/output_monte_carlo_switching/free_energy_vir_err.txt',
+        float, delimiter=' ')
 
     ax1.errorbar(temperature_array,
                  f_energy,
@@ -95,7 +101,7 @@ def print_graph_free_energy():
                  fmt='.',
                  capsize=2.5,
                  elinewidth=0.5,
-                 label = 'Monte Carlo switching')
+                 label='Monte Carlo switching')
 
     ax1.errorbar(temperature_array,
                  vir,
@@ -105,23 +111,21 @@ def print_graph_free_energy():
                  color='red',
                  capsize=2.5,
                  elinewidth=0.5,
-                 label = 'Virial theorem')
+                 label='Virial theorem')
 
     temperature_axis = np.loadtxt(
         './output_data/output_diag/temperature.txt', float, delimiter=' ')
     free_energy = np.loadtxt(
         './output_data/output_diag/free_energy.txt', float, delimiter=' ')
 
-
-
     ax1.plot(temperature_axis,
-              free_energy,
-              color='green',
-              label = 'Free energy')
+             free_energy,
+             color='green',
+             label='Free energy')
 
-    ax1.set_ylim(-2.3,-1.6)
-    ax1.legend(loc = 'upper left',
-         fontsize=10)
+    ax1.set_ylim(-2.3, -1.6)
+    ax1.legend(loc='upper left',
+               fontsize=10)
     ax1.set_xscale('log')
 
     fig1.savefig(filepath + '/free_energy.png', dpi=300)
@@ -129,14 +133,42 @@ def print_graph_free_energy():
     plt.show()
 
 
-def print_graph(folder):
+def print_graph_cor_func(folder, setup):
+    """
 
+    Parameters
+    ----------
+    folder :
+    """
     utility_custom.output_control(filepath + '/' + folder)
 
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
 
+    # axes limits
+
+    x_inf_1 = setup['x_inf_1']
+    x_sup_1 = setup['x_sup_1']
+
+    x_inf_2 = setup['x_inf_2']
+    x_sup_2 = setup['x_sup_2']
+
+    y_inf_2 = setup['y_inf_2']
+    y_sup_2 = setup['y_sup_2']
+
+    # point shift
+    cor1_s = setup['cor1_s']
+    cor2_s = setup['cor2_s']
+    cor3_s = setup['cor3_s']
+    cor2_s_fig1 = setup['cor2_s_fig1']
+
+    # Plots
+
+    fig1 = plt.figure(1, facecolor="#f1f1f1")
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
+    # Set x-axis limit
+    ax1.set_xlim(x_inf_1, x_sup_1)
+
+    # Import data
     tau_array = np.loadtxt('./output_data/' + folder + '/tau_array.txt',
                            float, delimiter=' ')
     corr1 = np.loadtxt('./output_data/' + folder + '/average_x_cor_1.txt',
@@ -168,7 +200,7 @@ def print_graph(folder):
 
     corr3_d = np.loadtxt('./output_data/output_diag/corr_function3.txt',
                          float, delimiter=' ')
-
+    # Plot
     ax1.plot(tau_array_2[0:61],
              corr1_d[0:61],
              color='b',
@@ -187,35 +219,52 @@ def print_graph(folder):
              linewidth=0.8,
              linestyle=':')
 
-    ax1.errorbar(tau_array,
-                 corr1,
-                 corr_err1,
+    ax1.errorbar(tau_array[:tau_array.size - cor1_s],
+                 corr1[:corr1.size - cor1_s],
+                 corr_err1[:corr1.size - cor1_s],
                  color='b',
                  fmt='.',
                  capsize=2.5,
-                 elinewidth=0.5)
+                 elinewidth=0.5,
+                 label=r'$<x(\tau)x(0)>$')
 
-    ax1.errorbar(tau_array,
-                 corr2,
-                 corr_err2,
+    ax1.errorbar(tau_array[:tau_array.size - cor2_s_fig1],
+                 corr2[:corr2.size - cor2_s_fig1],
+                 corr_err2[:corr2.size - cor2_s_fig1],
                  color='red',
                  fmt='.',
                  capsize=2.5,
-                 elinewidth=0.5)
+                 elinewidth=0.5,
+                 label=r'$<x^2(\tau)x^2(0)>$')
 
-    ax1.errorbar(tau_array,
-                 corr3,
-                 corr_err3,
+    ax1.errorbar(tau_array[:tau_array.size - cor3_s],
+                 corr3[:corr3.size - cor3_s],
+                 corr_err3[:corr3.size - cor3_s],
                  color='green',
                  fmt='.',
                  capsize=2.5,
-                 elinewidth=0.5)
+                 elinewidth=0.5,
+                 label=r'$<x^3(\tau)x^3(0)>$')
 
-    fig1.savefig(filepath + '/' + folder + '/x_corr.png', dpi=300)
+    # Labels
+    ax1.set_ylabel(r'$<x^n(\tau)x^n(0)> \; (m^{2n})$', rotation='vertical',
+                   fontsize=12)
+
+    ax1.set_xlabel(r'$\tau \; (s)$', fontsize=12)
+
+    # Legend
+    ax1.legend(loc='upper right', fontsize=10)
+    # Save plot
+    fig1.savefig(filepath + '/' + folder + '/x_corr.pgf', dpi=300)
+
+    # Plot 2
 
     fig2 = plt.figure(2, facecolor="#f1f1f1")
 
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax2.set_xlim(x_inf_2, x_sup_2)
+    ax2.set_ylim(y_inf_2, y_sup_2)
 
     dcorr1 = np.loadtxt('./output_data/' + folder + '/average_der_log_1.txt',
                         float, delimiter=' ')
@@ -244,8 +293,6 @@ def print_graph(folder):
     dcorr3_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct3.txt',
                           float, delimiter=' ')
 
-    ax2.set_ylim(-1.0, 10.0)
-
     ax2.plot(tau_array_2[0:61],
              dcorr1_d[0:61],
              color='b',
@@ -264,41 +311,50 @@ def print_graph(folder):
              linewidth=0.8,
              linestyle=':')
 
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr1,
-                 dcorr_err1,
+    ax2.errorbar(tau_array[0:tau_array.size - cor1_s - 1],
+                 dcorr1[:dcorr1.size - cor1_s],
+                 dcorr_err1[:dcorr1.size - cor1_s],
                  color='b',
                  fmt='.',
                  capsize=2.5,
-                 elinewidth=0.5)
+                 elinewidth=0.5,
+                 label=r'$<x(\tau)x(0)>$')
 
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr2,
-                 dcorr_err2,
+    ax2.errorbar(tau_array[0:tau_array.size - cor2_s - 1],
+                 dcorr2[:dcorr2.size - cor2_s],
+                 dcorr_err2[:dcorr2.size - cor2_s],
                  color='red',
                  fmt='.',
                  capsize=2.5,
-                 elinewidth=0.5)
+                 elinewidth=0.5,
+                 label=r'$<x^2(\tau)x^2(0)>$')
 
-    ax2.errorbar(tau_array[0:-1],
-                 dcorr3,
-                 dcorr_err3,
+    ax2.errorbar(tau_array[0:tau_array.size-cor3_s - 1],
+                 dcorr3[:dcorr3.size - cor3_s],
+                 dcorr_err3[:dcorr3.size - cor3_s],
                  color='green',
                  fmt='.',
                  capsize=2.5,
-                 elinewidth=0.5)
+                 elinewidth=0.5,
+                 label=r'$<x^3(\tau)x^3(0)>$')
+    # Legend
+    ax2.legend(loc='upper right', fontsize=10)
 
-    ax2.set_ylim(-0.1, 5.0)
+    # Labels
+    ax2.set_ylabel(r'$d(log<x^n(\tau)x^n(0)>)/d\tau \;\; (m^{2n}) $',
+                   rotation='vertical',
+                   fontsize=12)
 
-    fig2.savefig(filepath + '/' + folder + '/der_corr.png', dpi=300)
+    ax2.set_xlabel(r'$\tau \; (s)$', fontsize=12)
 
-    plt.show()
+    # Save figure
+    fig2.savefig(filepath + '/' + folder + '/der_corr.pgf', dpi=300)
+
+    #plt.show()
 
 
 def print_density():
-
-    
-    fig = plt.figure(1, facecolor="#f1f1f1", figsize = (5,5))
+    fig = plt.figure(1, facecolor="#f1f1f1", figsize=(5, 5))
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     ax.set_title('Instanton density')
@@ -313,8 +369,6 @@ def print_density():
         './output_data/output_cooled_monte_carlo/n_cooling.txt',
         delimiter=' ')
 
-    
-    
     i = 1
     for pot in np.nditer(potential_minima):
         n_instantons = np.loadtxt(
@@ -323,23 +377,23 @@ def print_density():
             f'./output_data/output_cooled_monte_carlo/n_instantons_{i}_err.txt')
 
         ax.errorbar(n_cooling,
-                     n_instantons,
-                     n_instantons_err,
-                     fmt='.',
-                     capsize=2.5,
-                     elinewidth=0.5,
-                     label=f'$\eta = {pot}$')
+                    n_instantons,
+                    n_instantons_err,
+                    fmt='.',
+                    capsize=2.5,
+                    elinewidth=0.5,
+                    label=f'$\eta = {pot}$')
 
         s0 = 4 / 3 * pow(pot, 3)
 
         loop_1 = 8 * pow(pot, 5 / 2) \
-            * pow(2 / np.pi, 1/2) * np.exp(-s0)
+                 * pow(2 / np.pi, 1 / 2) * np.exp(-s0)
 
         loop_2 = 8 * pow(pot, 5 / 2) \
-            * pow(2 / np.pi, 1/2) * np.exp(-s0 - 71 / (72 * s0))
+                 * pow(2 / np.pi, 1 / 2) * np.exp(-s0 - 71 / (72 * s0))
 
-        ax.hlines([loop_1, loop_2], 0, n_cooling[-1], color = 'green',
-                   linestyle=['dashed', 'solid'], linewidth=0.5)
+        ax.hlines([loop_1, loop_2], 0, n_cooling[-1], color='green',
+                  linestyle=['dashed', 'solid'], linewidth=0.5)
 
         i += 1
 
@@ -355,14 +409,15 @@ def print_density():
 
     fig.savefig(filepath + '/n_istantons.png', dpi=300)
 
-    fig2 = plt.figure(2, facecolor="#f1f1f1", figsize = (5,5))
+    fig2 = plt.figure(2, facecolor="#f1f1f1", figsize=(5, 5))
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     i = 1
     for pot in np.nditer(potential_minima):
-        action = np.loadtxt(f'./output_data/output_cooled_monte_carlo/action_{i}.txt',
-                            float,
-                            delimiter=' ')
+        action = np.loadtxt(
+            f'./output_data/output_cooled_monte_carlo/action_{i}.txt',
+            float,
+            delimiter=' ')
         action_err = np.loadtxt(
             f'./output_data/output_cooled_monte_carlo/action_err_{i}.txt',
             float,
@@ -396,15 +451,15 @@ def print_density():
 
 
 def print_zcr_hist():
-
     fig = plt.figure(1, facecolor="#f1f1f1")
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float,
                      delimiter=' ')
 
-    zcr_cooling = np.loadtxt('./output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
-                             float, delimiter=' ')
+    zcr_cooling = np.loadtxt(
+        './output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
+        float, delimiter=' ')
 
     zcr_int = np.loadtxt('./output_data/output_iilm/iilm/zcr_hist.txt',
                          float, delimiter=' ')
@@ -417,7 +472,8 @@ def print_zcr_hist():
             color='red', label='random liquid model')
     ax.hist(zcr_int, 39, (0.1, 4.), histtype='step', color='orange',
             label='core repulsion')  # , density='True')
-    ax.hist(zcr_cooling, 39, (0.1, 4.), histtype='step', label='monte carlo cooling',
+    ax.hist(zcr_cooling, 39, (0.1, 4.), histtype='step',
+            label='monte carlo cooling',
             color='blue')  # , density='True')
 
     ax.legend()
@@ -428,7 +484,6 @@ def print_zcr_hist():
 
 
 def print_tau_centers():
-
     fig = plt.figure(1, facecolor="#f1f1f1")
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
@@ -436,7 +491,7 @@ def print_tau_centers():
                         float, delimiter=' ')
 
     for n in range(12):
-        tau = np.loadtxt(f'./output_data/output_iilm/iilm/center_{n+1}.txt',
+        tau = np.loadtxt(f'./output_data/output_iilm/iilm/center_{n + 1}.txt',
                          float, delimiter=' ')
 
         if (n % 2) == 0:
@@ -451,12 +506,12 @@ def print_tau_centers():
 
 
 def print_cool_density():
-
     fig = plt.figure(1, facecolor="#f1f1f1")
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    potential_minima = np.loadtxt('output_data/output_cooled_monte_carlo/potential_minima.txt',
-                                  delimiter=' ')
+    potential_minima = np.loadtxt(
+        'output_data/output_cooled_monte_carlo/potential_minima.txt',
+        delimiter=' ')
 
     dens = np.zeros(potential_minima.size)
     dens_err = np.zeros(potential_minima.size)
@@ -464,20 +519,24 @@ def print_cool_density():
     i = 1
     for pot in np.nditer(potential_minima):
         j = 0
-        with open(f'output_data/output_cooled_monte_carlo/n_instantons_{i}.txt', 'r')\
+        with open(
+                f'output_data/output_cooled_monte_carlo/n_instantons_{i}.txt',
+                'r') \
                 as reader:
             for line in reader:
 
                 if j == 8:
                     line = reader.readline()
-                    dens[i-1] = float(line)
+                    dens[i - 1] = float(line)
                 j += 1
         j = 0
-        with open(f'output_data/output_cooled_monte_carlo/n_instantons_{i}_err.txt', 'r')\
+        with open(
+                f'output_data/output_cooled_monte_carlo/n_instantons_{i}_err.txt',
+                'r') \
                 as reader:
             for line in reader:
                 if j == 8:
-                    dens_err[i-1] = float(line)
+                    dens_err[i - 1] = float(line)
                 j += 1
 
         i += 1
@@ -493,12 +552,12 @@ def print_cool_density():
                 label='cooling')
 
     potential = np.linspace(0.1, 2.0)
-    action = 4/3 * np.power(potential, 3)
+    action = 4 / 3 * np.power(potential, 3)
 
-    loop_1 = 8 * np.sqrt(2/np.pi)\
-        * np.power(potential, 5/2) * np. exp(-action)
+    loop_1 = 8 * np.sqrt(2 / np.pi) \
+             * np.power(potential, 5 / 2) * np.exp(-action)
 
-    loop_2 = loop_1 * np.exp(-71/72/action)
+    loop_2 = loop_1 * np.exp(-71 / 72 / action)
 
     ax.plot(potential, loop_1,
             linestyle='--', color='green', label='1-loop')
@@ -540,43 +599,50 @@ def print_cool_density():
 
 
 def print_iilm():
-
     fig1 = plt.figure(1, facecolor="#f1f1f1")
 
     ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    tau_ia = np.loadtxt('./output_data/output_iilm/streamline/delta_tau_ia.txt',
-                        float, delimiter=' ')
+    tau_ia = np.loadtxt(
+        './output_data/output_iilm/streamline/delta_tau_ia.txt',
+        float, delimiter=' ')
 
     zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float,
                      delimiter=' ')
-    zcr_cooling = np.loadtxt('./output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
-                             float, delimiter=' ')
+    zcr_cooling = np.loadtxt(
+        './output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
+        float, delimiter=' ')
 
     hist_1, _ = np.histogram(zcr, 40, range=(0., 4.))
     hist_2, _ = np.histogram(zcr_cooling, 40, range=(0., 4.))
 
     # bisogna implementare un modo per capire già quanto vale il potentiale?
     # tipo costruire l'istogramma già nella funzione zero_...
-    action_ia = -np.log(hist_2[0:10]/hist_1[0:10])/(4/3*np.power(1.4, 3))
+    action_ia = -np.log(hist_2[0:10] / hist_1[0:10]) / (
+                4 / 3 * np.power(1.4, 3))
 
-    act_int = np.loadtxt('./output_data/output_iilm/streamline/streamline_action_int.txt',
-                         float, delimiter=' ')
+    act_int = np.loadtxt(
+        './output_data/output_iilm/streamline/streamline_action_int.txt',
+        float, delimiter=' ')
 
     array_ia = np.loadtxt('./output_data/output_iilm/streamline/array_ia.txt',
                           float, delimiter=' ')
 
-    array_ia_0 = np.loadtxt('./output_data/output_iilm/streamline/array_ia_0.txt',
-                            float, delimiter=' ')
+    array_ia_0 = np.loadtxt(
+        './output_data/output_iilm/streamline/array_ia_0.txt',
+        float, delimiter=' ')
 
-    array_int = np.loadtxt('./output_data/output_iilm/streamline/array_int.txt',
-                           float, delimiter=' ')
+    array_int = np.loadtxt(
+        './output_data/output_iilm/streamline/array_int.txt',
+        float, delimiter=' ')
 
-    array_int_core = np.loadtxt('./output_data/output_iilm/streamline/array_int_core.txt',
-                                float, delimiter=' ')
+    array_int_core = np.loadtxt(
+        './output_data/output_iilm/streamline/array_int_core.txt',
+        float, delimiter=' ')
 
-    array_int_zero_cross = np.loadtxt('./output_data/output_iilm/streamline/array_int_zero_cross.txt',
-                                      float, delimiter=' ')
+    array_int_zero_cross = np.loadtxt(
+        './output_data/output_iilm/streamline/array_int_zero_cross.txt',
+        float, delimiter=' ')
 
     ax1.plot(tau_ia,
              act_int,

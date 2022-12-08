@@ -13,6 +13,7 @@ import streamline_iilm
 import instanton_interactive_liquid_model
 import graph_print
 from utility_custom import graphical_ui
+from utility_custom import cor_plot_setup
 
 if __name__ == '__main__':
 
@@ -32,7 +33,7 @@ if __name__ == '__main__':
                 30,  # n_point
                 5,  # n_meas
                 False)
-            
+
         elif call in ['2']:
             monte_carlo_ao_switching. \
                 free_energy_anharm(1,
@@ -50,11 +51,12 @@ if __name__ == '__main__':
                 30,  # n_points
                 5,  # n_meas
                 False,  # cold start
-                10,  # number of mc configurations between successive cooled configurations
+                10,
+                # number of mc configurations between successive cooled configurations
                 100)  # number of mc cooling sweeps
 
         elif call in ['4']:
-            monte_carlo_ao_cooling_density.\
+            monte_carlo_ao_cooling_density. \
                 cooled_monte_carlo_density(800,
                                            100,
                                            100000,
@@ -71,7 +73,7 @@ if __name__ == '__main__':
                                              20,
                                              4,
                                              1.3,
-                                             delta_x = 0.6)
+                                             delta_x=0.6)
 
         elif call in ['6']:
             random_instanton_monte_carlo. \
@@ -97,7 +99,7 @@ if __name__ == '__main__':
                                                    70001)
 
         elif call in ['9']:
-            instanton_interactive_liquid_model.\
+            instanton_interactive_liquid_model. \
                 inst_int_liquid_model(800,
                                       100000,
                                       30,
@@ -124,17 +126,22 @@ if __name__ == '__main__':
                 call2 = graphical_ui('plots')
 
                 if call2 in ['a']:
-                    graph_print.print_graph('output_monte_carlo')
+                    graph_print.print_graph_cor_func('output_monte_carlo',
+                                                     cor_plot_setup(call2))
                 elif call2 in ['b']:
                     graph_print.print_graph_free_energy()
                 elif call2 in ['c']:
-                    graph_print.print_graph('output_cooled_monte_carlo')
+                    graph_print.print_graph_cor_func(
+                                                'output_cooled_monte_carlo',
+                                                 cor_plot_setup(call2))
                 elif call2 in ['d']:
                     graph_print.print_density()
                 elif call2 in ['e']:
-                    graph_print.print_graph('output_rilm')
+                    graph_print.print_graph_cor_func('output_rilm',
+                                                     cor_plot_setup(call2))
                 elif call2 in ['f']:
-                    graph_print.print_graph('output_rilm_heating')
+                    graph_print.print_graph_cor_func('output_rilm_heating',
+                                                     cor_plot_setup())
                 elif call2 in ['g']:
                     graph_print.print_iilm()
                 elif call2 in ['h']:
@@ -142,7 +149,8 @@ if __name__ == '__main__':
                 elif call2 in ['i']:
                     graph_print.print_tau_centers()
                 elif call2 in ['l']:
-                    graph_print.print_graph('output_iilm/iilm')
+                    graph_print.print_graph_cor_func('output_iilm/iilm',
+                                                     cor_plot_setup(call2))
                 elif call2 in ['m']:
                     graph_print.print_cool_density()
                 elif call2 in ['n']:
