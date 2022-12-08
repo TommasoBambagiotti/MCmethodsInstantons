@@ -338,7 +338,7 @@ def print_density():
         loop_2 = 8 * pow(pot, 5 / 2) \
             * pow(2 / np.pi, 1/2) * np.exp(-s0 - 71 / (72 * s0))
 
-        ax.hlines([loop_1, loop_2], 0, n_cooling[-1], 
+        ax.hlines([loop_1, loop_2], 0, n_cooling[-1], color = 'green',
                    linestyle=['dashed', 'solid'], linewidth=0.5)
 
         i += 1
@@ -391,23 +391,6 @@ def print_density():
     # ax2.gca().set_yticklabels([{'0.2f'}.format(x) for x in current_values])
 
     fig2.savefig(filepath + '/action.png', dpi=300)
-
-    hot = np.loadtxt('./output_data/output_cooled_monte_carlo/hot.txt',
-                      delimiter=' ')
-
-    cold = np.loadtxt('./output_data/output_cooled_monte_carlo/cold.txt',
-                      delimiter=' ')
-
-    fig_3 = plt.figure(3, facecolor="#f1f1f1", figsize = (5,5))
-    ax_3 = fig_3.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
-
-    ax_3.plot(np.linspace(0,hot.size,hot.size),
-              hot,
-              color = 'blue')
-    ax_3.plot(np.linspace(0,hot.size,hot.size),
-              cold,
-              color = 'red')
-
 
     plt.show()
 
