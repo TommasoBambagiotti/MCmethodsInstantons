@@ -2,7 +2,6 @@ import numpy as np
 import utility_custom
 import utility_monte_carlo as mc
 
-
 def monte_carlo_ao(n_lattice,
                    n_equil,
                    n_mc_sweeps,
@@ -74,28 +73,32 @@ def monte_carlo_ao(n_lattice,
                                mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
-
-    # Main MC sweeps
-    for i_mc in range(n_mc_sweeps - n_equil):
-        if i_mc % 100 == 0:
-            print(f'{i_mc} in {n_mc_sweeps - n_equil}')
-
-        mc.metropolis_question(x_config,
-                               x_potential_minimum,
-                               mc.potential_anh_oscillator,
-                               dtau,
-                               delta_x)
-
-        utility_custom.correlation_measurments(n_lattice, n_meas, n_points,
-                                               x_config, x_cor_sums,
-                                               x2_cor_sums)
-
-    # Evaluate correlation functions
-    utility_custom. \
-        output_correlation_functions_and_log(n_points,
-                                             x_cor_sums,
-                                             x2_cor_sums,
-                                             (n_mc_sweeps - n_equil) * n_meas,
-                                             output_path)
-
+    
+    with open(output_path + '/ground_state_histogram.txt','w') as hist_writer:
+        # Main MC sweeps
+        for i_mc in range(n_mc_sweeps - n_equil):
+            if i_mc % 100 == 0:
+                print(f'{i_mc} in {n_mc_sweeps - n_equil}')
+    
+            mc.metropolis_question(x_config,
+                                   x_potential_minimum,
+                                   mc.potential_anh_oscillator,
+                                   dtau,
+                                   delta_x)
+    
+            utility_custom.correlation_measurments(n_lattice, n_meas, n_points,
+                                                   x_config, x_cor_sums,
+                                                   x2_cor_sums)
+            
+            if i_mc % 50 == 0:
+                np.savetxt(hist_writer, x_config[0:-1])
+    
+        # Evaluate correlation functions
+        utility_custom. \
+            output_correlation_functions_and_log(n_points,
+                                                 x_cor_sums,
+                                                 x2_cor_sums,
+                                                 (n_mc_sweeps - n_equil) * n_meas,
+                                                 output_path)
+            
     return 1
