@@ -687,7 +687,7 @@ def anti_periodic_boundary_conditions(x_config):
     x_config[0] = - x_config[-2]
     x_config[-1] = - x_config[1]
 
-
+@njit
 def two_loop_density(x_pot_min):
     """Compute the instanton density at 2-loop.
 
@@ -701,7 +701,7 @@ def two_loop_density(x_pot_min):
     float
         Density.
     """
-    action_0 = np.power(x_pot_min, 3) * 4 / 6
+    action_0 = np.power(x_pot_min, 3) * 4 / 3
 
-    return 8 * pow(x_pot_min, 5 / 2) * pow(2 / np.pi, 1 / 2) \
+    return 8 * np.power(x_pot_min, 5 / 2) * np.power(2 / np.pi, 1 / 2) \
            * np.exp(-action_0 - 71 / (72 * action_0))
