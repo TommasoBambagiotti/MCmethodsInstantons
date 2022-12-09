@@ -128,7 +128,6 @@ def gaussian_potential(x_position,
 def metropolis_question_density_switching(x_config,
                                           x_0_config,
                                           second_der_0,
-                                          f_potential,
                                           x_potential_minimum,
                                           dtau,
                                           delta_x,
@@ -192,9 +191,9 @@ def metropolis_question_density_switching(x_config,
         action_loc_old = (np.square(x_config[i] - x_config[i - 1])
                           + np.square(x_config[i + 1] - x_config[i])) / (
                                  4 * dtau) \
-                         + dtau * f_potential(x_position,
-                                              x_potential_minimum,
-                                              a_alpha)
+                         + dtau * gaussian_potential(x_position,
+                                                     x_potential_minimum,
+                                                     a_alpha)
 
         # Jacobian (constrain)
 
@@ -212,9 +211,9 @@ def metropolis_question_density_switching(x_config,
 
         action_loc_new = (np.square(x_new - x_config[i - 1])
                           + np.square(x_config[i + 1] - x_new)) / (4 * dtau) \
-                         + dtau * f_potential(x_position,
-                                              x_potential_minimum,
-                                              a_alpha)
+                         + dtau * gaussian_potential(x_position,
+                                                     x_potential_minimum,
+                                                     a_alpha)
 
         if (i == tau_fixed - 1) and (sector == 1):
 
@@ -255,7 +254,6 @@ def metropolis_question_density_switching(x_config,
 @njit
 def metropolis_question(x_config,
                         x_potential_minimum,
-                        f_potential,
                         dtau,
                         delta_x):
     """Metropolis algorithm for Markov chain Monte Carlo simulations of a
@@ -291,7 +289,7 @@ def metropolis_question(x_config,
         action_loc_old = (np.square(x_config[i] - x_config[i - 1])
                           + np.square(x_config[i + 1] - x_config[i])) / (
                                  4. * dtau) \
-                         + dtau * f_potential(x_config[i],
+                         + dtau * potential_anh_oscillator(x_config[i],
                                               x_potential_minimum)
 
         x_new = x_config[i] + delta_x * \
@@ -299,7 +297,7 @@ def metropolis_question(x_config,
 
         action_loc_new = (np.square(x_new - x_config[i - 1])
                           + np.square(x_config[i + 1] - x_new)) / (4. * dtau) \
-                         + dtau * f_potential(x_new,
+                         + dtau * potential_anh_oscillator(x_new,
                                               x_potential_minimum)
 
         delta_action_exp = np.exp(action_loc_old - action_loc_new)
@@ -313,7 +311,6 @@ def metropolis_question(x_config,
 @njit
 def metropolis_question_switching(x_config,
                                   x_potential_minimum,
-                                  f_potential,
                                   dtau,
                                   delta_x,
                                   alpha):
@@ -353,7 +350,7 @@ def metropolis_question_switching(x_config,
         action_loc_old = (np.square(x_config[i] - x_config[i - 1])
                           + np.square(x_config[i + 1] - x_config[i])) / (
                                  4. * dtau) \
-                         + dtau * f_potential(x_config[i],
+                         + dtau * potential_alpha(x_config[i],
                                               x_potential_minimum,
                                               alpha)
 
@@ -362,7 +359,7 @@ def metropolis_question_switching(x_config,
 
         action_loc_new = (np.square(x_new - x_config[i - 1])
                           + np.square(x_config[i + 1] - x_new)) / (4. * dtau) \
-                         + dtau * f_potential(x_new,
+                         + dtau * potential_alpha(x_new,
                                               x_potential_minimum,
                                               alpha)
 
@@ -377,7 +374,6 @@ def metropolis_question_switching(x_config,
 @njit
 def configuration_cooling(x_cold_config,
                           x_potential_minimum,
-                          f_potential,
                           dtau,
                           delta_x):
     """Metropolis algorithm for Markov chain Monte Carlo simulations of an
@@ -414,8 +410,8 @@ def configuration_cooling(x_cold_config,
         action_loc_old = (np.square(x_cold_config[i] - x_cold_config[i - 1])
                           + np.square(
                     x_cold_config[i + 1] - x_cold_config[i])) / (4. * dtau) \
-                         + dtau * f_potential(x_cold_config[i],
-                                              x_potential_minimum)
+                         + dtau * potential_anh_oscillator(x_cold_config[i],
+                                                           x_potential_minimum)
 
         for _ in range(n_trials):
             x_new = x_cold_config[i] + delta_x * \
@@ -424,8 +420,8 @@ def configuration_cooling(x_cold_config,
             action_loc_new = (np.square(x_new - x_cold_config[i - 1])
                               + np.square(x_cold_config[i + 1] - x_new)) / (
                                      4. * dtau) \
-                             + dtau * f_potential(x_new,
-                                                  x_potential_minimum)
+                             + dtau * potential_anh_oscillator(x_new,
+                                                               x_potential_minimum)
 
             if action_loc_new < action_loc_old:
                 x_cold_config[i] = x_new
@@ -687,7 +683,7 @@ def anti_periodic_boundary_conditions(x_config):
     x_config[0] = - x_config[-2]
     x_config[-1] = - x_config[1]
 
-
+@njit
 def two_loop_density(x_pot_min):
     """Compute the instanton density at 2-loop.
 
@@ -701,7 +697,7 @@ def two_loop_density(x_pot_min):
     float
         Density.
     """
-    action_0 = np.power(x_pot_min, 3) * 4 / 6
+    action_0 = np.power(x_pot_min, 3) * 4 / 3
 
-    return 8 * pow(x_pot_min, 5 / 2) * pow(2 / np.pi, 1 / 2) \
+    return 8 * np.power(x_pot_min, 5 / 2) * np.power(2 / np.pi, 1 / 2) \
            * np.exp(-action_0 - 71 / (72 * action_0))

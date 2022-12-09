@@ -45,8 +45,7 @@ def print_sum_ansatz_ia(n_lattice,
         tau_array = np.linspace(0., n_lattice * dtau, n_lattice, False)
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,
-                                              x_potential_minimum,
-                                              dtau)
+                                              x_potential_minimum)
 
         action = mc.return_action(x_config,
                                   x_potential_minimum,
@@ -181,8 +180,7 @@ def streamline_method_iilm(r_initial_sep,
     # Initial condition of the streamline
     x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                           tau_array,
-                                          x_potential_minimum,
-                                          dtau)
+                                          x_potential_minimum)
 
     x_config = np.insert(x_config, 0, x_config[0])
     x_config = np.insert(x_config, 0, x_config[0])

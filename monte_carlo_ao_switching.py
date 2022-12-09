@@ -90,7 +90,6 @@ def monte_carlo_ao_switching(n_lattice,
         for _ in range(n_equil):
             mc.metropolis_question_switching(x_config,
                                              x_potential_minimum,
-                                             mc.potential_alpha,
                                              dtau,
                                              delta_x,
                                              a_alpha)
@@ -100,7 +99,6 @@ def monte_carlo_ao_switching(n_lattice,
 
             mc.metropolis_question_switching(x_config,
                                              x_potential_minimum,
-                                             mc.potential_alpha,
                                              dtau,
                                              delta_x,
                                              a_alpha)
@@ -207,7 +205,6 @@ def monte_carlo_virial_theorem(n_lattice,
     for _ in range(n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
-                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 
@@ -216,7 +213,6 @@ def monte_carlo_virial_theorem(n_lattice,
     for _ in range(n_mc_sweeps - n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
-                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 
