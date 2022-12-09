@@ -18,17 +18,25 @@ from prettytable import PrettyTable
 def stat_av_var(observable, observable_sqrd, n_data):
     """Evaluate the average and the variance of the average of a set of data,
     expressed in an array, directly as the sum and the sum of squares.
-    We use the formula Var[<O>] = (<O^2> - <O>^2)/N
 
     Parameters
     ----------
-    observable :
-    observable_sqrd :
-    n_data :
+    observable : ndarray
+        Data.
+    observable_sqrd : ndarray
+        Data squared.
+    n_data : int
+        Number of measurements.
 
     Returns
     -------
-
+    observable_av : ndarray
+        Average.
+    ndarray
+        Standard deviation.
+    Notes
+    -------
+    The variance is computed as Var[<O>] = (<O^2> - <O>^2)/N
     """
     if isinstance(observable, np.ndarray) and \
             isinstance(observable_sqrd, np.ndarray):
@@ -44,19 +52,29 @@ def stat_av_var(observable, observable_sqrd, n_data):
 
 
 def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
-    """Log derivative of the correlation functions.
+    """Log-derivative of the correlation functions.
     We can not use the analytic formula because
-    we do not know the energy eignevalues.
+    we do not know the energy eigenvalues.
 
     Parameters
     ----------
-    corr_funct :
-    corr_funct_err :
-    delta_step :
+    corr_funct : ndarray
+        Correlation function.
+    corr_funct_err : ndarray
+        Correlation function error.
+    delta_step : float
+        Differentiation step.
 
     Returns
     -------
+    derivative_log : ndarray
+        Log-derivative of correlation function.
+    derivative_log_err : ndarray
+        Error of the log-derivative of correlation function.
 
+    Notes
+    -------
+    We use the forward-difference formula.
     """
     if corr_funct.size != corr_funct_err.size:
         return None, None
@@ -82,16 +100,27 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
 @njit
 def correlation_measurments(n_lattice, n_meas, n_points,
                             x_config, x_cor_sums, x2_cor_sums):
-    """
+    """Compute correlation functions of spatial coordinates as function
+    of euclidean time.
 
     Parameters
     ----------
-    n_lattice :
-    n_meas :
-    n_points :
-    x_config :
-    x_cor_sums :
-    x2_cor_sums :
+    n_lattice : int
+        Number of lattice point in euclidean time.
+    n_meas : int
+        Number of measurement of correlation functions in a MC sweep.
+    n_points : int
+        Number of points on which correlation functions are computed.
+    x_config : ndarray
+        Spatial coordinates.
+    x_cor_sums : ndarray
+        Correlation function.
+    x2_cor_sums : ndarray
+        Correlation function of squared coordinates.
+
+    Returns
+    ----------
+    None
     """
     for _ in range(n_meas):
         i_p0 = int((n_lattice - n_points) * np.random.uniform(0., 1.))
@@ -112,11 +141,12 @@ def correlation_measurments(n_lattice, n_meas, n_points,
 # OUTPUT-----------------------------------------------------------------------
 
 def output_control(path_dir):
-    """
+    """Check if the output directory path is a directory. If it doesn't
+    exist, it is created.
 
     Parameters
     ----------
-    path_dir :
+    path_dir : basestring
 
     Returns
     -------
@@ -146,11 +176,15 @@ def output_control(path_dir):
 
 
 def clear_folder(output_path):
-    """
+    """Clean folder.
 
     Parameters
     ----------
-    output_path :
+    output_path : basestring
+
+    Returns
+    ----------
+    None
     """
     for filename in os.listdir(output_path):
 
@@ -168,15 +202,16 @@ def clear_folder(output_path):
 
 
 def graphical_ui(which_gui):
-    """
+    """Graphic user interface.
 
     Parameters
     ----------
-    which_gui :
+    which_gui : basestring
+        Two interfaces, 'main' and 'plots'.
 
     Returns
     -------
-
+    None
     """
     gui = PrettyTable()
 
@@ -235,26 +270,35 @@ def output_correlation_functions_and_log(n_points,
                                          n_config,
                                          output_path,
                                          dtau=0.05):
-    """
+    """Save correlation functions and log-derivative of correlation
+    functions into files.
 
     Parameters
     ----------
-    n_points :
-    x_cor_sums :
-    x2_cor_sums :
-    n_config :
-    output_path :
-    dtau :
+    n_points : int
+        Number of points on which correlation functions are computed.
+    x_cor_sums : ndarray
+        Correlation function.
+    x2_cor_sums : ndarray
+        Correlation function of squared coordinates.
+    n_config : int
+        Number of measurements (for averages).
+    output_path : basestring
+        Output directory.
+    dtau : float, default=0.05
+        Lattice spacing.
 
     Returns
     -------
-
+    int
+        If x_cor_sums and x2_cor_sums are ndarray returns 1, otherwise
+        returns 0.
     """
     if isinstance(x_cor_sums, np.ndarray) \
             and isinstance(x2_cor_sums, np.ndarray):
 
-        x_cor_av = np.zeros(x_cor_sums.shape)
-        x_cor_err = np.zeros(x_cor_sums.shape)
+        x_cor_av = np.empty(x_cor_sums.shape)
+        x_cor_err = np.empty(x_cor_sums.shape)
 
         for i_stat in range(3):
             x_cor_av[i_stat], x_cor_err[i_stat] = \
@@ -271,8 +315,8 @@ def output_correlation_functions_and_log(n_points,
                       encoding='utf8') as err_writer:
                 np.savetxt(err_writer, x_cor_err[i_stat])
 
-        derivative_log_corr_funct = np.zeros((3, n_points - 1))
-        derivative_log_corr_funct_err = np.zeros((3, n_points - 1))
+        derivative_log_corr_funct = np.empty((3, n_points - 1))
+        derivative_log_corr_funct_err = np.empty((3, n_points - 1))
 
         for i_stat in range(3):
 
@@ -321,7 +365,13 @@ def output_correlation_functions_and_log(n_points,
 
 
 def cor_plot_setup(which_plot=None):
+    """Customise correlation function plots.
 
+    Returns
+    -------
+    dict
+        Plot configuration.
+    """
     if which_plot in ['a']:
         # montecarlo
         return {'x_inf_1': -0.05,

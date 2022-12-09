@@ -20,28 +20,42 @@ def cooled_monte_carlo_density(n_lattice,
                                first_minimum=1.4,
                                dtau=0.05,
                                delta_x=0.5):
-    """
+    """Compute total number of instantons and anti-instantons and the action
+    density as function of the number of cooling sweeps for each cooling.
+    The computation is done for different value of the potential minima.
 
     We use a system of unit of measurements where h_bar=1, m=1/2 and
     lambda=1.
 
     Parameters
     ----------
-    n_lattice :
-    n_equil :
-    n_mc_sweeps :
-    i_cold :
-    n_sweeps_btw_cooling :
-    n_cooling_sweeps :
-    n_minima :
-    first_minimum :
-    dtau :
-    delta_x :
+    n_lattice : int
+        Number of lattice point in euclidean time.
+    n_equil : int
+        Number of equilibration Monte Carlo sweeps.
+    n_mc_sweeps : int
+        Number of Monte Carlo sweeps.
+    i_cold : bool
+        True for cold start, False for hot start.
+    n_sweeps_btw_cooling : int
+        Number of MC sweeps between two consecutive coolings.
+    n_cooling_sweeps : int
+        Number of MC sweeps for each cooling.
+    n_minima : int
+        Number of potential minima.
+    first_minimum : float
+        First potential minimum.
+    dtau : float, default=0.05
+        Lattice spacing.
+    delta_x : float, default=0.5
+        Width of Gaussian distribution for Metropolis update.
 
     Returns
-    -------
-
+    ----------
+    int
+        Return 0 if n_mc_sweeps < n_equil, else return 1
     """
+
     start = time.time()
     end = np.zeros(n_minima + 1)
     end[0] = start
@@ -55,6 +69,7 @@ def cooled_monte_carlo_density(n_lattice,
 
     potential_minima = []
 
+    # Main cycle over potential minima
     for i_minimum in range(n_minima):
         print(f'New monte carlo for minimum ='
               f' {first_minimum + 0.1 * i_minimum}')
@@ -72,19 +87,15 @@ def cooled_monte_carlo_density(n_lattice,
                                          i_cold)
 
         # number of instantons
-        n_total_instantons_sum = np.zeros((n_cooling_sweeps), int)
-        n2_total_instantons_sum = np.zeros((n_cooling_sweeps), int)
+        n_total_instantons_sum = np.zeros(n_cooling_sweeps, int)
+        n2_total_instantons_sum = np.zeros(n_cooling_sweeps, int)
 
         # instanton action density
-        action_cooling = np.zeros((n_cooling_sweeps), float)
-        action2_cooling = np.zeros((n_cooling_sweeps), float)
+        action_cooling = np.zeros(n_cooling_sweeps, float)
+        action2_cooling = np.zeros(n_cooling_sweeps, float)
 
-        # Monte Carlo sweeps: Principal cycle
-
-        # Equilibration cycles
-
+        # Equilibration sweeps
         # tau_array = np.linspace(0.0, dtau*n_lattice, n_lattice)
-
         for _ in range(n_equil):
             mc.metropolis_question(x_config,
                                    x_potential_minimum,
@@ -144,6 +155,7 @@ def cooled_monte_carlo_density(n_lattice,
 
         np.savetxt(output_path + f'/n_total_{i_minimum + 1}.txt', n_total)
 
+        # Density and action density
         action_av = np.divide(action_av, n_total)
         action_err = np.divide(action_err, n_total)
 
