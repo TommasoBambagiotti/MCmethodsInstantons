@@ -4,4 +4,4 @@ This program develops several Monte Carlo methods to compute correlation functio
 # Bibliography
 1. T. Schaefer and E. V. Shuryak, Rev. Mod. Phys. 70, 323 (1998), [hep-ph/9610451].
 2. T. Schaefer, Instantons and Monte Carlo Methods in Quantum Mechanics, (2004) [hep-lat/0411010]
-3. M. Hjorth-Jensen, M. P. Lombardo, and U. van Kolck, An advanced coursein computational nuclear physics, (2017), ISBN:978-3-319-53335-3
+3. M. H.-Jensen, M. P. Lombardo, and U. van Kolck, An advanced course in computational nuclear physics, (2017), ISBN:978-3-319-53335-3
