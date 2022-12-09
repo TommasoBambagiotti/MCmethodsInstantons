@@ -241,11 +241,12 @@ def graphical_ui(which_gui):
     elif which_gui in ['plots']:
 
         gui.field_names = ['Plot', 'Plot #']
-        gui.add_row(['Corr. Fun. Anh. oscill. Montecarlo', 'a'])
+        gui.add_row(['Anh. oscill. Montecarlo corr. func.', 'a'])
         gui.add_row(['Free energy graph.', 'b'])
-        gui.add_row(['', 'c'])
+        gui.add_row(['Montecarlo cooling corr. func.', 'c'])
         gui.add_row(['', 'd'])
-        gui.add_row(['', 'e'])
+        gui.add_row(['Random instanton corr. func.', 'e'])
+        gui.add_row(['Random instanton heating corr. func.', 'f'])
         gui.add_row(['', 'g'])
         gui.add_row(['', 'h'])
         gui.add_row(['', 'i'])
