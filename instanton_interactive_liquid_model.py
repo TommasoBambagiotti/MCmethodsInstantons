@@ -1,3 +1,6 @@
+'''
+Instanton interactive Liquid model
+'''
 import numpy as np
 import time
 import utility_custom
