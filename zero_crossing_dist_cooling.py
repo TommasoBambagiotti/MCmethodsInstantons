@@ -74,7 +74,6 @@ def zero_crossing_cooling_density(n_lattice,
     for _ in range(n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
-                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 
@@ -87,7 +86,6 @@ def zero_crossing_cooling_density(n_lattice,
 
         mc.metropolis_question(x_config,
                                x_potential_minimum,
-                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 

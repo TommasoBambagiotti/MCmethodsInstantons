@@ -99,14 +99,12 @@ def cooled_monte_carlo_density(n_lattice,
         for _ in range(n_equil):
             mc.metropolis_question(x_config,
                                    x_potential_minimum,
-                                   mc.potential_anh_oscillator,
                                    dtau,
                                    delta_x)
         # Rest of the MC sweeps
         for i_mc in range(n_mc_sweeps - n_equil):
             mc.metropolis_question(x_config,
                                    x_potential_minimum,
-                                   mc.potential_anh_oscillator,
                                    dtau,
                                    delta_x)
 
@@ -124,7 +122,6 @@ def cooled_monte_carlo_density(n_lattice,
                 for i_cooling in range(n_cooling_sweeps):
                     mc.configuration_cooling(x_cold_config,
                                              x_potential_minimum,
-                                             mc.potential_anh_oscillator,
                                              dtau,
                                              delta_x)
 
