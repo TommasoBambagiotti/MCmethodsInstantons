@@ -87,6 +87,7 @@ def cooled_monte_carlo(
     for i_equil in range(n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
+                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
 
@@ -94,9 +95,15 @@ def cooled_monte_carlo(
     for i_mc in range(n_mc_sweeps - n_equil):
         mc.metropolis_question(x_config,
                                x_potential_minimum,
+                               mc.potential_anh_oscillator,
                                dtau,
                                delta_x)
+        # save middle config
+        if i_mc % int((n_mc_sweeps-n_equil)/2) == 0:
+            with open(output_path+'/x2_config.txt','w') as f_writer:
+                np.savetxt(f_writer, x_config)
 
+        # Print action
         if i_mc % int((n_mc_sweeps - n_equil)/10) == 0:
             print(f'conf: {i_mc}\n'
                   +f'Action: {mc.return_action(x_config, x_potential_minimum, dtau)}')
@@ -115,9 +122,13 @@ def cooled_monte_carlo(
             for i_cooling in range(n_cooling_sweeps):
                 mc.configuration_cooling(x_cold_config,
                                          x_potential_minimum,
+                                         mc.potential_anh_oscillator,
                                          dtau,
                                          delta_x)
-
+            # save mid config cooled
+            if i_mc % int((n_mc_sweeps - n_equil) / 2) == 0:
+                with open(output_path + '/x1_config.txt', 'w') as f_writer:
+                    np.savetxt(f_writer, x_cold_config)
             
             # Compute correlation functions for the cooled configuration
             utility_custom.correlation_measurments(n_lattice, n_meas, n_points,

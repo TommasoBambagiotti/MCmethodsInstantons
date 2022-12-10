@@ -5,20 +5,22 @@ import struct
 
 import matplotlib
 
-# matplotlib.use('pgf')
-# matplotlib.rcParams.update({
-#     "pgf.texsystem": "pdflatex",
-#     'font.family': 'serif',
-#     'font.sans-serif': ['Helvetica'],
-#     'text.usetex': True,
-#     'pgf.rcfonts': False,
-# })
+#matplotlib.use('pgf')
+matplotlib.rcParams.update({
+    "pgf.texsystem": "pdflatex",
+    'font.family': 'serif',
+    'font.sans-serif': ['Helvetica'],
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 
 plt.style.use('ggplot')
 
 filepath = './output_graph'
 utility_custom.output_control(filepath)
+n_lattice = 800
+dtau = 0.05
 
 
 def print_ground_state():
@@ -132,6 +134,29 @@ def print_graph_free_energy():
 
     plt.show()
 
+def print_configuration(folder):
+
+    # check folder
+    utility_custom.output_control(folder + '/' + folder)
+
+    fig1 = plt.figure(1, facecolor="#f1f1f1")
+    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+
+    # import data
+    tau_array = np.linspace(0,dtau*n_lattice,n_lattice+1)
+    x1_config = np.loadtxt('./output_data/' + folder + '/x2_config.txt')
+    x2_config = np.loadtxt('./output_data/' + folder + '/x1_config.txt')
+
+    # plot 1
+    ax1.plot(tau_array, x1_config, color ='green')
+    ax1.plot(tau_array, x2_config, color='black')
+
+    plt.savefig(filepath + '/' + folder + '/ ' + 'config.png')
+    plt.show()
+
+
+
+
 
 def print_graph_cor_func(folder, setup):
     """
@@ -141,7 +166,6 @@ def print_graph_cor_func(folder, setup):
     folder :
     """
     utility_custom.output_control(filepath + '/' + folder)
-
 
     # axes limits
 
@@ -247,10 +271,10 @@ def print_graph_cor_func(folder, setup):
                  label=r'$<x^3(\tau)x^3(0)>$')
 
     # Labels
-    ax1.set_ylabel(r'$<x^n(\tau)x^n(0)> \; (m^{2n})$', rotation='vertical',
+    ax1.set_ylabel(r'$<x^n(\tau)x^n(0)>$', rotation='vertical',
                    fontsize=12)
 
-    ax1.set_xlabel(r'$\tau \; (s)$', fontsize=12)
+    ax1.set_xlabel(r'$\tau$', fontsize=12)
 
     # Legend
     ax1.legend(loc='upper right', fontsize=10)
@@ -341,11 +365,11 @@ def print_graph_cor_func(folder, setup):
     ax2.legend(loc='upper right', fontsize=10)
 
     # Labels
-    ax2.set_ylabel(r'$d(log<x^n(\tau)x^n(0)>)/d\tau \;\; (m^{2n}) $',
+    ax2.set_ylabel(r'$d(log<x^n(\tau)x^n(0)>)/d\tau) $',
                    rotation='vertical',
                    fontsize=12)
 
-    ax2.set_xlabel(r'$\tau \; (s)$', fontsize=12)
+    ax2.set_xlabel(r'$\tau$', fontsize=12)
 
     # Save figure
     fig2.savefig(filepath + '/' + folder + '/der_corr.pgf', dpi=300)

@@ -3,6 +3,7 @@ from numba import njit
 
 import utility_custom
 
+
 @njit
 def centers_setup(n_ia, n_lattice, dtau=0.05):
     """Generate a random ensemble of instantons/anti-instantons.
@@ -21,7 +22,7 @@ def centers_setup(n_ia, n_lattice, dtau=0.05):
     -------
     ndarray
         Instanton/anti-instanton centers.
-    """ 
+    """
     tau_centers_ia = np.random.uniform(0, n_lattice * dtau, size=n_ia)
     tau_centers_ia = np.sort(tau_centers_ia)
 
@@ -88,8 +89,8 @@ def ansatz_instanton_conf(tau_centers_ia,
     top_charge = 1
     for tau_ia in np.nditer(tau_centers_ia):
         x_ansatz += top_charge * x_potential_minimum \
-            * np.tanh(2 * x_potential_minimum
-                      * (tau_array - tau_ia))
+                    * np.tanh(2 * x_potential_minimum
+                              * (tau_array - tau_ia))
 
         top_charge *= -1
 
@@ -123,16 +124,17 @@ def gaussian_potential(x_pos, tau, tau_ia_centers, x_potential_minimum):
     potential : ndarray
         Gaussian potential.
     """
-    
+
     potential = 0.0
     for tau_ia in np.nditer(tau_ia_centers):
         potential += -3.0 / (2.0 * np.power(np.cosh(2 * x_potential_minimum
                                                     * (tau - tau_ia)), 2))
     potential += 1
     potential *= 4.0 * x_potential_minimum \
-        * x_potential_minimum * x_pos * x_pos
+                 * x_potential_minimum * x_pos * x_pos
 
     return potential
+
 
 @njit
 def hard_core_action(n_lattice,
@@ -163,18 +165,18 @@ def hard_core_action(n_lattice,
         Hard core interaction action.
 
     """
-    
+
     action = 0.0
 
     for i_ia in range(0, tau_centers_ia.size):
         if i_ia == 0:
             zero_crossing_m = tau_centers_ia[-1] - n_lattice * dtau
         else:
-            zero_crossing_m = tau_centers_ia[i_ia-1]
+            zero_crossing_m = tau_centers_ia[i_ia - 1]
 
         action += action_0 * action_core * np.exp(-(tau_centers_ia[i_ia]
-                                         - zero_crossing_m)
-                                       / tau_core)
+                                                    - zero_crossing_m)
+                                                  / tau_core)
 
     return action
 
@@ -211,7 +213,7 @@ def configuration_heating(x_delta_config,
     ----------
     None
     """
-    
+
     n_lattice = tau_array.size
 
     for i in range(1, n_lattice):
@@ -220,37 +222,42 @@ def configuration_heating(x_delta_config,
             continue
         else:
             action_loc_old = (
-                np.square(x_delta_config[i] - x_delta_config[i - 1])
-                + np.square(x_delta_config[i + 1] - x_delta_config[i])
-            ) / (4 * dtau)\
-                + dtau * gaussian_potential(x_delta_config[i], tau_array[i],
-                                            tau_centers_ia,
-                                            x_potential_minimum)
+                                     np.square(
+                                         x_delta_config[i] - x_delta_config[
+                                             i - 1])
+                                     + np.square(
+                                 x_delta_config[i + 1] - x_delta_config[i])
+                             ) / (4 * dtau) \
+                             + dtau * gaussian_potential(x_delta_config[i],
+                                                         tau_array[i],
+                                                         tau_centers_ia,
+                                                         x_potential_minimum)
 
-            if (i+1) in tau_centers_ia_index or (i-1) in tau_centers_ia_index:
-                der = (x_delta_config[i+1] -
-                       x_delta_config[i-1]) / (2.0 * dtau)
+            if (i + 1) in tau_centers_ia_index or (
+                    i - 1) in tau_centers_ia_index:
+                der = (x_delta_config[i + 1] -
+                       x_delta_config[i - 1]) / (2.0 * dtau)
 
                 action_loc_old += -np.log(np.abs(der))
 
             x_new = x_delta_config[i] + np.random.normal(0., delta_x)
 
             action_loc_new = (
-                np.square(x_new - x_delta_config[i - 1])
-                + np.square(x_delta_config[i + 1] - x_new)
-            ) / (4 * dtau)\
-                + dtau * gaussian_potential(x_new, tau_array[i],
-                                            tau_centers_ia,
-                                            x_potential_minimum)
+                                     np.square(x_new - x_delta_config[i - 1])
+                                     + np.square(x_delta_config[i + 1] - x_new)
+                             ) / (4 * dtau) \
+                             + dtau * gaussian_potential(x_new, tau_array[i],
+                                                         tau_centers_ia,
+                                                         x_potential_minimum)
 
-            if (i-1) in tau_centers_ia_index:
+            if (i - 1) in tau_centers_ia_index:
                 der = (x_delta_config[i + 1] - x_new) / (2.0 * dtau)
 
                 action_loc_new += - np.log(np.abs(der))
 
-            elif (i+1) in tau_centers_ia_index:
+            elif (i + 1) in tau_centers_ia_index:
                 der = (x_new - x_delta_config[i - 1]) / (2.0 * dtau)
-                
+
                 action_loc_new += - np.log(np.abs(der))
 
             delta_action = action_loc_new - action_loc_old
@@ -298,7 +305,7 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     tau_centers_ia : ndarray
         Instantons/anti-instantons centers.
     """
-    
+
     # Center of instantons and anti instantons
     tau_centers_ia = centers_setup(n_ia, tau_array.size)
 
@@ -330,12 +337,12 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                                  delta_x):
     """Compute correlation functions for a random instanton ensemble using
     heating method.
-    
+
     This function compute quantum correction to the semi-classical instant-
     on path using the heating method, where fluctuations are summed to the
     semi-classical solution. Quantum fluctuations are computed using the
     Metropolis Algorithm with a Gaussian potential.
-    
+
     Parameters
     ----------
     n_ia : int
@@ -358,13 +365,15 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
         Lattice spacing.
     delta_x : float
         Width of Gaussian distribution for Metropolis update.
-    
+
     Returns
     ----------
-    None
+    x_ansatz : ndarray
+        Sum ansatz configuration.
+    x_ansatz_heated : ndarray
+        Sum ansatz configuration with gaussian fluctuations.
     """
-    
-    
+
     # Center of instantons and anti instantons
     tau_centers_ia, tau_centers_ia_index = centers_setup_gauss(
         tau_array, n_ia, tau_array.size)
@@ -375,8 +384,8 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     # Difference from the classical solution
     x_delta_config = np.zeros((tau_array.size + 1))
     # Heating sweeps
-    for _ in range(n_heating):
 
+    for _ in range(n_heating):
         configuration_heating(x_delta_config,
                               tau_array,
                               tau_centers_ia,
@@ -388,9 +397,9 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
         x_ansatz_heated = x_ansatz + x_delta_config
 
     utility_custom.correlation_measurments(tau_array.size,
-                                            n_meas,
-                                            n_points,
-                                            x_ansatz_heated,
-                                            x_cor_sums,
-                                            x2_cor_sums)
-
+                                           n_meas,
+                                           n_points,
+                                           x_ansatz_heated,
+                                           x_cor_sums,
+                                           x2_cor_sums)
+    return x_ansatz, x_ansatz_heated

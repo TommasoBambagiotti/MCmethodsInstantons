@@ -252,9 +252,11 @@ def graphical_ui(which_gui):
         gui.add_row(['', 'i'])
         gui.add_row(['', 'j'])
         gui.add_row(['', 'k'])
-        gui.add_row(['', 'l'])
+        gui.add_row(['Instanton interactive liquid model corr. func.', 'l'])
         gui.add_row(['', 'm'])
         gui.add_row(['Groundstate', 'n'])
+        gui.add_row(['', 'o'])
+        gui.add_row(['', 'p'])
         gui.add_row(['Exit', 'exit'])
         print(gui)
         print('Which (Plot #)?\n')
@@ -375,6 +377,7 @@ def cor_plot_setup(which_plot=None):
     """
     if which_plot in ['a']:
         # montecarlo
+        # 2: log-derivative corr. func.; 1: corr. func.
         return {'x_inf_1': -0.05,
                 'x_sup_1': 1.03,
                 'x_inf_2': -0.05,
@@ -407,6 +410,30 @@ def cor_plot_setup(which_plot=None):
                 'y_sup_2': 5,
                 'cor1_s': 0,
                 'cor2_s': 7,
+                'cor3_s': 0,
+                'cor2_s_fig1': 0}
+    elif which_plot in ['f']:
+        # rilm heating
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1,
+                'y_inf_2': -1.0,
+                'y_sup_2': 5,
+                'cor1_s': 0,
+                'cor2_s': 8,
+                'cor3_s': 0,
+                'cor2_s_fig1': 0}
+    elif which_plot in ['l']:
+        # iilm
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1,
+                'y_inf_2': -1.0,
+                'y_sup_2': 5,
+                'cor1_s': 0,
+                'cor2_s': 15,
                 'cor3_s': 0,
                 'cor2_s_fig1': 0}
     else:
