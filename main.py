@@ -141,7 +141,7 @@ if __name__ == '__main__':
                                                      cor_plot_setup(call2))
                 elif call2 in ['f']:
                     graph_print.print_graph_cor_func('output_rilm_heating',
-                                                     cor_plot_setup())
+                                                     cor_plot_setup(call2))
                 elif call2 in ['g']:
                     graph_print.print_iilm()
                 elif call2 in ['h']:
@@ -155,6 +155,10 @@ if __name__ == '__main__':
                     graph_print.print_cool_density()
                 elif call2 in ['n']:
                     graph_print.print_ground_state()
+                elif call2 in ['o']:
+                    graph_print.print_configuration('output_cooled_monte_carlo')
+                elif call2 in ['p']:
+                    graph_print.print_configuration('output_iilm')
                 elif call2 in ['exit']:
                     stop_exec_plot = 1
                 else:
