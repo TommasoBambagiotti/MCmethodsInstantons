@@ -93,8 +93,9 @@ def zero_crossing_cooling_density(n_lattice,
 
         if (i_mc % n_sweeps_btw_cooling) == 0:
 
-            # print(f'cooling #{n_cooling} of {(n_mc_sweeps - n_equil) / n_sweeps_btw_cooling}\n'
-            #       f'in configuration #{i_mc}')
+            if i_mc % 10000 == 0:
+                print(f'cooling #{n_cooling} of {(n_mc_sweeps - n_equil) / n_sweeps_btw_cooling}\n'
+                      f'in configuration #{i_mc}')
 
             x_cold_config = np.copy(x_config)
             n_cooling += 1

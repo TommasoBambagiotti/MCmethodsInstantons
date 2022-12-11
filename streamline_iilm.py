@@ -203,6 +203,8 @@ def streamline_method_iilm(r_initial_sep,
     act_writer = open(
         output_path + '/streamline_action_int.txt', 'w', encoding='utf8')
 
+    tau_store = 1.5
+
     for i_s in range(n_streamline):
         if i_s % 1000 == 0:
             print(f'streamline #{i_s}')
@@ -238,18 +240,20 @@ def streamline_method_iilm(r_initial_sep,
         n_i, n_a, pos_root, neg_root = mc.find_instantons(
             x_config[2:-2], dtau)
 
-        if 63000 < i_s < 64000 and i_s % 20 == 0:
+        if 59000 < i_s < 64000 and i_s % 10 == 0:
             if n_i == n_a \
                     and n_i != 0 \
                     and pos_root.size == n_i and neg_root.size == n_a:
                 interactive_action = current_action - 2 * ansatz_action
 
                 tau_i_a = np.abs(pos_root[0] - neg_root[0])
+                if tau_i_a < tau_store - 0.08:
+                    tau_store = tau_i_a
+                    tau_writer.write(str(tau_i_a) + '\n')
 
-                tau_writer.write(str(tau_i_a) + '\n')
+                    act_writer.write(
+                        str(interactive_action / ansatz_action) + '\n')
 
-                act_writer.write(
-                    str(interactive_action / ansatz_action) + '\n')
 
         if print_valley is True:
             if current_action > 0.0001:

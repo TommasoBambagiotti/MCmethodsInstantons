@@ -79,7 +79,7 @@ if __name__ == '__main__':
             random_instanton_monte_carlo. \
                 random_instanton_liquid_model(800,
                                               120000,
-                                              20,
+                                              30,
                                               5,
                                               10)
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
             random_instanton_monte_carlo_heating. \
                 random_instanton_liquid_model_heating(800,
                                                       100000,
-                                                      20,
+                                                      30,
                                                       5,
                                                       10)
 
@@ -120,45 +120,67 @@ if __name__ == '__main__':
         elif call in ['11']:
 
             stop_exec_plot = 0
-
+            i_figure = 1
+            
             while not stop_exec_plot:
-
+                 
                 call2 = graphical_ui('plots')
 
                 if call2 in ['a']:
                     graph_print.print_graph_cor_func('output_monte_carlo',
-                                                     cor_plot_setup(call2))
+                                                     cor_plot_setup(call2),
+                                                     i_figure)
+                    i_figure += 2
                 elif call2 in ['b']:
-                    graph_print.print_graph_free_energy()
+                    graph_print.print_ground_state(i_figure)
+                    i_figure += 1
                 elif call2 in ['c']:
-                    graph_print.print_graph_cor_func(
-                                                'output_cooled_monte_carlo',
-                                                 cor_plot_setup(call2))
+                    graph_print.print_graph_free_energy(i_figure)
+                    i_figure += 1
                 elif call2 in ['d']:
-                    graph_print.print_density()
+                    graph_print.print_graph_cor_func(
+                        'output_cooled_monte_carlo',
+                        cor_plot_setup(call2),
+                        i_figure)
+                    i_figure += 2
                 elif call2 in ['e']:
-                    graph_print.print_graph_cor_func('output_rilm',
-                                                     cor_plot_setup(call2))
+                    graph_print.print_density(i_figure)
+                    i_figure += 2
                 elif call2 in ['f']:
-                    graph_print.print_graph_cor_func('output_rilm_heating',
-                                                     cor_plot_setup(call2))
+                     graph_print.print_cool_density(i_figure)
+                     i_figure += 1
                 elif call2 in ['g']:
-                    graph_print.print_iilm()
+                    graph_print.print_configuration('output_cooled_monte_carlo',
+                                                    i_figure)
+                    i_figure += 2
                 elif call2 in ['h']:
-                    graph_print.print_zcr_hist()
+                    graph_print.print_graph_cor_func('output_rilm',
+                                                     cor_plot_setup(call2),
+                                                     i_figure)
+                    i_figure += 2
                 elif call2 in ['i']:
-                    graph_print.print_tau_centers()
-                elif call2 in ['l']:
+                    graph_print.print_graph_cor_func('output_rilm_heating',
+                                                     cor_plot_setup(call2),
+                                                     i_figure)
+                    i_figure += 2
+                elif call2 in ['j']:
+                    graph_print.print_configuration('output_rilm_heating',
+                                                    i_figure)
+                    i_figure += 1
+                elif call2 in ['k']:
                     graph_print.print_graph_cor_func('output_iilm/iilm',
-                                                     cor_plot_setup(call2))
+                                                     cor_plot_setup(call2),
+                                                     i_figure)
+                    i_figure += 2
+                elif call2 in ['l']:
+                    graph_print.print_zcr_hist(i_figure)
+                    i_figure += 1
                 elif call2 in ['m']:
-                    graph_print.print_cool_density()
+                    graph_print.print_tau_centers(i_figure)
+                    i_figure += 1
                 elif call2 in ['n']:
-                    graph_print.print_ground_state()
-                elif call2 in ['o']:
-                    graph_print.print_configuration('output_cooled_monte_carlo')
-                elif call2 in ['p']:
-                    graph_print.print_configuration('output_iilm')
+                    graph_print.print_iilm(i_figure)
+                    i_figure += 1
                 elif call2 in ['exit']:
                     stop_exec_plot = 1
                 else:

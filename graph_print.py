@@ -7,11 +7,9 @@ import matplotlib
 
 #matplotlib.use('pgf')
 matplotlib.rcParams.update({
-    "pgf.texsystem": "pdflatex",
     'font.family': 'serif',
     'font.sans-serif': ['Helvetica'],
     'text.usetex': True,
-    'pgf.rcfonts': False,
 })
 
 
@@ -23,13 +21,13 @@ n_lattice = 800
 dtau = 0.05
 
 
-def print_ground_state():
+def print_ground_state(i_figure):
     filepath_loc = filepath + '/ground_state'
     utility_custom.output_control(filepath_loc)
     utility_custom.clear_folder(filepath_loc)
 
-    fig1 = plt.figure(1,
-                      facecolor="#f1f1f1",
+    fig1 = plt.figure(i_figure,
+                      facecolor="#fafafa",
                       figsize=(5, 5))
     ax1 = fig1.add_axes((0.13, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
@@ -68,9 +66,9 @@ def print_ground_state():
     plt.show()
 
 
-def print_graph_free_energy():
-    fig1 = plt.figure(1,
-                      facecolor="#f1f1f1",
+def print_graph_free_energy(i_figure):
+    fig1 = plt.figure(i_figure,
+                      facecolor="#fafafa",
                       figsize=(5, 5))
     ax1 = fig1.add_axes((0.13, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
@@ -134,31 +132,43 @@ def print_graph_free_energy():
 
     plt.show()
 
-def print_configuration(folder):
+def print_configuration(folder, i_figure):
 
     # check folder
-    utility_custom.output_control(folder + '/' + folder)
+    utility_custom.output_control(filepath + '/' + folder)
 
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize = (6,4.5))
+    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     # import data
     tau_array = np.linspace(0,dtau*n_lattice,n_lattice+1)
-    x1_config = np.loadtxt('./output_data/' + folder + '/x2_config.txt')
-    x2_config = np.loadtxt('./output_data/' + folder + '/x1_config.txt')
+    x1_config = np.loadtxt('./output_data/' + folder + '/x1_config.txt')
+    x2_config = np.loadtxt('./output_data/' + folder + '/x2_config.txt')
 
     # plot 1
-    ax1.plot(tau_array, x1_config, color ='green')
-    ax1.plot(tau_array, x2_config, color='black')
+    ax.set_ylabel(r'$x(\tau)$')
+    ax.set_xlabel(r'$\tau$')
+    
+    if folder in ['output_cooled_monte_carlo']:
+        ax.plot(tau_array, x1_config, color ='black', label = r'Monte Carlo')
+        ax.plot(tau_array, x2_config, color='green', label = r'Cooled Monte Carlo')
+        
+    elif folder in ['output_rilm_heating']:
+        ax.plot(tau_array, x1_config, color ='blue', label = r'RILM',
+                linewidth = 1.)
+        ax.plot(tau_array, x2_config, color='red', label = r'Gaussian heating',
+                linewidth = 0.8)
 
-    plt.savefig(filepath + '/' + folder + '/ ' + 'config.png')
+    ax.legend()
+    
+    plt.savefig(filepath + '/' + folder + '/ ' + 'config.png', dpi = 300)
     plt.show()
 
 
 
 
 
-def print_graph_cor_func(folder, setup):
+def print_graph_cor_func(folder, setup, i_figure):
     """
 
     Parameters
@@ -186,8 +196,8 @@ def print_graph_cor_func(folder, setup):
 
     # Plots
 
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+    fig1 = plt.figure(i_figure, facecolor="#fafafa")
+    ax1 = fig1.add_axes((0.13, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     # Set x-axis limit
     ax1.set_xlim(x_inf_1, x_sup_1)
@@ -279,13 +289,13 @@ def print_graph_cor_func(folder, setup):
     # Legend
     ax1.legend(loc='upper right', fontsize=10)
     # Save plot
-    fig1.savefig(filepath + '/' + folder + '/x_corr.pgf', dpi=300)
+    fig1.savefig(filepath + '/' + folder + '/x_corr.png', dpi=300)
 
     # Plot 2
 
-    fig2 = plt.figure(2, facecolor="#f1f1f1")
+    fig2 = plt.figure(i_figure + 1, facecolor="#fafafa")
 
-    ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+    ax2 = fig2.add_axes((0.13, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     ax2.set_xlim(x_inf_2, x_sup_2)
     ax2.set_ylim(y_inf_2, y_sup_2)
@@ -372,13 +382,13 @@ def print_graph_cor_func(folder, setup):
     ax2.set_xlabel(r'$\tau$', fontsize=12)
 
     # Save figure
-    fig2.savefig(filepath + '/' + folder + '/der_corr.pgf', dpi=300)
+    fig2.savefig(filepath + '/' + folder + '/der_corr.png', dpi=300)
 
     #plt.show()
 
 
-def print_density():
-    fig = plt.figure(1, facecolor="#f1f1f1", figsize=(5, 5))
+def print_density(i_figure):
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(5, 5))
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     ax.set_title('Instanton density')
@@ -433,7 +443,7 @@ def print_density():
 
     fig.savefig(filepath + '/n_istantons.png', dpi=300)
 
-    fig2 = plt.figure(2, facecolor="#f1f1f1", figsize=(5, 5))
+    fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 5))
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     i = 1
@@ -474,9 +484,12 @@ def print_density():
     plt.show()
 
 
-def print_zcr_hist():
-    fig = plt.figure(1, facecolor="#f1f1f1")
-    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+def print_zcr_hist(i_figure):
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+    ax = fig.add_axes((0.15, 0.13, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax.set_xlabel(r'$\Delta\tau_{zcr}$')
+    ax.set_ylabel(r'$n_{IA}(\tau_{zcr})$')
 
     zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float,
                      delimiter=' ')
@@ -488,49 +501,54 @@ def print_zcr_hist():
     zcr_int = np.loadtxt('./output_data/output_iilm/iilm/zcr_hist.txt',
                          float, delimiter=' ')
 
-    print(zcr_int.size)
-    print(zcr.size)
-    print(zcr_cooling.size)
-
-    ax.hist(zcr, 39, (0.1, 4.), histtype='step',
-            color='red', label='random liquid model')
-    ax.hist(zcr_int, 39, (0.1, 4.), histtype='step', color='orange',
-            label='core repulsion')  # , density='True')
-    ax.hist(zcr_cooling, 39, (0.1, 4.), histtype='step',
-            label='monte carlo cooling',
-            color='blue')  # , density='True')
+    ax.hist(zcr, 40, (0., 4.), histtype='step',
+            color='red', linewidth = 1.2,
+            label='RILM')
+    ax.hist(zcr_int, 40, (0., 4.), histtype='step', 
+            color='orange', linewidth = 1.2,
+            label='Core repulsion')  # , density='True')
+    ax.hist(zcr_cooling, 40, (0., 4.), histtype='step',
+            label='Monte carlo cooling',
+            color='blue', linewidth = 1.2)  # , density='True')
 
     ax.legend()
 
     fig.savefig(filepath + '/zcr_histogram.png', dpi=300)
 
-    plt.show()
+    # plt.show()
 
 
-def print_tau_centers():
-    fig = plt.figure(1, facecolor="#f1f1f1")
-    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+def print_tau_centers(i_figure):
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     n_conf = np.loadtxt('./output_data/output_iilm/iilm/n_conf.txt',
                         float, delimiter=' ')
-
+    ax.set_xlabel(r'$N_{conf}$')
+    ax.set_ylabel(r'$\tau_{IA}$')
     for n in range(12):
         tau = np.loadtxt(f'./output_data/output_iilm/iilm/center_{n + 1}.txt',
                          float, delimiter=' ')
 
         if (n % 2) == 0:
-            ax.plot(n_conf, tau, color='blue',
-                    linewidth=0.4)
+            handle_inst, = ax.plot(n_conf, tau, color='blue',
+                    linewidth = 0.4,
+                    label = r'Instanton center')
         else:
-            ax.plot(n_conf, tau, color='red',
-                    linewidth=0.4)
-
+            handle_a_inst, = ax.plot(n_conf, tau, color='red',
+                    linewidth=0.4,
+                    label = r'Anti-instanton center')
+    
+    ax.legend(loc = 'upper right', handles =[handle_inst,
+                                              handle_a_inst])
+    
+    ax.set_ylim(0,47)
     fig.savefig(filepath + '/iilm_config.png', dpi=300)
-    plt.show()
+    # plt.show()
 
 
-def print_cool_density():
-    fig = plt.figure(1, facecolor="#f1f1f1")
+def print_cool_density(i_figure):
+    fig = plt.figure(i_figure, facecolor="#fafafa")
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     potential_minima = np.loadtxt(
@@ -622,10 +640,13 @@ def print_cool_density():
     plt.show()
 
 
-def print_iilm():
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
+def print_iilm(i_figure):
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
 
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax.set_xlabel(r'$\Delta\tau_{IA}$')
+    ax.set_ylabel(r'$S_{int}\slash S_{0}$')
 
     tau_ia = np.loadtxt(
         './output_data/output_iilm/streamline/delta_tau_ia.txt',
@@ -643,7 +664,7 @@ def print_iilm():
     # bisogna implementare un modo per capire già quanto vale il potentiale?
     # tipo costruire l'istogramma già nella funzione zero_...
     action_ia = -np.log(hist_2[0:10] / hist_1[0:10]) / (
-                4 / 3 * np.power(1.4, 3))
+        4 / 3 * np.power(1.4, 3))
 
     act_int = np.loadtxt(
         './output_data/output_iilm/streamline/streamline_action_int.txt',
@@ -668,45 +689,45 @@ def print_iilm():
         './output_data/output_iilm/streamline/array_int_zero_cross.txt',
         float, delimiter=' ')
 
-    ax1.plot(tau_ia,
-             act_int,
-             marker='^',
-             linestyle='',
-             color='green',
-             label='streamline'
-             )
+    ax.scatter(tau_ia,
+               act_int,
+               marker='^',
+               color='green',
+               label=r'Streamline',
+               s=25
+               )
 
-    ax1.plot(array_ia,
-             array_int,
-             color='blue',
-             label='sum ansatz')
+    ax.plot(array_ia,
+            array_int,
+            color='blue',
+            label=r'Sum ansatz'
+            )
 
-    ax1.plot(array_ia,
-             array_int_core,
-             color='orange',
-             label='core repulsion'
-             )
+    ax.plot(array_ia,
+            array_int_core,
+            color='orange',
+            label=r'Core repulsion'
+            )
 
-    ax1.plot(array_ia_0,
-             array_int_zero_cross,
-             color='red',
-             marker='s',
-             linestyle='',
-             label='zcr sum ansatz'
-             )
+    ax.scatter(array_ia_0,
+               array_int_zero_cross,
+               color='red',
+               marker='s',
+               label=r'Sum ansatz zero crossing',
+               s=25
+               )
 
-    ax1.plot(np.linspace(0.1, 1.0, 10, False),
-             action_ia,
-             marker='s',
-             linestyle='',
-             color='cyan',
-             label='monte carlo cooling')
+    ax.scatter(np.linspace(0.1, 1.0, 10, False),
+               action_ia,
+               marker='s',
+               color='cyan',
+               label=r'Monte Carlo cooling',
+               s=25
+               )
 
-    ax1.legend()
+    ax.legend()
 
-    ax1.set_ylim(-2.0, 0.5)
-    ax1.set_xlim(-0.05, 2.3)
+    ax.set_ylim(-2.1, 0.5)
+    ax.set_xlim(-0.05, 2.05)
 
-    fig1.savefig(filepath + '/iilm.png', dpi=300)
-
-    plt.show()
+    fig.savefig(filepath + '/iilm.png', dpi=300)

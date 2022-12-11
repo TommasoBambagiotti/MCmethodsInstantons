@@ -103,7 +103,7 @@ def cooled_monte_carlo(
 
         # save middle config
         if i_mc % int((n_mc_sweeps-n_equil)/2) == 0:
-            with open(output_path+'/x2_config.txt','w') as f_writer:
+            with open(output_path+'/x1_config.txt','w') as f_writer:
                 np.savetxt(f_writer, x_config)
 
         # COOLING
@@ -125,7 +125,7 @@ def cooled_monte_carlo(
 
             # save mid config cooled
             if i_mc % int((n_mc_sweeps - n_equil) / 2) == 0:
-                with open(output_path + '/x1_config.txt', 'w') as f_writer:
+                with open(output_path + '/x2_config.txt', 'w') as f_writer:
                     np.savetxt(f_writer, x_cold_config)
             
             # Compute correlation functions for the cooled configuration
