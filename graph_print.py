@@ -614,7 +614,7 @@ def print_tau_centers(i_figure):
     # plt.show()
 
 
-def print_cool_density(i_figure):
+def print_switch_density(i_figure):
 
     # you have to import delta_e to use this function
 
@@ -690,6 +690,7 @@ def print_cool_density(i_figure):
     ax.plot(potential_e, delta_e, linestyle='-', color='black',
             label=r'$\Delta E / 2$', linewidth=1)
 
+    # load minima and densities
     potential_minima = np.loadtxt(
         'output_data/output_monte_carlo_density_switching/potential_minima.txt',
         delimiter=' ')
@@ -712,12 +713,21 @@ def print_cool_density(i_figure):
         markersize=4.,
         label='Monte Carlo')
 
+    # create new legend
     ax.legend()
+
+    # axes limits
     ax.set_xlim(0.0, 1.9)
     ax.set_ylim(0.03, 2.)
 
+    # log-scale
     ax.set_yscale('log')
 
+    # labels
+    ax.set_xlabel(r'$$f$$')
+    ax.set_ylabel(r'$$N_{tot} / \beta$$')
+
+    # save and show
     fig.savefig(filepath + '/density.png', dpi=300)
 
     plt.show()

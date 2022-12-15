@@ -24,7 +24,9 @@ if __name__ == '__main__':
         call = graphical_ui('main')
 
         if call in ['0']:
+
             anh_osc_diag.anharmonic_oscillator_diag(50)
+
         elif call in ['1']:
             monte_carlo_ao.monte_carlo_ao(
                 800,  # n_lattice
@@ -67,13 +69,13 @@ if __name__ == '__main__':
 
         elif call in ['5']:
             monte_carlo_ao_density_switching. \
-                instantons_density_switching(100,
+                instantons_density_switching(80,
                                              100,
-                                             100000,
+                                             50000,
                                              20,
                                              4,
                                              1.3,
-                                             delta_x=0.6)
+                                             delta_x=0.5)
 
         elif call in ['6']:
             random_instanton_monte_carlo. \
@@ -121,9 +123,9 @@ if __name__ == '__main__':
 
             stop_exec_plot = 0
             i_figure = 1
-            
+
             while not stop_exec_plot:
-                 
+
                 call2 = graphical_ui('plots')
 
                 if call2 in ['a']:
@@ -147,11 +149,12 @@ if __name__ == '__main__':
                     graph_print.print_density(i_figure)
                     i_figure += 2
                 elif call2 in ['f']:
-                     graph_print.print_cool_density(i_figure)
-                     i_figure += 1
+                    graph_print.print_switch_density(i_figure)
+                    i_figure += 1
                 elif call2 in ['g']:
-                    graph_print.print_configuration('output_cooled_monte_carlo',
-                                                    i_figure)
+                    graph_print.print_configuration(
+                        'output_cooled_monte_carlo',
+                        i_figure)
                     i_figure += 2
                 elif call2 in ['h']:
                     graph_print.print_graph_cor_func('output_rilm',
@@ -181,6 +184,9 @@ if __name__ == '__main__':
                 elif call2 in ['n']:
                     graph_print.print_iilm(i_figure)
                     i_figure += 1
+                elif call2 in ['o']:
+                    graph_print.print_potential(i_figure)
+                    i_figure +=1
                 elif call2 in ['exit']:
                     stop_exec_plot = 1
                 else:
