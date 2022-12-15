@@ -245,7 +245,8 @@ def anharmonic_oscillator_diag(n_dim,
     oscillator in the harmonic oscillator basis. In all modules we use a
     system of unit of measurements where h_bar=1, m=1/2 and lambda=1. After
     diagonalization, euclidean correlation functions and their log-deriva-
-    tive are computer. All results are saved into files.
+    tive are computer, and finally the free energy. All results are saved
+    into files.
         
     Parameters
     ----------
