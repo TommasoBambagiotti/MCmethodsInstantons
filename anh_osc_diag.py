@@ -451,31 +451,31 @@ def anharmonic_oscillator_diag(n_dim,
 
     # Logarithmic derivative of the correlators
 
-    # Python methods
-    py_derivative_log_corr_funct = np.gradient(-corr_funct[0], dtau)
-    py_derivative_log_corr_funct2 = np.gradient(-corr_funct[1],
-                                                dtau)
-    py_derivative_log_corr_funct3 = np.gradient(-corr_funct[2],
-                                                dtau)
+#     # Python methods
+#     py_derivative_log_corr_funct = np.gradient(-corr_funct[0], dtau)
+#     py_derivative_log_corr_funct2 = np.gradient(-corr_funct[1],
+#                                                 dtau)
+#     py_derivative_log_corr_funct3 = np.gradient(-corr_funct[2],
+#                                                 dtau)
 
-    with open(output_path + '/py_der_log_corr_funct.txt', 'w') as log_writer:
-        np.savetxt(log_writer, py_derivative_log_corr_funct)
-        np.savetxt(log_writer, py_derivative_log_corr_funct2)
-        np.savetxt(log_writer, py_derivative_log_corr_funct3)
+#     with open(output_path + '/py_der_log_corr_funct.txt', 'w') as log_writer:
+#         np.savetxt(log_writer, py_derivative_log_corr_funct)
+#         np.savetxt(log_writer, py_derivative_log_corr_funct2)
+#         np.savetxt(log_writer, py_derivative_log_corr_funct3)
 
-    # Forward difference
+#     # Forward difference
 
-    fd_derivative_log_corr_funct = log_corr_funct_forward_difference(
-        corr_funct[0], dtau)
-    fd_derivative_log_corr_funct2 = log_corr_funct_forward_difference(
-        corr_funct[1], dtau)
-    fd_derivative_log_corr_funct3 = log_corr_funct_forward_difference(
-        corr_funct[2], dtau)
+#     fd_derivative_log_corr_funct = log_corr_funct_forward_difference(
+#         corr_funct[0], dtau)
+#     fd_derivative_log_corr_funct2 = log_corr_funct_forward_difference(
+#         corr_funct[1], dtau)
+#     fd_derivative_log_corr_funct3 = log_corr_funct_forward_difference(
+#         corr_funct[2], dtau)
 
-    with open(output_path + '/fd_der_log_corr_funct.txt', 'w') as log_writer:
-        np.savetxt(log_writer, fd_derivative_log_corr_funct)
-        np.savetxt(log_writer, fd_derivative_log_corr_funct2)
-        np.savetxt(log_writer, fd_derivative_log_corr_funct3)
+#     with open(output_path + '/fd_der_log_corr_funct.txt', 'w') as log_writer:
+#         np.savetxt(log_writer, fd_derivative_log_corr_funct)
+#         np.savetxt(log_writer, fd_derivative_log_corr_funct2)
+#         np.savetxt(log_writer, fd_derivative_log_corr_funct3)
 
     # Analytic formula
 
