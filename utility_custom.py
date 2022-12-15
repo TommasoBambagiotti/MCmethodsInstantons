@@ -255,7 +255,8 @@ def graphical_ui(which_gui):
         gui.add_row(['IA dist. over tau', 'l'])
         gui.add_row(['Iilm IA conf.', 'm'])
         gui.add_row(['Inter. Action dist.', 'n'])
-        
+        gui.add_row(['Anharmonic potential','o'])
+
         gui.add_row(['Exit', 'exit'])
         print(gui)
         print('Which (Plot #)?\n')
@@ -392,15 +393,15 @@ def cor_plot_setup(which_plot=None):
         return {'x_inf_1': -0.05,
                 'x_sup_1': 1.03,
                 'x_inf_2': -0.05,
-                'x_sup_2': 1,
+                'x_sup_2': 1.03,
                 'y_inf_2': -1.0,
                 'y_sup_2': 5,
                 'cor1_s': 0,
-                'cor2_s': 8,
+                'cor2_s': 17,
                 'cor3_s': 0,
                 'cor2_s_fig1': 0}
     elif which_plot in ['h']:
-        #rilm
+        # rilm
         return {'x_inf_1': -0.05,
                 'x_sup_1': 1.5,
                 'x_inf_2': -0.05,
