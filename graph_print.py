@@ -2,8 +2,6 @@ import utility_custom
 import utility_monte_carlo as mc
 import matplotlib.pyplot as plt
 import numpy as np
-import string
-import struct
 
 import matplotlib
 
@@ -61,7 +59,6 @@ def print_potential(i_figure):
 
     for i in range(n_eigenvalues):
         ax1.hlines(en_eigenvalues[i], x_min, x_max, linestyles='--', color='green')
-
 
     ax1.set_xlabel(r'$$x$$')
     ax1.set_ylabel(r'$$V(x)$$')
@@ -618,6 +615,9 @@ def print_tau_centers(i_figure):
 
 
 def print_cool_density(i_figure):
+
+    # you have to import delta_e to use this function
+
     fig = plt.figure(i_figure, facecolor="#fafafa")
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
