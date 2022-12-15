@@ -348,6 +348,10 @@ def anharmonic_oscillator_diag(n_dim,
     energy_eigenvalues = np.delete(energy_eigenvalues, indices_removed)
     energy_eigenvectors = np.delete(energy_eigenvectors, indices_removed, 1)
 
+    # save energy eigenvalues
+    with open(output_path + '/eigenvalues.txt', 'w') as e_writer:
+        np.savetxt(e_writer, energy_eigenvalues)
+
     # Evaluate the energy dist. rho, rho2, rho2 and matrix elements
     # < 0|x^i|n > , i= 1,2,3.
     # We use the convention for the ladder operators:
@@ -500,3 +504,6 @@ def anharmonic_oscillator_diag(n_dim,
 
     # Helmoltz Free Energy
     free_energy(energy_eigenvalues, output_path)
+
+    # Return first two energy eigenvalues
+
