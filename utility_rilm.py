@@ -359,7 +359,7 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     ----------
     x_ansatz : ndarray
         Sum ansatz configuration.
-    x_ansatz_heated : ndarray
+    x_ansatz_hot : ndarray
         Sum ansatz configuration with gaussian fluctuations.
     """
 
