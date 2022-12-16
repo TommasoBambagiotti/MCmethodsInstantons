@@ -2,6 +2,7 @@ import numpy as np
 from numba import njit
 
 import utility_custom
+import utility_monte_carlo as mc
 
 
 @njit
@@ -104,36 +105,25 @@ def ansatz_instanton_conf(tau_centers_ia,
 
 
 @njit
-def gaussian_potential(x_pos, tau, tau_ia_centers, x_potential_minimum):
+def gaussian_potential(x_position):
     """Compute the gaussian potential for an ensemble of instantons/anti-
     instantons.
 
     Parameters
     ----------
-    x_pos : ndarray
-        Spatial configuration.
-    tau : ndarray
-        Euclidean time axis.
-    tau_ia_centers : ndarray
-        instantons/anti-instantons positions.
-    x_potential_minimum : float
-        Position of the minimum(a) of the anharmonic potential.
+    x_position : (1,3) ndarray
+        First element is the classical configuration around which the pot-
+        ential is expanded. Second element is the heated spatial configur-
+        ation.
 
     Returns
     -------
-    potential : ndarray
+    potential : float
         Gaussian potential.
     """
 
-    potential = 0.0
-    for tau_ia in np.nditer(tau_ia_centers):
-        potential += -3.0 / (2.0 * np.power(np.cosh(2 * x_potential_minimum
-                                                    * (tau - tau_ia)), 2))
-    potential += 1
-    potential *= 4.0 * x_potential_minimum \
-                 * x_potential_minimum * x_pos * x_pos
-
-    return potential
+    return 0.5 * x_position[2] * np.square(x_position[1]-
+                                           x_position[0])
 
 
 @njit
@@ -182,9 +172,9 @@ def hard_core_action(n_lattice,
 
 
 @njit
-def configuration_heating(x_delta_config,
-                          tau_array,
-                          tau_centers_ia,
+def configuration_heating(x_ansatz_hot,
+                          x_ansatz,
+                          second_der_0,
                           tau_centers_ia_index,
                           x_potential_minimum,
                           dtau,
@@ -194,8 +184,12 @@ def configuration_heating(x_delta_config,
 
     Parameters
     ----------
-    x_delta_config : ndarray
-        Fluctuation path.
+    x_ansatz_hot : ndarray
+        Heated (spatial) configuration
+    x_ansatz : ndarray
+        Classical configuration
+    second_der_0 : ndarray
+        Second derivative of the action
     tau_array : ndarray
         Euclidean time axis.
     tau_centers_ia : ndarray
@@ -214,59 +208,54 @@ def configuration_heating(x_delta_config,
     None
     """
 
-    n_lattice = tau_array.size
-
-    for i in range(1, n_lattice):
+    for i in range(1, x_ansatz_hot.size - 1):
 
         if i in tau_centers_ia_index:
             continue
         else:
+            
+            x_position = np.array([x_ansatz[i],
+                                   x_ansatz_hot[i],                   
+                                   second_der_0[i-1]])
+            
             action_loc_old = (
-                                     np.square(
-                                         x_delta_config[i] - x_delta_config[
-                                             i - 1])
-                                     + np.square(
-                                 x_delta_config[i + 1] - x_delta_config[i])
-                             ) / (4 * dtau) \
-                             + dtau * gaussian_potential(x_delta_config[i],
-                                                         tau_array[i],
-                                                         tau_centers_ia,
-                                                         x_potential_minimum)
+                np.square(x_ansatz_hot[i] - x_ansatz_hot[i - 1])
+                + np.square(x_ansatz_hot[i + 1] - x_ansatz_hot[i])
+                ) / (4 * dtau) \
+                + dtau * gaussian_potential(x_position)
 
             if (i + 1) in tau_centers_ia_index or (
                     i - 1) in tau_centers_ia_index:
-                der = (x_delta_config[i + 1] -
-                       x_delta_config[i - 1]) / (2.0 * dtau)
+                der = (x_ansatz_hot[i + 1] -
+                       x_ansatz_hot[i - 1]) / (2.0 * dtau)
 
                 action_loc_old += -np.log(np.abs(der))
 
-            x_new = x_delta_config[i] + np.random.normal(0., delta_x)
+            x_new = x_ansatz_hot[i] + np.random.normal(0., delta_x)
+            x_position[1] = x_new
 
             action_loc_new = (
-                                     np.square(x_new - x_delta_config[i - 1])
-                                     + np.square(x_delta_config[i + 1] - x_new)
-                             ) / (4 * dtau) \
-                             + dtau * gaussian_potential(x_new, tau_array[i],
-                                                         tau_centers_ia,
-                                                         x_potential_minimum)
+                np.square(x_new - x_ansatz_hot[i - 1])
+                + np.square(x_ansatz_hot[i + 1] - x_new)
+                ) / (4 * dtau) \
+                + dtau * gaussian_potential(x_position)
 
             if (i - 1) in tau_centers_ia_index:
-                der = (x_delta_config[i + 1] - x_new) / (2.0 * dtau)
+                der = (x_ansatz_hot[i + 1] - x_new) / (2.0 * dtau)
 
                 action_loc_new += - np.log(np.abs(der))
 
             elif (i + 1) in tau_centers_ia_index:
-                der = (x_new - x_delta_config[i - 1]) / (2.0 * dtau)
+                der = (x_new - x_ansatz_hot[i - 1]) / (2.0 * dtau)
 
                 action_loc_new += - np.log(np.abs(der))
 
             delta_action = action_loc_new - action_loc_old
 
             if np.exp(-delta_action) > np.random.uniform(0., 1.):
-                x_delta_config[i] = x_new
+                x_ansatz_hot[i] = x_new
 
-    x_delta_config[n_lattice - 1] = x_delta_config[0]
-    x_delta_config[n_lattice] = x_delta_config[1]
+    mc.periodic_boundary_conditions(x_ansatz_hot)
 
 
 @njit
@@ -276,8 +265,8 @@ def rilm_monte_carlo_step(n_ia,  # number of instantons and anti inst.
                           tau_array,
                           x_cor_sums,
                           x2_cor_sums,
-                          x_potential_minimum,
-                          dtau):
+                          x_potential_minimum
+                          ):
     """Compute correlation functions using the sum ansatz path and generate
     a random distribution of instantons/anti-instantons.
 
@@ -381,25 +370,27 @@ def rilm_heated_monte_carlo_step(n_ia,  # number of instantons and anti inst.
     # Ansatz sum of indipendent instantons
     x_ansatz = ansatz_instanton_conf(tau_centers_ia, tau_array,
                                      x_potential_minimum)
-    # Difference from the classical solution
-    x_delta_config = np.zeros((tau_array.size + 1))
+    x_ansatz_hot = np.copy(x_ansatz)
+    
+    # Second derivative of the action for the instanton configuraton
+    second_der_0 = mc.second_derivative_action(x_ansatz[1:-1],
+                                               x_potential_minimum)
+        
     # Heating sweeps
 
     for _ in range(n_heating):
-        configuration_heating(x_delta_config,
-                              tau_array,
-                              tau_centers_ia,
+        configuration_heating(x_ansatz_hot,
+                              x_ansatz,
+                              second_der_0,
                               tau_centers_ia_index,
                               x_potential_minimum,
                               dtau,
                               delta_x)
 
-        x_ansatz_heated = x_ansatz + x_delta_config
-
     utility_custom.correlation_measurments(tau_array.size,
                                            n_meas,
                                            n_points,
-                                           x_ansatz_heated,
+                                           x_ansatz_hot,
                                            x_cor_sums,
                                            x2_cor_sums)
-    return x_ansatz, x_ansatz_heated
+    return x_ansatz, x_ansatz_hot
