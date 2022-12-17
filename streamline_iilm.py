@@ -4,9 +4,9 @@ import utility_custom
 import utility_monte_carlo as mc
 
 
-def print_sum_ansatz_ia(n_lattice,
-                        x_potential_minimum,
-                        dtau):
+def sum_ansatz_ia(n_lattice,
+                  x_potential_minimum,
+                  dtau):
     """Dependence of the interactive action with respect to the instanton-
     anti-instanton separation, in the near repulsive case. Results are sa-
     ved into files.
@@ -27,104 +27,72 @@ def print_sum_ansatz_ia(n_lattice,
     output_path = './output_data/output_iilm/streamline'
     utility_custom.output_control(output_path)
 
-    n_inst = int(n_lattice / 4)
+    n_lattice_4 = int(n_lattice / 4)
 
     # Action
-    array_ia = np.zeros(n_inst)
-    array_int_core = np.zeros(n_inst)
-    array_int = np.zeros(n_inst)
-    array_ia_0_list = []
-    array_int_zero_cross_list = []
+    tau_ia_ansatz = np.zeros(n_lattice_4)
+    action_int_ansatz = np.zeros(n_lattice_4)
+    tau_ia_zcr_list = []
+    action_int_zcr_list = []
 
     # Semi-classical action for one instanton
     action_0 = 4 / 3 * np.power(x_potential_minimum, 3)
 
-    for n_a in range(n_inst, 2 * n_inst):
-
-        tau_centers_ia = np.array([n_inst * dtau, n_a * dtau])
+    for n_counter in range(n_lattice_4, 2 * n_lattice_4):
+        # Initialize variables
+        tau_centers_ia = np.array([n_lattice_4 * dtau, n_counter * dtau])
         tau_array = np.linspace(0., n_lattice * dtau, n_lattice, False)
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,
                                               x_potential_minimum)
-
+        # Total action
         action = mc.return_action(x_config,
                                   x_potential_minimum,
                                   dtau)
-
-        tau_core = 0.3 / x_potential_minimum
-        action_core = 3.0
-
-        action_int_core = action_0 * action_core * (np.exp(-(tau_centers_ia[1]
-                                                             - tau_centers_ia[
-                                                                 0])
-                                                           / tau_core)
-                                                    + np.exp(
-                    -(tau_centers_ia[0]
-                      - tau_centers_ia[1]
-                      + n_lattice * dtau)
-                    / tau_core)
-                                                    )
-
-        action_int_core += action
-
-        action_int_core /= action_0
+        # Normalization
         action /= action_0
-
-        action_int_core -= 2.
         action -= 2.
-
-        array_int_core[n_a - n_inst] = action_int_core
-        array_int[n_a - n_inst] = action
-        array_ia[n_a - n_inst] = tau_centers_ia[1] - tau_centers_ia[0]
-
-        n_i, n_an, pos_roots, neg_roots = mc.find_instantons(
+        
+        action_int_ansatz[n_counter - n_lattice_4] = action
+        tau_ia_ansatz[n_counter - n_lattice_4] = tau_centers_ia[1] - tau_centers_ia[0]
+        # Tau zero crossing
+        n_inst, n_a_inst, pos_roots, neg_roots = mc.find_instantons(
             x_config, dtau)
 
-        z_ia = 0
-        if n_a % 2 == 0 \
-                and n_i == n_an \
-                and n_i > 0 \
-                and n_i == len(pos_roots) \
-                and n_an == len(neg_roots):
+        if n_counter % 2 == 0 \
+                and n_inst == n_a_inst \
+                and n_inst > 0 \
+                and n_inst == len(pos_roots) \
+                and n_a_inst == len(neg_roots):
 
-            if pos_roots[0] < neg_roots[0]:
+            
+            for i in range(n_inst):
+                if i == 0:
+                    zero_m = neg_roots[-1] - n_lattice * dtau
+                else:
+                    zero_m = neg_roots[i - 1]
 
-                for i in range(n_i):
-                    if i == 0:
-                        zero_m = neg_roots[-1] - n_lattice * dtau
-                    else:
-                        zero_m = neg_roots[i - 1]
+                z_ia = np.minimum(np.abs(neg_roots[i] - pos_roots[i]),
+                                  np.abs(pos_roots[i] - zero_m))
 
-                    z_ia = np.minimum(np.abs(neg_roots[i] - pos_roots[i]),
-                                      np.abs(pos_roots[i] - zero_m))
-
-            elif pos_roots[0] > neg_roots[0]:
-                for i in range(n_i):
-                    if i == 0:
-                        zero_p = pos_roots[-1] - n_lattice * dtau
-                    else:
-                        zero_p = pos_roots[i - 1]
-
-                    z_ia = np.minimum(np.abs(pos_roots[i] - neg_roots[i]),
-                                      np.abs(neg_roots[i] - zero_p))
-
-            array_ia_0_list.append(z_ia)
-            array_int_zero_cross_list.append(mc.return_action(x_config,
-                                                              x_potential_minimum,
-                                                              dtau)
+            
+            tau_ia_zcr_list.append(z_ia)
+            action_int_zcr_list.append(mc.return_action(x_config,
+                                                        x_potential_minimum,
+                                                        dtau)
                                              )
 
-    array_ia_0 = np.array(array_ia_0_list, float)
-    array_int_zero_cross = np.array(array_int_zero_cross_list, float)
-    array_int_zero_cross /= 4 / 3 * np.power(x_potential_minimum, 3)
-    array_int_zero_cross -= 2
+    tau_ia_zcr = np.array(tau_ia_zcr_list, float)
+    action_int_zcr = np.array(action_int_zcr_list, float)
+    # Normalization
+    action_int_zcr /= 4 / 3 * np.power(x_potential_minimum, 3)
+    action_int_zcr -= 2
 
     # Save action into files
-    np.savetxt(output_path + '/array_ia.txt', array_ia)
-    np.savetxt(output_path + '/array_ia_0.txt', array_ia_0)
-    np.savetxt(output_path + '/array_int.txt', array_int)
-    np.savetxt(output_path + '/array_int_core.txt', array_int_core)
-    np.savetxt(output_path + '/array_int_zero_cross.txt', array_int_zero_cross)
+    np.savetxt(output_path + '/tau_ia_ansatz.txt', tau_ia_ansatz)
+    np.savetxt(output_path + '/tau_ia_zcr.txt', tau_ia_zcr)
+    np.savetxt(output_path + '/action_int_ansatz.txt', action_int_ansatz)
+    np.savetxt(output_path + '/action_int_zcr.txt', action_int_zcr)
 
 
 def streamline_method_iilm(r_initial_sep,
@@ -164,9 +132,9 @@ def streamline_method_iilm(r_initial_sep,
     ----------
     None
     """
-    print_sum_ansatz_ia(n_lattice,
-                        x_potential_minimum,
-                        dtau)
+    sum_ansatz_ia(n_lattice,
+                  x_potential_minimum,
+                  dtau)
 
     output_path = './output_data/output_iilm/streamline'
     utility_custom.output_control(output_path)
@@ -192,19 +160,19 @@ def streamline_method_iilm(r_initial_sep,
     # Derivative in streamline parameter
     lambda_derivative = np.zeros(2 * n_lattice_half)
 
-    # np.savetxt(output_path + '/tau_array.txt', tau_array)
-    # np.savetxt(output_path + '/streamline_0.txt', x_config[2:-2])
-
+    np.savetxt(output_path + '/tau_array.txt', tau_array)
+    np.savetxt(output_path + '/stream_0.txt', x_config[2:-2])
+    
     ansatz_action = 4 / 3 * pow(x_potential_minimum, 3)
 
-    # Streamline evolution
 
     tau_writer = open(output_path + '/delta_tau_ia.txt', 'w', encoding='utf8')
     act_writer = open(
         output_path + '/streamline_action_int.txt', 'w', encoding='utf8')
 
     tau_store = 1.5
-
+    
+    # Streamline evolution
     for i_s in range(n_streamline):
         if i_s % 1000 == 0:
             print(f'streamline #{i_s}')
@@ -234,6 +202,10 @@ def streamline_method_iilm(r_initial_sep,
             k = (x_config[i + 1] - x_config[i - 1]) / (2. * dtau)
             action_density[i - 2] = k ** 2 / 4. + v
 
+        if i_s == 0:
+            np.savetxt(output_path + '/streamline_action_dens_0.txt', 
+                       action_density)
+
         current_action = mc.return_action(x_config[2:-1],
                                           x_potential_minimum,
                                           dtau)
@@ -259,20 +231,43 @@ def streamline_method_iilm(r_initial_sep,
             if current_action > 0.0001:
                 if current_action / ansatz_action > 1.8:
                     np.savetxt(output_path + '/stream_1.txt', x_config[2:-2])
+                    np.savetxt(output_path + '/streamline_action_dens_1.txt', 
+                               action_density)
                 elif current_action / ansatz_action > 1.6:
                     np.savetxt(output_path + '/stream_2.txt', x_config[2:-2])
+                    np.savetxt(output_path + '/streamline_action_dens_2.txt', 
+                               action_density)
                 elif current_action / ansatz_action > 1.4:
                     np.savetxt(output_path + '/stream_3.txt', x_config[2:-2])
+                    np.savetxt(output_path + '/streamline_action_dens_3.txt', 
+                               action_density)
                 elif current_action / ansatz_action > 1.2:
                     np.savetxt(output_path + '/stream_4.txt', x_config[2:-2])
+                    np.savetxt(output_path + '/streamline_action_dens_4.txt', 
+                               action_density)
                 elif current_action / ansatz_action > 1.0:
                     np.savetxt(output_path + '/stream_5.txt', x_config[2:-2])
+                    np.savetxt(output_path + '/streamline_action_dens_5.txt', 
+                               action_density)
                 elif current_action / ansatz_action > 0.8:
                     np.savetxt(output_path + '/stream_6.txt', x_config[2:-2])
-                elif current_action / ansatz_action > 0.5:
+                    np.savetxt(output_path + '/streamline_action_dens_6.txt', 
+                               action_density)
+                elif current_action / ansatz_action > 0.6:
                     np.savetxt(output_path + '/stream_7.txt', x_config[2:-2])
-                elif current_action / ansatz_action > 0.2:
+                    np.savetxt(output_path + '/streamline_action_dens_7.txt', 
+                               action_density)
+                elif current_action / ansatz_action > 0.4:
                     np.savetxt(output_path + '/stream_8.txt', x_config[2:-2])
-
+                    np.savetxt(output_path + '/streamline_action_dens_8.txt', 
+                               action_density)
+                elif current_action / ansatz_action > 0.2:
+                    np.savetxt(output_path + '/stream_9.txt', x_config[2:-2])
+                    np.savetxt(output_path + '/streamline_action_dens_9.txt', 
+                               action_density)
+                else:
+                    np.savetxt(output_path + '/stream_10.txt', x_config[2:-2])
+                    np.savetxt(output_path + '/streamline_action_dens_10.txt', 
+                               action_density)
     tau_writer.close()
     act_writer.close()

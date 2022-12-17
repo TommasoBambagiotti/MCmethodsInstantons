@@ -187,6 +187,9 @@ if __name__ == '__main__':
                 elif call2 in ['o']:
                     graph_print.print_potential(i_figure)
                     i_figure +=1
+                elif call2 in ['p']:
+                    graph_print.print_streamline(i_figure)
+                    i_figure += 2
                 elif call2 in ['exit']:
                     stop_exec_plot = 1
                 else:

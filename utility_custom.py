@@ -256,6 +256,7 @@ def graphical_ui(which_gui):
         gui.add_row(['Iilm IA conf.', 'm'])
         gui.add_row(['Inter. Action dist.', 'n'])
         gui.add_row(['Anharmonic potential','o'])
+        gui.add_row(['Streamline configuration', 'p'])
 
         gui.add_row(['Exit', 'exit'])
         print(gui)

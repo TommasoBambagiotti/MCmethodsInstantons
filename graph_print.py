@@ -824,3 +824,47 @@ def print_iilm(i_figure):
     ax.set_xlim(-0.05, 2.05)
 
     fig.savefig(filepath + '/iilm.png', dpi=300)
+    
+    
+def print_streamline(i_figure):
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(5, 4.5))
+
+    ax = fig.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+    
+    ax.set_xlabel(r'$\Delta \tau$')
+    ax.set_ylabel(r'$x(\tau)$')
+    colors = ['blue', 'cornflowerblue', 'cyan', 'seagreen', 'lime', 'yellow', 
+              'orange', 'red', 'brown','gray', 'black']
+    tau_array = np.loadtxt('./output_data/output_iilm/streamline/tau_array.txt',
+                           delimiter = ' ')
+    for i in range(11):
+        action = '%.2f' % (2 - i * 2/10)
+        x = np.loadtxt(f'./output_data/output_iilm/streamline/stream_{i}.txt',
+                       delimiter = ' ')
+        ax.plot(tau_array,
+                x,
+                color = colors[i],
+                linewidth = 0.8,
+                label = f'$S/S_0 = {action}$')
+    
+    ax.legend()
+    fig.savefig(filepath + '/streamline_x.png', dpi = 300)
+    
+    fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 4.5))
+
+    ax2 = fig2.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+    
+    ax2.set_xlabel(r'$\tau$')
+    ax2.set_ylabel(r'$s(\tau)$')
+    
+    for i in range(11):
+        action = '%.2f' % (2 - i * 2/10)
+        s = np.loadtxt(f'./output_data/output_iilm/streamline/streamline_action_dens_{i}.txt',
+                       delimiter = ' ')
+        ax2.plot(tau_array,
+                 s,
+                 color = colors[i],
+                 linewidth = 0.8,
+                 label = f'$S/S_0 = {action}$')
+    ax2.legend()
+    fig2.savefig(filepath + '/streamline_s.png', dpi = 300)
