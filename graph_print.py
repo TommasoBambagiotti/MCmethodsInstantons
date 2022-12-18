@@ -20,7 +20,16 @@ dtau = 0.05
 
 
 def print_potential(i_figure):
+    """
 
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     # plot setup
     n_eigenvalues = 4
     x_min = -2.5
@@ -38,40 +47,48 @@ def print_potential(i_figure):
     ax1.set_xlim(x_min, x_max)
     ax1.set_ylim(y_min, y_max)
 
-    ax1.set_yticks(np.arange(y_min, y_max+1, 1.0))
+    ax1.set_yticks(np.arange(y_min, y_max + 1, 1.0))
 
     # create x_axis and potential
     x_axis = np.linspace(x_min, x_max, 100)
     pot = mc.potential_anh_oscillator(x_axis, 1.4)
 
-    #import #(n_eigenvalues) energy eigenvalues
+    # import #(n_eigenvalues) energy eigenvalues
     count = 0
     en_eigenvalues = np.empty(n_eigenvalues)
     with open('./output_data/output_diag/eigenvalues.txt', 'r') as f_read:
         for line in f_read.readlines():
             if count == (n_eigenvalues):
                 continue
-            count +=1
-            en_eigenvalues[count-1] = float(line)
+            count += 1
+            en_eigenvalues[count - 1] = float(line)
 
     # plot
     ax1.plot(x_axis, pot)
 
     for i in range(n_eigenvalues):
-        ax1.hlines(en_eigenvalues[i], x_min, x_max, linestyles='--', color='green')
+        ax1.hlines(en_eigenvalues[i], x_min, x_max, linestyles='--',
+                   color='green')
 
     ax1.set_xlabel(r'$$x$$')
     ax1.set_ylabel(r'$$V(x)$$')
 
     # save figure
-    fig1.savefig(filepath+'/potential.png', dpi=300)
+    fig1.savefig(filepath + '/potential.png', dpi=300)
     plt.show()
 
 
-
-
-
 def print_ground_state(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     filepath_loc = filepath + '/ground_state'
     utility_custom.output_control(filepath_loc)
     utility_custom.clear_folder(filepath_loc)
@@ -117,6 +134,16 @@ def print_ground_state(i_figure):
 
 
 def print_graph_free_energy(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     fig1 = plt.figure(i_figure,
                       facecolor="#fafafa",
                       figsize=(5, 5))
@@ -184,6 +211,17 @@ def print_graph_free_energy(i_figure):
 
 
 def print_configuration(folder, i_figure):
+    """
+
+    Parameters
+    ----------
+    folder :
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     # check folder
     utility_custom.output_control(filepath + '/' + folder)
 
@@ -222,6 +260,10 @@ def print_graph_cor_func(folder, setup, i_figure):
     Parameters
     ----------
     folder :
+
+    Returns
+    ----------
+    None
     """
     utility_custom.output_control(filepath + '/' + folder)
 
@@ -439,12 +481,21 @@ def print_graph_cor_func(folder, setup, i_figure):
 
 
 def print_density(i_figure):
+    """
 
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     # create new figure and plot density
     fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(5, 5))
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    #ax.set_title('Instanton density')
+    # ax.set_title('Instanton density')
 
     potential_minima = np.loadtxt(
         'output_data/output_cooled_monte_carlo/potential_minima.txt',
@@ -552,6 +603,16 @@ def print_density(i_figure):
 
 
 def print_zcr_hist(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
     ax = fig.add_axes((0.15, 0.13, 0.8, 0.8), facecolor="#e1e1e1")
 
@@ -586,6 +647,16 @@ def print_zcr_hist(i_figure):
 
 
 def print_tau_centers(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
     ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
@@ -615,7 +686,16 @@ def print_tau_centers(i_figure):
 
 
 def print_switch_density(i_figure):
+    """
 
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     # you have to import delta_e to use this function
 
     fig = plt.figure(i_figure, facecolor="#fafafa")
@@ -667,10 +747,11 @@ def print_switch_density(i_figure):
 
     potential_e = np.empty(40)
     for i in range(np.size(potential_e)):
-        potential_e[i] = 0.05*i
+        potential_e[i] = 0.05 * i
 
     # import energy eigenvalues
-    delta_e = np.loadtxt('output_data/output_monte_carlo_density_switching/delta_e.txt') / 2
+    delta_e = np.loadtxt(
+        'output_data/output_monte_carlo_density_switching/delta_e.txt') / 2
 
     action = 4 / 3 * np.power(potential, 3)
 
@@ -734,6 +815,16 @@ def print_switch_density(i_figure):
 
 
 def print_iilm(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
 
     ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
@@ -824,47 +915,59 @@ def print_iilm(i_figure):
     ax.set_xlim(-0.05, 2.05)
 
     fig.savefig(filepath + '/iilm.png', dpi=300)
-    
-    
+
+
 def print_streamline(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(5, 4.5))
 
     ax = fig.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
-    
+
     ax.set_xlabel(r'$\Delta \tau$')
     ax.set_ylabel(r'$x(\tau)$')
-    colors = ['blue', 'cornflowerblue', 'cyan', 'seagreen', 'lime', 'yellow', 
-              'orange', 'red', 'brown','gray', 'black']
-    tau_array = np.loadtxt('./output_data/output_iilm/streamline/tau_array.txt',
-                           delimiter = ' ')
+    colors = ['blue', 'cornflowerblue', 'cyan', 'seagreen', 'lime', 'yellow',
+              'orange', 'red', 'brown', 'gray', 'black']
+    tau_array = np.loadtxt(
+        './output_data/output_iilm/streamline/tau_array.txt',
+        delimiter=' ')
     for i in range(11):
-        action = '%.2f' % (2 - i * 2/10)
+        action = '%.2f' % (2 - i * 2 / 10)
         x = np.loadtxt(f'./output_data/output_iilm/streamline/stream_{i}.txt',
-                       delimiter = ' ')
+                       delimiter=' ')
         ax.plot(tau_array,
                 x,
-                color = colors[i],
-                linewidth = 0.8,
-                label = f'$S/S_0 = {action}$')
-    
+                color=colors[i],
+                linewidth=0.8,
+                label=f'$S/S_0 = {action}$')
+
     ax.legend()
-    fig.savefig(filepath + '/streamline_x.png', dpi = 300)
-    
+    fig.savefig(filepath + '/streamline_x.png', dpi=300)
+
     fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 4.5))
 
     ax2 = fig2.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
-    
+
     ax2.set_xlabel(r'$\tau$')
     ax2.set_ylabel(r'$s(\tau)$')
-    
+
     for i in range(11):
-        action = '%.2f' % (2 - i * 2/10)
-        s = np.loadtxt(f'./output_data/output_iilm/streamline/streamline_action_dens_{i}.txt',
-                       delimiter = ' ')
+        action = '%.2f' % (2 - i * 2 / 10)
+        s = np.loadtxt(
+            f'./output_data/output_iilm/streamline/streamline_action_dens_{i}.txt',
+            delimiter=' ')
         ax2.plot(tau_array,
                  s,
-                 color = colors[i],
-                 linewidth = 0.8,
-                 label = f'$S/S_0 = {action}$')
+                 color=colors[i],
+                 linewidth=0.8,
+                 label=f'$S/S_0 = {action}$')
     ax2.legend()
-    fig2.savefig(filepath + '/streamline_s.png', dpi = 300)
+    fig2.savefig(filepath + '/streamline_s.png', dpi=300)
