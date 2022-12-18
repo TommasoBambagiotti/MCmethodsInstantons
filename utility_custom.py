@@ -242,19 +242,22 @@ def graphical_ui(which_gui):
 
         gui.field_names = ['Plot', 'Plot #']
         gui.add_row(['Anh. oscill. Montecarlo corr. func.', 'a'])
-        gui.add_row(['Free energy graph.', 'b'])
-        gui.add_row(['Montecarlo cooling corr. func.', 'c'])
-        gui.add_row(['', 'd'])
-        gui.add_row(['Random instanton corr. func.', 'e'])
-        gui.add_row(['Random instanton heating corr. func.', 'f'])
-        gui.add_row(['', 'g'])
-        gui.add_row(['', 'h'])
-        gui.add_row(['', 'i'])
-        gui.add_row(['', 'j'])
-        gui.add_row(['', 'k'])
-        gui.add_row(['', 'l'])
-        gui.add_row(['', 'm'])
-        gui.add_row(['Groundstate', 'n'])
+        gui.add_row(['Groundstate', 'b'])
+        gui.add_row(['Free energy graph.', 'c'])
+        gui.add_row(['Montecarlo cooling corr. func.', 'd'])
+        gui.add_row(['IA cooling density distribution', 'e'])
+        gui.add_row(['IA switching density distribution', 'f'])
+        gui.add_row(['Cool. configuration', 'g'])
+        gui.add_row(['Random instanton corr. func.', 'h'])
+        gui.add_row(['Random instanton heating corr. func.', 'i'])
+        gui.add_row(['Random instanton heating configuration', 'j'])
+        gui.add_row(['Inst. int. liquid model corr. func.', 'k'])
+        gui.add_row(['IA dist. over tau', 'l'])
+        gui.add_row(['Iilm IA conf.', 'm'])
+        gui.add_row(['Inter. Action dist.', 'n'])
+        gui.add_row(['Anharmonic potential','o'])
+        gui.add_row(['Streamline configuration', 'p'])
+
         gui.add_row(['Exit', 'exit'])
         print(gui)
         print('Which (Plot #)?\n')
@@ -375,6 +378,7 @@ def cor_plot_setup(which_plot=None):
     """
     if which_plot in ['a']:
         # montecarlo
+        # 2: log-derivative corr. func.; 1: corr. func.
         return {'x_inf_1': -0.05,
                 'x_sup_1': 1.03,
                 'x_inf_2': -0.05,
@@ -385,28 +389,52 @@ def cor_plot_setup(which_plot=None):
                 'cor2_s': 17,
                 'cor3_s': 7,
                 'cor2_s_fig1': 7}
-    elif which_plot in ['c']:
+    elif which_plot in ['d']:
         # montecarlo cooling
         return {'x_inf_1': -0.05,
                 'x_sup_1': 1.03,
                 'x_inf_2': -0.05,
-                'x_sup_2': 1,
+                'x_sup_2': 1.03,
                 'y_inf_2': -1.0,
                 'y_sup_2': 5,
                 'cor1_s': 0,
-                'cor2_s': 8,
+                'cor2_s': 17,
                 'cor3_s': 0,
                 'cor2_s_fig1': 0}
-    elif which_plot in ['e']:
-        #rilm
+    elif which_plot in ['h']:
+        # rilm
         return {'x_inf_1': -0.05,
-                'x_sup_1': 1,
+                'x_sup_1': 1.5,
                 'x_inf_2': -0.05,
-                'x_sup_2': 1,
-                'y_inf_2': -1.0,
+                'x_sup_2': 1.5,
+                'y_inf_2': -0.5,
                 'y_sup_2': 5,
                 'cor1_s': 0,
-                'cor2_s': 7,
+                'cor2_s': 9,
+                'cor3_s': 0,
+                'cor2_s_fig1': 0}
+    elif which_plot in ['i']:
+        # rilm heating
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1.5,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1.5,
+                'y_inf_2': 0.0,
+                'y_sup_2': 6.5,
+                'cor1_s': 0,
+                'cor2_s': 13,
+                'cor3_s': 0,
+                'cor2_s_fig1': 0}
+    elif which_plot in ['k']:
+        # iilm
+        return {'x_inf_1': -0.05,
+                'x_sup_1': 1.5,
+                'x_inf_2': -0.05,
+                'x_sup_2': 1.5,
+                'y_inf_2': -0.5,
+                'y_sup_2': 5,
+                'cor1_s': 0,
+                'cor2_s': 13,
                 'cor3_s': 0,
                 'cor2_s_fig1': 0}
     else:

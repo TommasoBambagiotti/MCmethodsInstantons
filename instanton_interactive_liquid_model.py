@@ -103,8 +103,8 @@ def inst_int_liquid_model(n_lattice,
                                             action_0,
                                             dtau)
 
-        # if i_mc % 100 == 0:
-        #     print(f'#{i_mc} sweep in {n_mc_sweeps - 1}')
+        if i_mc % 10000 == 0:
+            print(f'#{i_mc} sweep in {n_mc_sweeps - 1}')
 
         for i in range(tau_centers_ia.size):
             tau_centers_ia[i] += \

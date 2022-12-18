@@ -1,33 +1,100 @@
 import utility_custom
+import utility_monte_carlo as mc
 import matplotlib.pyplot as plt
 import numpy as np
-import struct
 
 import matplotlib
 
-# matplotlib.use('pgf')
-# matplotlib.rcParams.update({
-#     "pgf.texsystem": "pdflatex",
-#     'font.family': 'serif',
-#     'font.sans-serif': ['Helvetica'],
-#     'text.usetex': True,
-#     'pgf.rcfonts': False,
-# })
-
-
+matplotlib.rcParams.update({
+    'font.family': 'serif',
+    'font.sans-serif': ['Helvetica'],
+    'text.usetex': True,
+})
 plt.style.use('ggplot')
 
+# global variables
 filepath = './output_graph'
 utility_custom.output_control(filepath)
+n_lattice = 800
+dtau = 0.05
 
 
-def print_ground_state():
+def print_potential(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    # plot setup
+    n_eigenvalues = 4
+    x_min = -2.5
+    x_max = 2.5
+    y_min = 0
+    y_max = 10
+
+    # create figure
+    fig1 = plt.figure(i_figure,
+                      facecolor="#fafafa",
+                      figsize=(5, 5))
+
+    ax1 = fig1.add_axes((0.13, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_ylim(y_min, y_max)
+
+    ax1.set_yticks(np.arange(y_min, y_max + 1, 1.0))
+
+    # create x_axis and potential
+    x_axis = np.linspace(x_min, x_max, 100)
+    pot = mc.potential_anh_oscillator(x_axis, 1.4)
+
+    # import #(n_eigenvalues) energy eigenvalues
+    count = 0
+    en_eigenvalues = np.empty(n_eigenvalues)
+    with open('./output_data/output_diag/eigenvalues.txt', 'r') as f_read:
+        for line in f_read.readlines():
+            if count == (n_eigenvalues):
+                continue
+            count += 1
+            en_eigenvalues[count - 1] = float(line)
+
+    # plot
+    ax1.plot(x_axis, pot)
+
+    for i in range(n_eigenvalues):
+        ax1.hlines(en_eigenvalues[i], x_min, x_max, linestyles='--',
+                   color='green')
+
+    ax1.set_xlabel(r'$$x$$')
+    ax1.set_ylabel(r'$$V(x)$$')
+
+    # save figure
+    fig1.savefig(filepath + '/potential.png', dpi=300)
+    plt.show()
+
+
+def print_ground_state(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
     filepath_loc = filepath + '/ground_state'
     utility_custom.output_control(filepath_loc)
     utility_custom.clear_folder(filepath_loc)
 
-    fig1 = plt.figure(1,
-                      facecolor="#f1f1f1",
+    fig1 = plt.figure(i_figure,
+                      facecolor="#fafafa",
                       figsize=(5, 5))
     ax1 = fig1.add_axes((0.13, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
@@ -66,9 +133,19 @@ def print_ground_state():
     plt.show()
 
 
-def print_graph_free_energy():
-    fig1 = plt.figure(1,
-                      facecolor="#f1f1f1",
+def print_graph_free_energy(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    fig1 = plt.figure(i_figure,
+                      facecolor="#fafafa",
                       figsize=(5, 5))
     ax1 = fig1.add_axes((0.13, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
@@ -133,15 +210,62 @@ def print_graph_free_energy():
     plt.show()
 
 
-def print_graph_cor_func(folder, setup):
+def print_configuration(folder, i_figure):
     """
 
     Parameters
     ----------
     folder :
+    i_figure :
+
+    Returns
+    ----------
+    None
     """
+    # check folder
     utility_custom.output_control(filepath + '/' + folder)
 
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+
+    # import data
+    tau_array = np.linspace(0, dtau * n_lattice, n_lattice + 1)
+    x1_config = np.loadtxt('./output_data/' + folder + '/x1_config.txt')
+    x2_config = np.loadtxt('./output_data/' + folder + '/x2_config.txt')
+
+    # plot 1
+    ax.set_ylabel(r'$x(\tau)$')
+    ax.set_xlabel(r'$\tau$')
+
+    if folder in ['output_cooled_monte_carlo']:
+        ax.plot(tau_array, x1_config, color='black', label=r'Monte Carlo')
+        ax.plot(tau_array, x2_config, color='green',
+                label=r'Cooled Monte Carlo')
+
+    elif folder in ['output_rilm_heating']:
+        ax.plot(tau_array, x1_config, color='blue', label=r'RILM',
+                linewidth=1.)
+        ax.plot(tau_array, x2_config, color='red', label=r'Gaussian heating',
+                linewidth=0.8)
+
+    ax.legend()
+
+    plt.savefig(filepath + '/' + folder + '/ ' + 'config.png', dpi=300)
+    plt.show()
+
+
+def print_graph_cor_func(folder, setup, i_figure):
+    """
+
+    Parameters
+    ----------
+    folder :
+
+    Returns
+    ----------
+    None
+    """
+    utility_custom.output_control(filepath + '/' + folder)
 
     # axes limits
 
@@ -162,8 +286,8 @@ def print_graph_cor_func(folder, setup):
 
     # Plots
 
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+    fig1 = plt.figure(i_figure, facecolor="#fafafa")
+    ax1 = fig1.add_axes((0.13, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     # Set x-axis limit
     ax1.set_xlim(x_inf_1, x_sup_1)
@@ -247,21 +371,21 @@ def print_graph_cor_func(folder, setup):
                  label=r'$<x^3(\tau)x^3(0)>$')
 
     # Labels
-    ax1.set_ylabel(r'$<x^n(\tau)x^n(0)> \; (m^{2n})$', rotation='vertical',
+    ax1.set_ylabel(r'$<x^n(\tau)x^n(0)>$', rotation='vertical',
                    fontsize=12)
 
-    ax1.set_xlabel(r'$\tau \; (s)$', fontsize=12)
+    ax1.set_xlabel(r'$\tau$', fontsize=12)
 
     # Legend
     ax1.legend(loc='upper right', fontsize=10)
     # Save plot
-    fig1.savefig(filepath + '/' + folder + '/x_corr.pgf', dpi=300)
+    fig1.savefig(filepath + '/' + folder + '/x_corr.png', dpi=300)
 
     # Plot 2
 
-    fig2 = plt.figure(2, facecolor="#f1f1f1")
+    fig2 = plt.figure(i_figure + 1, facecolor="#fafafa")
 
-    ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+    ax2 = fig2.add_axes((0.13, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     ax2.set_xlim(x_inf_2, x_sup_2)
     ax2.set_ylim(y_inf_2, y_sup_2)
@@ -284,14 +408,17 @@ def print_graph_cor_func(folder, setup):
     dcorr_err3 = np.loadtxt('./output_data/' + folder + '/error_der_log_3.txt',
                             float, delimiter=' ')
 
-    dcorr1_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct.txt',
-                          float, delimiter=' ')
+    dcorr1_d = np.loadtxt(
+        './output_data/output_diag/av_der_log_corr_funct.txt',
+        float, delimiter=' ')
 
-    dcorr2_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct2.txt',
-                          float, delimiter=' ')
+    dcorr2_d = np.loadtxt(
+        './output_data/output_diag/av_der_log_corr_funct2.txt',
+        float, delimiter=' ')
 
-    dcorr3_d = np.loadtxt('./output_data/output_diag/av_der_log_corr_funct3.txt',
-                          float, delimiter=' ')
+    dcorr3_d = np.loadtxt(
+        './output_data/output_diag/av_der_log_corr_funct3.txt',
+        float, delimiter=' ')
 
     ax2.plot(tau_array_2[0:61],
              dcorr1_d[0:61],
@@ -329,7 +456,7 @@ def print_graph_cor_func(folder, setup):
                  elinewidth=0.5,
                  label=r'$<x^2(\tau)x^2(0)>$')
 
-    ax2.errorbar(tau_array[0:tau_array.size-cor3_s - 1],
+    ax2.errorbar(tau_array[0:tau_array.size - cor3_s - 1],
                  dcorr3[:dcorr3.size - cor3_s],
                  dcorr_err3[:dcorr3.size - cor3_s],
                  color='green',
@@ -341,25 +468,34 @@ def print_graph_cor_func(folder, setup):
     ax2.legend(loc='upper right', fontsize=10)
 
     # Labels
-    ax2.set_ylabel(r'$d(log<x^n(\tau)x^n(0)>)/d\tau \;\; (m^{2n}) $',
+    ax2.set_ylabel(r'$d(log<x^n(\tau)x^n(0)>)/d\tau $',
                    rotation='vertical',
                    fontsize=12)
 
-    ax2.set_xlabel(r'$\tau \; (s)$', fontsize=12)
+    ax2.set_xlabel(r'$\tau$', fontsize=12)
 
     # Save figure
-    fig2.savefig(filepath + '/' + folder + '/der_corr.pgf', dpi=300)
+    fig2.savefig(filepath + '/' + folder + '/der_corr.png', dpi=300)
 
-    #plt.show()
+    # plt.show()
 
 
-def print_density():
-    fig = plt.figure(1, facecolor="#f1f1f1", figsize=(5, 5))
+def print_density(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    # create new figure and plot density
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(5, 5))
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    ax.set_title('Instanton density')
-    ax.set_xlabel('$N_{cool}$')
-    ax.set_ylabel('$N_{total} \beta $')
+    # ax.set_title('Instanton density')
 
     potential_minima = np.loadtxt(
         'output_data/output_cooled_monte_carlo/potential_minima.txt',
@@ -368,6 +504,9 @@ def print_density():
     n_cooling = np.loadtxt(
         './output_data/output_cooled_monte_carlo/n_cooling.txt',
         delimiter=' ')
+
+    # only for #potential_minima = 4
+    colors = ['red', 'green', 'orange', 'blue']
 
     i = 1
     for pot in np.nditer(potential_minima):
@@ -382,6 +521,7 @@ def print_density():
                     fmt='.',
                     capsize=2.5,
                     elinewidth=0.5,
+                    color=colors[pot],
                     label=f'$\eta = {pot}$')
 
         s0 = 4 / 3 * pow(pot, 3)
@@ -397,7 +537,14 @@ def print_density():
 
         i += 1
 
+    # Labels
+    ax.set_xlabel(r'$N_{cool}$', labelpad=0)
+    ax.set_ylabel(r'$N_{tot}  / \beta $')
+
+    # Legend
     ax.legend()
+
+    # Log scale
     ax.set_xscale('log')
 
     ax.set_yscale('log')
@@ -407,12 +554,14 @@ def print_density():
     # current_values = ax.get_yticks()
     # ax.set_yticklabels(['{:.2f}'.format(x) for x in current_values])
 
+    fig.set_size_inches(w=7, h=4)
     fig.savefig(filepath + '/n_istantons.png', dpi=300)
 
-    fig2 = plt.figure(2, facecolor="#f1f1f1", figsize=(5, 5))
+    fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 5))
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     i = 1
+
     for pot in np.nditer(potential_minima):
         action = np.loadtxt(
             f'./output_data/output_cooled_monte_carlo/action_{i}.txt',
@@ -429,6 +578,7 @@ def print_density():
                      fmt='.',
                      capsize=2.5,
                      elinewidth=0.5,
+                     color=colors[pot],
                      label=f'$\eta = {pot}$')
 
         s0 = 4 / 3 * pow(pot, 3)
@@ -441,7 +591,9 @@ def print_density():
     ax2.legend()
     ax2.set_xscale('log')
     ax2.set_yscale('log')
-
+    ax2.set_ylabel(r'S / N_{tot}')
+    ax2.set_xlabel(r'N_{cool}', labelpad=0)
+    fig2.set_size_inches(w=7, h=4)
     # current_values = ax2.gca().get_yticks()
     # ax2.gca().set_yticklabels([{'0.2f'}.format(x) for x in current_values])
 
@@ -450,9 +602,22 @@ def print_density():
     plt.show()
 
 
-def print_zcr_hist():
-    fig = plt.figure(1, facecolor="#f1f1f1")
-    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+def print_zcr_hist(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+    ax = fig.add_axes((0.15, 0.13, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax.set_xlabel(r'$\Delta\tau_{zcr}$')
+    ax.set_ylabel(r'$n_{IA}(\tau_{zcr})$')
 
     zcr = np.loadtxt('./output_data/output_rilm/zcr_hist.txt', float,
                      delimiter=' ')
@@ -464,49 +629,76 @@ def print_zcr_hist():
     zcr_int = np.loadtxt('./output_data/output_iilm/iilm/zcr_hist.txt',
                          float, delimiter=' ')
 
-    print(zcr_int.size)
-    print(zcr.size)
-    print(zcr_cooling.size)
-
-    ax.hist(zcr, 39, (0.1, 4.), histtype='step',
-            color='red', label='random liquid model')
-    ax.hist(zcr_int, 39, (0.1, 4.), histtype='step', color='orange',
-            label='core repulsion')  # , density='True')
-    ax.hist(zcr_cooling, 39, (0.1, 4.), histtype='step',
-            label='monte carlo cooling',
-            color='blue')  # , density='True')
+    ax.hist(zcr, 40, (0., 4.), histtype='step',
+            color='red', linewidth=1.2,
+            label='RILM')
+    ax.hist(zcr_int, 40, (0., 4.), histtype='step',
+            color='orange', linewidth=1.2,
+            label='Core repulsion')  # , density='True')
+    ax.hist(zcr_cooling, 40, (0., 4.), histtype='step',
+            label='Monte carlo cooling',
+            color='blue', linewidth=1.2)  # , density='True')
 
     ax.legend()
 
     fig.savefig(filepath + '/zcr_histogram.png', dpi=300)
 
-    plt.show()
+    # plt.show()
 
 
-def print_tau_centers():
-    fig = plt.figure(1, facecolor="#f1f1f1")
-    ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+def print_tau_centers(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     n_conf = np.loadtxt('./output_data/output_iilm/iilm/n_conf.txt',
                         float, delimiter=' ')
-
+    ax.set_xlabel(r'$N_{conf}$')
+    ax.set_ylabel(r'$\tau_{IA}$')
     for n in range(12):
         tau = np.loadtxt(f'./output_data/output_iilm/iilm/center_{n + 1}.txt',
                          float, delimiter=' ')
 
         if (n % 2) == 0:
-            ax.plot(n_conf, tau, color='blue',
-                    linewidth=0.4)
+            handle_inst, = ax.plot(n_conf, tau, color='blue',
+                                   linewidth=0.4,
+                                   label=r'Instanton center')
         else:
-            ax.plot(n_conf, tau, color='red',
-                    linewidth=0.4)
+            handle_a_inst, = ax.plot(n_conf, tau, color='red',
+                                     linewidth=0.4,
+                                     label=r'Anti-instanton center')
 
+    ax.legend(loc='upper right', handles=[handle_inst,
+                                          handle_a_inst])
+
+    ax.set_ylim(0, 47)
     fig.savefig(filepath + '/iilm_config.png', dpi=300)
-    plt.show()
+    # plt.show()
 
 
-def print_cool_density():
-    fig = plt.figure(1, facecolor="#f1f1f1")
+def print_switch_density(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    # you have to import delta_e to use this function
+
+    fig = plt.figure(i_figure, facecolor="#fafafa")
     ax = fig.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
     potential_minima = np.loadtxt(
@@ -552,6 +744,15 @@ def print_cool_density():
                 label='cooling')
 
     potential = np.linspace(0.1, 2.0)
+
+    potential_e = np.empty(40)
+    for i in range(np.size(potential_e)):
+        potential_e[i] = 0.05 * i
+
+    # import energy eigenvalues
+    delta_e = np.loadtxt(
+        'output_data/output_monte_carlo_density_switching/delta_e.txt') / 2
+
     action = 4 / 3 * np.power(potential, 3)
 
     loop_1 = 8 * np.sqrt(2 / np.pi) \
@@ -559,12 +760,18 @@ def print_cool_density():
 
     loop_2 = loop_1 * np.exp(-71 / 72 / action)
 
+    # 1loop plot
     ax.plot(potential, loop_1,
             linestyle='--', color='green', label='1-loop')
 
+    # 2loop plot
     ax.plot(potential, loop_2,
             linestyle='-', color='green', label='2-loop')
+    # deltaE/2 plot
+    ax.plot(potential_e, delta_e, linestyle='-', color='black',
+            label=r'$\Delta E / 2$', linewidth=1)
 
+    # load minima and densities
     potential_minima = np.loadtxt(
         'output_data/output_monte_carlo_density_switching/potential_minima.txt',
         delimiter=' ')
@@ -587,21 +794,43 @@ def print_cool_density():
         markersize=4.,
         label='Monte Carlo')
 
+    # create new legend
     ax.legend()
+
+    # axes limits
     ax.set_xlim(0.0, 1.9)
     ax.set_ylim(0.03, 2.)
 
+    # log-scale
     ax.set_yscale('log')
 
+    # labels
+    ax.set_xlabel(r'$$f$$')
+    ax.set_ylabel(r'$$N_{tot} / \beta$$')
+
+    # save and show
     fig.savefig(filepath + '/density.png', dpi=300)
 
     plt.show()
 
 
-def print_iilm():
-    fig1 = plt.figure(1, facecolor="#f1f1f1")
+def print_iilm(i_figure):
+    """
 
-    ax1 = fig1.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+
+    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax.set_xlabel(r'$\Delta\tau_{IA}$')
+    ax.set_ylabel(r'$S_{int}\slash S_{0}$')
 
     tau_ia = np.loadtxt(
         './output_data/output_iilm/streamline/delta_tau_ia.txt',
@@ -619,7 +848,7 @@ def print_iilm():
     # bisogna implementare un modo per capire già quanto vale il potentiale?
     # tipo costruire l'istogramma già nella funzione zero_...
     action_ia = -np.log(hist_2[0:10] / hist_1[0:10]) / (
-                4 / 3 * np.power(1.4, 3))
+            4 / 3 * np.power(1.4, 3))
 
     act_int = np.loadtxt(
         './output_data/output_iilm/streamline/streamline_action_int.txt',
@@ -644,45 +873,101 @@ def print_iilm():
         './output_data/output_iilm/streamline/array_int_zero_cross.txt',
         float, delimiter=' ')
 
-    ax1.plot(tau_ia,
-             act_int,
-             marker='^',
-             linestyle='',
-             color='green',
-             label='streamline'
-             )
+    ax.scatter(tau_ia,
+               act_int,
+               marker='^',
+               color='green',
+               label=r'Streamline',
+               s=25
+               )
 
-    ax1.plot(array_ia,
-             array_int,
-             color='blue',
-             label='sum ansatz')
+    ax.plot(array_ia,
+            array_int,
+            color='blue',
+            label=r'Sum ansatz'
+            )
 
-    ax1.plot(array_ia,
-             array_int_core,
-             color='orange',
-             label='core repulsion'
-             )
+    ax.plot(array_ia,
+            array_int_core,
+            color='orange',
+            label=r'Core repulsion'
+            )
 
-    ax1.plot(array_ia_0,
-             array_int_zero_cross,
-             color='red',
-             marker='s',
-             linestyle='',
-             label='zcr sum ansatz'
-             )
+    ax.scatter(array_ia_0,
+               array_int_zero_cross,
+               color='red',
+               marker='s',
+               label=r'Sum ansatz zero crossing',
+               s=25
+               )
 
-    ax1.plot(np.linspace(0.1, 1.0, 10, False),
-             action_ia,
-             marker='s',
-             linestyle='',
-             color='cyan',
-             label='monte carlo cooling')
+    ax.scatter(np.linspace(0.1, 1.0, 10, False),
+               action_ia,
+               marker='s',
+               color='cyan',
+               label=r'Monte Carlo cooling',
+               s=25
+               )
 
-    ax1.legend()
+    ax.legend()
 
-    ax1.set_ylim(-2.0, 0.5)
-    ax1.set_xlim(-0.05, 2.3)
+    ax.set_ylim(-2.1, 0.5)
+    ax.set_xlim(-0.05, 2.05)
 
-    fig1.savefig(filepath + '/iilm.png', dpi=300)
+    fig.savefig(filepath + '/iilm.png', dpi=300)
 
-    plt.show()
+
+def print_streamline(i_figure):
+    """
+
+    Parameters
+    ----------
+    i_figure :
+
+    Returns
+    ----------
+    None
+    """
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(5, 4.5))
+
+    ax = fig.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax.set_xlabel(r'$\Delta \tau$')
+    ax.set_ylabel(r'$x(\tau)$')
+    colors = ['blue', 'cornflowerblue', 'cyan', 'seagreen', 'lime', 'yellow',
+              'orange', 'red', 'brown', 'gray', 'black']
+    tau_array = np.loadtxt(
+        './output_data/output_iilm/streamline/tau_array.txt',
+        delimiter=' ')
+    for i in range(11):
+        action = '%.2f' % (2 - i * 2 / 10)
+        x = np.loadtxt(f'./output_data/output_iilm/streamline/stream_{i}.txt',
+                       delimiter=' ')
+        ax.plot(tau_array,
+                x,
+                color=colors[i],
+                linewidth=0.8,
+                label=f'$S/S_0 = {action}$')
+
+    ax.legend()
+    fig.savefig(filepath + '/streamline_x.png', dpi=300)
+
+    fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 4.5))
+
+    ax2 = fig2.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+
+    ax2.set_xlabel(r'$\tau$')
+    ax2.set_ylabel(r'$s(\tau)$')
+
+    for i in range(11):
+        action = '%.2f' % (2 - i * 2 / 10)
+        s = np.loadtxt(
+            f'./output_data/output_iilm/streamline/streamline_action_dens_{i}.txt',
+            delimiter=' ')
+        ax2.plot(tau_array,
+                 s,
+                 color=colors[i],
+                 linewidth=0.8,
+                 label=f'$S/S_0 = {action}$')
+    ax2.legend()
+    fig2.savefig(filepath + '/streamline_s.png', dpi=300)

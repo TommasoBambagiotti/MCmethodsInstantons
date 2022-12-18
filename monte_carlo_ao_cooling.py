@@ -101,6 +101,11 @@ def cooled_monte_carlo(
             print(f'conf: {i_mc}\n'
                   +f'Action: {mc.return_action(x_config, x_potential_minimum, dtau)}')
 
+        # save middle config
+        if i_mc % int((n_mc_sweeps-n_equil)/2) == 0:
+            with open(output_path+'/x1_config.txt','w') as f_writer:
+                np.savetxt(f_writer, x_config)
+
         # COOLING
 
         if (i_mc % n_sweeps_btw_cooling) == 0:
@@ -118,6 +123,10 @@ def cooled_monte_carlo(
                                          dtau,
                                          delta_x)
 
+            # save mid config cooled
+            if i_mc % int((n_mc_sweeps - n_equil) / 2) == 0:
+                with open(output_path + '/x2_config.txt', 'w') as f_writer:
+                    np.savetxt(f_writer, x_cold_config)
             
             # Compute correlation functions for the cooled configuration
             utility_custom.correlation_measurments(n_lattice, n_meas, n_points,

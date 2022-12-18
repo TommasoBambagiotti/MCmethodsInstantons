@@ -245,7 +245,8 @@ def anharmonic_oscillator_diag(n_dim,
     oscillator in the harmonic oscillator basis. In all modules we use a
     system of unit of measurements where h_bar=1, m=1/2 and lambda=1. After
     diagonalization, euclidean correlation functions and their log-deriva-
-    tive are computer. All results are saved into files.
+    tive are computer, and finally the free energy. All results are saved
+    into files.
         
     Parameters
     ----------
@@ -348,6 +349,10 @@ def anharmonic_oscillator_diag(n_dim,
     energy_eigenvalues = np.delete(energy_eigenvalues, indices_removed)
     energy_eigenvectors = np.delete(energy_eigenvectors, indices_removed, 1)
 
+    # save energy eigenvalues
+    with open(output_path + '/eigenvalues.txt', 'w') as e_writer:
+        np.savetxt(e_writer, energy_eigenvalues)
+
     # Evaluate the energy dist. rho, rho2, rho2 and matrix elements
     # < 0|x^i|n > , i= 1,2,3.
     # We use the convention for the ladder operators:
@@ -446,31 +451,31 @@ def anharmonic_oscillator_diag(n_dim,
 
     # Logarithmic derivative of the correlators
 
-    # Python methods
-    py_derivative_log_corr_funct = np.gradient(-corr_funct[0], dtau)
-    py_derivative_log_corr_funct2 = np.gradient(-corr_funct[1],
-                                                dtau)
-    py_derivative_log_corr_funct3 = np.gradient(-corr_funct[2],
-                                                dtau)
+#     # Python methods
+#     py_derivative_log_corr_funct = np.gradient(-corr_funct[0], dtau)
+#     py_derivative_log_corr_funct2 = np.gradient(-corr_funct[1],
+#                                                 dtau)
+#     py_derivative_log_corr_funct3 = np.gradient(-corr_funct[2],
+#                                                 dtau)
 
-    with open(output_path + '/py_der_log_corr_funct.txt', 'w') as log_writer:
-        np.savetxt(log_writer, py_derivative_log_corr_funct)
-        np.savetxt(log_writer, py_derivative_log_corr_funct2)
-        np.savetxt(log_writer, py_derivative_log_corr_funct3)
+#     with open(output_path + '/py_der_log_corr_funct.txt', 'w') as log_writer:
+#         np.savetxt(log_writer, py_derivative_log_corr_funct)
+#         np.savetxt(log_writer, py_derivative_log_corr_funct2)
+#         np.savetxt(log_writer, py_derivative_log_corr_funct3)
 
-    # Forward difference
+#     # Forward difference
 
-    fd_derivative_log_corr_funct = log_corr_funct_forward_difference(
-        corr_funct[0], dtau)
-    fd_derivative_log_corr_funct2 = log_corr_funct_forward_difference(
-        corr_funct[1], dtau)
-    fd_derivative_log_corr_funct3 = log_corr_funct_forward_difference(
-        corr_funct[2], dtau)
+#     fd_derivative_log_corr_funct = log_corr_funct_forward_difference(
+#         corr_funct[0], dtau)
+#     fd_derivative_log_corr_funct2 = log_corr_funct_forward_difference(
+#         corr_funct[1], dtau)
+#     fd_derivative_log_corr_funct3 = log_corr_funct_forward_difference(
+#         corr_funct[2], dtau)
 
-    with open(output_path + '/fd_der_log_corr_funct.txt', 'w') as log_writer:
-        np.savetxt(log_writer, fd_derivative_log_corr_funct)
-        np.savetxt(log_writer, fd_derivative_log_corr_funct2)
-        np.savetxt(log_writer, fd_derivative_log_corr_funct3)
+#     with open(output_path + '/fd_der_log_corr_funct.txt', 'w') as log_writer:
+#         np.savetxt(log_writer, fd_derivative_log_corr_funct)
+#         np.savetxt(log_writer, fd_derivative_log_corr_funct2)
+#         np.savetxt(log_writer, fd_derivative_log_corr_funct3)
 
     # Analytic formula
 
@@ -500,3 +505,6 @@ def anharmonic_oscillator_diag(n_dim,
 
     # Helmoltz Free Energy
     free_energy(energy_eigenvalues, output_path)
+
+    # Return first two energy eigenvalues
+

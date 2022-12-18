@@ -414,7 +414,7 @@ def configuration_cooling(x_cold_config,
                                                            x_potential_minimum)
 
         for _ in range(n_trials):
-            x_new = x_cold_config[i] + delta_x * \
+            x_new = x_cold_config[i] + delta_x * 0.1 *\
                     (2 * np.random.uniform(0.0, 1.0) - 1.)
 
             action_loc_new = (np.square(x_new - x_cold_config[i - 1])

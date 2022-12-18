@@ -75,10 +75,12 @@ def random_instanton_liquid_model_heating(n_lattice,  # size of the grid
                            * n_lattice * dtau))
 
     for i_mc in range(n_mc_sweeps):
-        if i_mc % 100 == 0:
+        if i_mc % 10000 == 0:
             print(f'#{i_mc} sweep in {n_mc_sweeps - 1}')
 
-        rilm.rilm_heated_monte_carlo_step(n_ia,
+        # print last config
+        if i_mc % int(n_mc_sweeps-1) == 0:
+            x_ansatz , x_ansatz_heated = rilm.rilm_heated_monte_carlo_step(n_ia,
                                           n_heating,
                                           n_points,
                                           n_meas,
@@ -88,6 +90,24 @@ def random_instanton_liquid_model_heating(n_lattice,  # size of the grid
                                           x_potential_minimum,
                                           dtau,
                                           delta_x)
+            with open(output_path + '/x1_config.txt',
+                      'w') as f_w:
+                np.savetxt(f_w, x_ansatz)
+            with open(output_path + '/x2_config.txt',
+                      'w') as f_w:
+                np.savetxt(f_w, x_ansatz_heated)
+        else:
+            _, _ = rilm.rilm_heated_monte_carlo_step(n_ia,
+                                          n_heating,
+                                          n_points,
+                                          n_meas,
+                                          tau_array,
+                                          x_cor_sums,
+                                          x2_cor_sums,
+                                          x_potential_minimum,
+                                          dtau,
+                                          delta_x)
+
 
     utility_custom. \
         output_correlation_functions_and_log(n_points,
