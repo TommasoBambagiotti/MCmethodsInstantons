@@ -535,7 +535,7 @@ def print_density(i_figure):
     # only for #potential_minima = 4
     colors = ['red', 'green', 'orange', 'blue']
 
-    i = 1
+    i = 0
     for pot in np.nditer(potential_minima):
         n_instantons = np.loadtxt(
             f'./output_data/output_cooled_monte_carlo/n_instantons_{i}.txt')
@@ -587,8 +587,8 @@ def print_density(i_figure):
     fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 5))
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    i = 1
-
+    
+    i = 0
     for pot in np.nditer(potential_minima):
         action = np.loadtxt(
             f'./output_data/output_cooled_monte_carlo/action_{i}.txt',
