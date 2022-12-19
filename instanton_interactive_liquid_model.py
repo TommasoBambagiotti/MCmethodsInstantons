@@ -59,10 +59,6 @@ def inst_int_liquid_model(n_lattice,
 
     # Loop 2 expectation density
     action_0 = 4 / 3 * np.power(x_potential_minimum, 3)
-
-    # loop_2 = 8 * np.power(x_potential_minimum, 5 / 2) \
-    #          * np.power(2 / np.pi, 1 / 2) * np.exp(
-    #     -action_0 - 71 / (72 * action_0))
     loop_2 = mc.two_loop_density(x_potential_minimum)
 
     n_ia = int(np.rint(loop_2 * n_lattice * dtau))
@@ -86,8 +82,10 @@ def inst_int_liquid_model(n_lattice,
     start = time.time()
 
     for i_mc in range(n_mc_sweeps):
+        # Store tau centers between iterations
         tau_centers_ia_store = np.copy(tau_centers_ia)
 
+        # Initialize the lattice
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,
                                               x_potential_minimum)
@@ -105,7 +103,8 @@ def inst_int_liquid_model(n_lattice,
 
         if i_mc % 10000 == 0:
             print(f'#{i_mc} sweep in {n_mc_sweeps - 1}')
-
+            
+        # Evolve one center at a time
         for i in range(tau_centers_ia.size):
             tau_centers_ia[i] += \
                 (np.random.uniform(0.0, 1.0) - 0.5) * dx_update
@@ -131,24 +130,11 @@ def inst_int_liquid_model(n_lattice,
                                                 dtau)
 
             delta_action = action_new - action_old
-            if np.exp(-delta_action) > np.random.uniform(0., 1.):
-                action_old = action_new
-            else:
+            if np.exp(-delta_action) < np.random.uniform(0., 1.):
                 tau_centers_ia[i] = tau_centers_ia_store[i]
 
         if (i_mc + 1) < n_conf:
             tau_centers_evolution[i_mc + 1] = tau_centers_ia
-
-        for i in range(0, n_ia, 2):
-            if i == 0:
-                zero_m = tau_centers_ia[-1] - n_lattice * dtau
-            else:
-                zero_m = tau_centers_ia[i - 1]
-
-            z_ia = min((tau_centers_ia[i + 1] - tau_centers_ia[i]),
-                       (tau_centers_ia[i] - zero_m))
-
-            hist_writer.write(str(z_ia) + '\n')
 
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,

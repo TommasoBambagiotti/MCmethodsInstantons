@@ -866,9 +866,10 @@ def print_iilm(i_figure):
     ----------
     None
     """
-    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+ 
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(4, 4))
 
-    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+    ax = fig.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     ax.set_xlabel(r'$\Delta\tau_{IA}$')
     ax.set_ylabel(r'$S_{int}\slash S_{0}$')
@@ -889,73 +890,71 @@ def print_iilm(i_figure):
     # bisogna implementare un modo per capire già quanto vale il potentiale?
     # tipo costruire l'istogramma già nella funzione zero_...
     action_ia = -np.log(hist_2[0:10] / hist_1[0:10]) / (
-            4 / 3 * np.power(1.4, 3))
+        4 / 3 * np.power(1.4, 3))
 
     act_int = np.loadtxt(
         './output_data/output_iilm/streamline/streamline_action_int.txt',
         float, delimiter=' ')
 
-    array_ia = np.loadtxt('./output_data/output_iilm/streamline/array_ia.txt',
+    tau_ia_ansatz = np.loadtxt('./output_data/output_iilm/streamline/tau_ia_ansatz.txt',
                           float, delimiter=' ')
 
-    array_ia_0 = np.loadtxt(
-        './output_data/output_iilm/streamline/array_ia_0.txt',
+    tau_ia_zcr = np.loadtxt(
+        './output_data/output_iilm/streamline/tau_ia_zcr.txt',
         float, delimiter=' ')
 
-    array_int = np.loadtxt(
-        './output_data/output_iilm/streamline/array_int.txt',
+    action_int_ansatz = np.loadtxt(
+        './output_data/output_iilm/streamline/action_int_ansatz.txt',
         float, delimiter=' ')
 
-    array_int_core = np.loadtxt(
-        './output_data/output_iilm/streamline/array_int_core.txt',
+
+    action_int_zcr = np.loadtxt(
+        './output_data/output_iilm/streamline/action_int_zcr.txt',
         float, delimiter=' ')
 
-    array_int_zero_cross = np.loadtxt(
-        './output_data/output_iilm/streamline/array_int_zero_cross.txt',
-        float, delimiter=' ')
+    
 
-    ax.scatter(tau_ia,
-               act_int,
-               marker='^',
-               color='green',
-               label=r'Streamline',
-               s=25
-               )
-
-    ax.plot(array_ia,
-            array_int,
+    ax.plot(tau_ia_ansatz,
+            action_int_ansatz,
             color='blue',
-            label=r'Sum ansatz'
+            label=r'Sum ansatz',
+            zorder = 1
             )
 
-    ax.plot(array_ia,
-            array_int_core,
-            color='orange',
-            label=r'Core repulsion'
-            )
 
-    ax.scatter(array_ia_0,
-               array_int_zero_cross,
+    ax.scatter(tau_ia_zcr,
+               action_int_zcr,
                color='red',
                marker='s',
                label=r'Sum ansatz zero crossing',
-               s=25
+               s=25,
+               zorder = 5
                )
+
+    ax.scatter(tau_ia,
+                act_int,
+                marker='^',
+                color='green',
+                label=r'Streamline',
+                s=25,
+                zorder = 10
+                )
 
     ax.scatter(np.linspace(0.1, 1.0, 10, False),
-               action_ia,
-               marker='s',
-               color='cyan',
-               label=r'Monte Carlo cooling',
-               s=25
-               )
+                action_ia,
+                marker='p',
+                color='orange',
+                label=r'Monte Carlo cooling',
+                s=25
+                )
 
-    ax.legend()
+    ax.legend(loc = 'lower right')
 
-    ax.set_ylim(-2.1, 0.5)
+    ax.set_ylim(-2.1, 0.1)
     ax.set_xlim(-0.05, 2.05)
 
-    fig.savefig(filepath + '/iilm.png', dpi=300)
+    fig.savefig(filepath + '/iilm.png', dpi=300)    
+    
 
 
 def print_streamline(i_figure):
