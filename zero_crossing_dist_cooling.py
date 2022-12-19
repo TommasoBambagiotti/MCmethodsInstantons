@@ -10,6 +10,7 @@ def zero_crossing_cooling_density(n_lattice,
                                   i_cold,
                                   n_sweeps_btw_cooling,
                                   n_cooling_sweeps,
+                                  n_data,
                                   x_potential_minimum=1.4,
                                   dtau=0.05,
                                   delta_x=0.5):
@@ -30,6 +31,8 @@ def zero_crossing_cooling_density(n_lattice,
         Number of Monte Carlo sweeps between two successive cooling.
     n_cooling_sweeps : int
         Total number of cooling sweeps to perform.
+    n_data:
+        Total sample for the histogram
     x_potential_minimum : float, default=1.4
         Position of the minimum(a) of the anharmonic potential.
     dtau : float, default=0.05
@@ -81,7 +84,7 @@ def zero_crossing_cooling_density(n_lattice,
     # Rest of the MC sweeps
     for i_mc in range(n_mc_sweeps - n_equil):
 
-        if count > 600000:
+        if count > n_data:
             break
 
         mc.metropolis_question(x_config,

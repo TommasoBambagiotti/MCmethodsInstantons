@@ -160,7 +160,7 @@ def output_control(path_dir):
                 print('The partent path is not a directory: Error\n')
                 return 0
         else:
-            parent_path.mkdir()
+            parent_path.mkdir(parents=True)
 
     if path_output.exists() is True:
         if path_output.is_dir() is False:
