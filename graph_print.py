@@ -548,7 +548,7 @@ def print_density(i_figure):
                     fmt='.',
                     capsize=2.5,
                     elinewidth=0.5,
-                    color=colors[pot],
+                    color=colors[i],
                     label=f'$\eta = {pot}$')
 
         s0 = 4 / 3 * pow(pot, 3)
@@ -605,7 +605,7 @@ def print_density(i_figure):
                      fmt='.',
                      capsize=2.5,
                      elinewidth=0.5,
-                     color=colors[pot],
+                     color=colors[i],
                      label=f'$\eta = {pot}$')
 
         s0 = 4 / 3 * pow(pot, 3)
