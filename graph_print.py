@@ -23,7 +23,7 @@ def print_potential(i_figure):
     """
     Print the graph for the potential and the first four energy
     levels of the quantum anharmonic oscillator.
-    
+
     Parameters
     ----------
     i_figure : int
@@ -83,9 +83,9 @@ def print_potential(i_figure):
 def print_ground_state(i_figure):
     """
     Print the grooundstate probability distribution of the anharmonic
-    quantum oscillator using the data collected from the diagonalization and 
+    quantum oscillator using the data collected from the diagonalization and
     the Monte Carlo method.
-    
+
     Parameters
     ----------
     i_figure : int
@@ -103,10 +103,8 @@ def print_ground_state(i_figure):
                       figsize=(5, 5))
     ax1 = fig1.add_axes((0.13, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    ax1.set_title('Groundstate distribution $|\psi|^2$',
-                  )
-    ax1.set_xlabel(f'$x (arb. un.)$')
-    ax1.set_ylabel(f'$|\psi|^2$')
+    ax1.set_xlabel('$x$')
+    ax1.set_ylabel('$|\psi|^2$')
 
     hist = np.loadtxt(
         './output_data/output_monte_carlo/ground_state_histogram.txt',
@@ -123,12 +121,12 @@ def print_ground_state(i_figure):
         float, delimiter=' ')
 
     ax1.set_ylim(0.0, 0.55)
-    ax1.hist(hist, 100, (-3, 3), color='blue', label=f'Monte Carlo sim.',
+    ax1.hist(hist, 100, (-3, 3), color='blue', label='Monte Carlo sim.',
              density=True, histtype='step', linewidth=1)
     ax1.plot(x_array, psi_simple_model, color='red',
-             label=f'$\psi$ simple model', linewidth=0.8)
+             label='$\psi$ simple model', linewidth=0.8)
     ax1.plot(x_array, psi_ground_state, color='green',
-             label=f'$\psi$ ground state', linewidth=1)
+             label='$\psi$ ground state', linewidth=1)
 
     ax1.legend(
         fontsize=10)
@@ -143,11 +141,12 @@ def print_graph_free_energy(i_figure):
     Print the graph of the free energy of the anharmonic oscillator computed
     directly from the energy levels, compared with the ones obtained through
     the adiabtic switching and the Virial method.
-    
+
     Parameters
     ----------
     i_figure :int
         Index identifier for the figure
+
     Returns
     ----------
     None
@@ -157,7 +156,6 @@ def print_graph_free_energy(i_figure):
                       figsize=(5, 5))
     ax1 = fig1.add_axes((0.13, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    ax1.set_title("Free energy F")
     ax1.set_ylabel("F")
     ax1.set_xlabel("Temperature")
 
@@ -221,10 +219,10 @@ def print_graph_free_energy(i_figure):
 def print_configuration(folder, i_figure):
     """
     Print the spatial configuration of the lattice. Depending on the input
-    data folder, we print: 
+    data folder, we print:
         1. The quantum configuration compared with its cooled form.
         2. The RILM configuration compared with its heated form.
-        
+
     Parameters
     ----------
     folder : string
@@ -276,7 +274,7 @@ def print_graph_cor_func(folder, setup, i_figure):
         3. RILM.
         4. RILM heated.
         5. IILM hard core.
-        
+
     Parameters
     ----------
     folder : string
@@ -509,7 +507,7 @@ def print_density(i_figure):
     Print the graph of the density of instantons with respect to the
     number of cooling sweeps and the graph of the action per instanton with
     respect to the number of cooling sweeps.
-    
+
     Parameters
     ----------
     i_figure : int
@@ -587,7 +585,7 @@ def print_density(i_figure):
     fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 5))
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    
+
     i = 0
     for pot in np.nditer(potential_minima):
         action = np.loadtxt(
@@ -675,7 +673,7 @@ def print_tau_centers(i_figure):
     """
     Print the evolution of instanton and anti-instanton centres in the
     IILM hard core model.
-    
+
     Parameters
     ----------
     i_figure : int
@@ -716,9 +714,9 @@ def print_switch_density(i_figure):
     """
     Print the graph of the number of instanton density depending on the
     position of the minimum of the potential. We graph the result obtained
-    from the Monte Carlo cooling density and Monte Carlo density switching 
+    from the Monte Carlo cooling density and Monte Carlo density switching
     with the approximations at 1-loop, 2-loop and energy difference E1-E0.
-    
+
     Parameters
     ----------
     i_figure : int
@@ -726,6 +724,11 @@ def print_switch_density(i_figure):
     Returns
     ----------
     None
+
+    Warnings:
+    ----------
+    Excecution fails if these files are not found:
+        './output_data/output_monte_carlo_density_switching/delta_e.txt'
     """
     # you have to import delta_e to use this function
 
@@ -782,7 +785,7 @@ def print_switch_density(i_figure):
 
     # import energy eigenvalues
     delta_e = np.loadtxt(
-        'output_data/output_monte_carlo_density_switching/delta_e.txt') / 2
+        './output_data/output_monte_carlo_density_switching/delta_e.txt') / 2
 
     action = 4 / 3 * np.power(potential, 3)
 
@@ -849,9 +852,9 @@ def print_iilm(i_figure):
     """
     Print the graph of the interactive action depending on the distance
     between the centres of the instanton-anti-instanton pair. We graph
-    the data obtained from the RILM ansatz, the RILM ansatz zcr, the 
+    the data obtained from the RILM ansatz, the RILM ansatz zcr, the
     Streamline method and the Monte Carlo cooling method.
-    
+
     Parameters
     ----------
     i_figure : int
@@ -860,7 +863,7 @@ def print_iilm(i_figure):
     ----------
     None
     """
- 
+
     fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(4, 4))
 
     ax = fig.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
@@ -906,7 +909,7 @@ def print_iilm(i_figure):
         './output_data/output_iilm/streamline/action_int_zcr.txt',
         float, delimiter=' ')
 
-    
+
 
     ax.plot(tau_ia_ansatz,
             action_int_ansatz,
@@ -947,8 +950,8 @@ def print_iilm(i_figure):
     ax.set_ylim(-2.1, 0.1)
     ax.set_xlim(-0.05, 2.05)
 
-    fig.savefig(filepath + '/iilm.png', dpi=300)    
-    
+    fig.savefig(filepath + '/iilm.png', dpi=300)
+
 
 
 def print_streamline(i_figure):
@@ -956,7 +959,7 @@ def print_streamline(i_figure):
     Print the lattice configurations and their action densities
     along the streamline evolution. We have chosen configurations
     with certain values of the action.
-    
+
     Parameters
     ----------
     i_figure : int
