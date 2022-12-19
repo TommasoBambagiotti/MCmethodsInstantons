@@ -727,7 +727,7 @@ def print_switch_density(i_figure):
 
     Warnings:
     ----------
-    Excecution fails if these files are not found:
+    Excecution fails if this file is not found:
         './delta_e.txt'
     """
     # you have to import delta_e to use this function
