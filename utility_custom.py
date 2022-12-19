@@ -89,10 +89,10 @@ def log_central_der_alg(corr_funct, corr_funct_err, delta_step):
                 corr_funct[i_array + 1] - corr_funct[i_array]) \
                                   / (corr_funct[i_array] * delta_step)
 
-        derivative_log_err[i_array] = pow(
-            pow(corr_funct_err[i_array + 1] / corr_funct[i_array], 2)
-            + pow(corr_funct_err[i_array] * corr_funct[i_array + 1]
-                  / pow(corr_funct[i_array], 2), 2), 1 / 2) / delta_step
+        derivative_log_err[i_array] = np.power(
+            np.power(corr_funct_err[i_array + 1] / corr_funct[i_array], 2)
+            + np.power(corr_funct_err[i_array] * corr_funct[i_array + 1]
+                  / np.power(corr_funct[i_array], 2), 2), 1 / 2) / delta_step
 
     return derivative_log, derivative_log_err
 
@@ -337,7 +337,7 @@ def output_correlation_functions_and_log(n_points,
 
                 # subtraction of the constant term (<x^2>)^2 in <x(0)^2x(t)^2>
                 cor_funct_err = np.sqrt(np.square(x_cor_err[i_stat])
-                                        + pow(x_cor_err[i_stat, -1], 2))
+                                        + np.power(x_cor_err[i_stat, -1], 2))
 
                 derivative_log_corr_funct[i_stat], \
                 derivative_log_corr_funct_err[i_stat] = \
@@ -380,14 +380,14 @@ def cor_plot_setup(which_plot=None):
         # montecarlo
         # 2: log-derivative corr. func.; 1: corr. func.
         return {'x_inf_1': -0.05,
-                'x_sup_1': 1.03,
+                'x_sup_1': 1.5,
                 'x_inf_2': -0.05,
-                'x_sup_2': 1.1,
-                'y_inf_2': -1.0,
+                'x_sup_2': 1.5,
+                'y_inf_2': 0,
                 'y_sup_2': 5,
-                'cor1_s': 7,
+                'cor1_s': 0,
                 'cor2_s': 17,
-                'cor3_s': 7,
+                'cor3_s': 0,
                 'cor2_s_fig1': 7}
     elif which_plot in ['d']:
         # montecarlo cooling
