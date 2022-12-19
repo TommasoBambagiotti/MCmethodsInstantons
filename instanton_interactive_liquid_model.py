@@ -7,7 +7,6 @@ import utility_custom
 import utility_monte_carlo as mc
 import utility_rilm as rilm
 
-
 def inst_int_liquid_model(n_lattice,
                           n_mc_sweeps,
                           n_points,
@@ -15,6 +14,8 @@ def inst_int_liquid_model(n_lattice,
                           tau_core,
                           action_core,
                           dx_update,
+                          n_conf = 3000,
+                          n_ia = 0,
                           x_potential_minimum=1.4,
                           dtau=0.05):
     """Compute correlation functions for the anharmonic oscillator
@@ -57,11 +58,13 @@ def inst_int_liquid_model(n_lattice,
     # Eucliadian time
     tau_array = np.linspace(0.0, n_lattice * dtau, n_lattice, False)
 
-    # Loop 2 expectation density
+    # Classical action value
     action_0 = 4 / 3 * np.power(x_potential_minimum, 3)
-    loop_2 = mc.two_loop_density(x_potential_minimum)
 
-    n_ia = int(np.rint(loop_2 * n_lattice * dtau))
+    if n_ia == 0:
+        # n_ia evaluated from 2-loop semi-classical expansion
+        n_ia = int(np.rint(mc.two_loop_density(x_potential_minimum)
+                           * n_lattice * dtau))
 
     # Center of instantons and anti instantons
     tau_centers_ia = rilm.centers_setup(n_ia, tau_array.size)
@@ -71,7 +74,6 @@ def inst_int_liquid_model(n_lattice,
     x2_cor_sums = np.zeros((3, n_points))
 
     # Print evolution in conf of tau centers
-    n_conf = 3000
     tau_centers_evolution = np.zeros((n_conf, n_ia), float)
 
     # Initial centers
@@ -128,7 +130,9 @@ def inst_int_liquid_model(n_lattice,
                                                 dtau)
 
             delta_action = action_new - action_old
-            if np.exp(-delta_action) < np.random.uniform(0., 1.):
+            if np.exp(-delta_action) > np.random.uniform(0., 1.):
+                action_old = action_new
+            else:
                 tau_centers_ia[i] = tau_centers_ia_store[i]
 
         if (i_mc + 1) < n_conf:
