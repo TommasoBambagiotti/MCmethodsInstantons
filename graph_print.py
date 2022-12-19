@@ -728,7 +728,7 @@ def print_switch_density(i_figure):
     Warnings:
     ----------
     Excecution fails if these files are not found:
-        './output_data/output_monte_carlo_density_switching/delta_e.txt'
+        './delta_e.txt'
     """
     # you have to import delta_e to use this function
 
@@ -785,7 +785,7 @@ def print_switch_density(i_figure):
 
     # import energy eigenvalues
     delta_e = np.loadtxt(
-        './output_data/output_monte_carlo_density_switching/delta_e.txt') / 2
+        './delta_e.txt') / 2
 
     action = 4 / 3 * np.power(potential, 3)
 
