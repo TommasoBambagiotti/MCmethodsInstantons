@@ -22,7 +22,7 @@ dtau = 0.05
 def print_potential(i_figure):
     """
     Print the graph for the potential and the first four energy
-    levels of the quantum anharmonic oscillator
+    levels of the quantum anharmonic oscillator.
     
     Parameters
     ----------
@@ -140,7 +140,10 @@ def print_ground_state(i_figure):
 
 def print_graph_free_energy(i_figure):
     """
-
+    Print the graph of the free energy of the anharmonic oscillator computed
+    directly from the energy levels, compared with the ones obtained through
+    the adiabtic switching and the Virial method.
+    
     Parameters
     ----------
     i_figure :int
@@ -217,11 +220,15 @@ def print_graph_free_energy(i_figure):
 
 def print_configuration(folder, i_figure):
     """
-
+    Print the spatial configuration of the lattice. Depending on the input
+    data folder, we print: 
+        1. The quantum configuration compared with its cooled form.
+        2. The RILM configuration compared with its heated form.
+        
     Parameters
     ----------
     folder : string
-        Path to the output folder
+        Path to the input data folder
     i_figure : int
         Index identifier for the figure
     Returns
@@ -262,7 +269,14 @@ def print_configuration(folder, i_figure):
 
 def print_graph_cor_func(folder, setup, i_figure):
     """
-
+    Print the graph for the correlation functions and its logarithmic
+    derivative, obtained from all the different Monte Carlo approaches:
+        1. Monte Carlo.
+        2. Monte Carlo cooling.
+        3. RILM.
+        4. RILM heated.
+        5. IILM hard core.
+        
     Parameters
     ----------
     folder : string
@@ -492,7 +506,10 @@ def print_graph_cor_func(folder, setup, i_figure):
 
 def print_density(i_figure):
     """
-
+    Print the graph of the density of instantons with respect to the
+    number of cooling sweeps and the graph of the action per instanton with
+    respect to the number of cooling sweeps.
+    
     Parameters
     ----------
     i_figure : int
@@ -614,6 +631,10 @@ def print_density(i_figure):
 
 def print_zcr_hist(i_figure):
     """
+    Print the distribution of the number of instanton-anti-instanton pairs
+    with respect to the distance between their zero-crossing centres. We
+    compare the results obtained from the Monte Carlo cooling method and
+    the RILM model.
 
     Parameters
     ----------
@@ -658,7 +679,9 @@ def print_zcr_hist(i_figure):
 
 def print_tau_centers(i_figure):
     """
-
+    Print the evolution of instanton and anti-instanton centres in the
+    IILM hard core model.
+    
     Parameters
     ----------
     i_figure : int
@@ -697,7 +720,11 @@ def print_tau_centers(i_figure):
 
 def print_switch_density(i_figure):
     """
-
+    Print the graph of the number of instanton density depending on the
+    position of the minimum of the potential. We graph the result obtained
+    from the Monte Carlo cooling density and Monte Carlo density switching 
+    with the approximations at 1-loop, 2-loop and energy difference E1-E0.
+    
     Parameters
     ----------
     i_figure : int
@@ -826,7 +853,11 @@ def print_switch_density(i_figure):
 
 def print_iilm(i_figure):
     """
-
+    Print the graph of the interactive action depending on the distance
+    between the centres of the instanton-anti-instanton pair. We graph
+    the data obtained from the RILM ansatz, the RILM ansatz zcr, the 
+    Streamline method and the Monte Carlo cooling method.
+    
     Parameters
     ----------
     i_figure : int
@@ -929,7 +960,10 @@ def print_iilm(i_figure):
 
 def print_streamline(i_figure):
     """
-
+    Print the lattice configurations and their action densities
+    along the streamline evolution. We have chosen configurations
+    with certain values of the action.
+    
     Parameters
     ----------
     i_figure : int
