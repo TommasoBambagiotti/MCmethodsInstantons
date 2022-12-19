@@ -77,8 +77,6 @@ def inst_int_liquid_model(n_lattice,
     # Initial centers
     tau_centers_evolution[0] = tau_centers_ia
 
-    hist_writer = open(output_path + '/zcr_hist.txt', 'w')
-
     start = time.time()
 
     for i_mc in range(n_mc_sweeps):

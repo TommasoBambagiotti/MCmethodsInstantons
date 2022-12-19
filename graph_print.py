@@ -657,15 +657,9 @@ def print_zcr_hist(i_figure):
         './output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
         float, delimiter=' ')
 
-    zcr_int = np.loadtxt('./output_data/output_iilm/iilm/zcr_hist.txt',
-                         float, delimiter=' ')
-
     ax.hist(zcr, 40, (0., 4.), histtype='step',
             color='red', linewidth=1.2,
             label='RILM')
-    ax.hist(zcr_int, 40, (0., 4.), histtype='step',
-            color='orange', linewidth=1.2,
-            label='Core repulsion')  # , density='True')
     ax.hist(zcr_cooling, 40, (0., 4.), histtype='step',
             label='Monte carlo cooling',
             color='blue', linewidth=1.2)  # , density='True')
