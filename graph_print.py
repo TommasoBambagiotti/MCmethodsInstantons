@@ -21,11 +21,13 @@ dtau = 0.05
 
 def print_potential(i_figure):
     """
-
+    Print the graph for the potential and the first four energy
+    levels of the quantum anharmonic oscillator
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -80,11 +82,14 @@ def print_potential(i_figure):
 
 def print_ground_state(i_figure):
     """
-
+    Print the grooundstate probability distribution of the anharmonic
+    quantum oscillator using the data collected from the diagonalization and 
+    the Monte Carlo method.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -138,8 +143,8 @@ def print_graph_free_energy(i_figure):
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure :int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -215,9 +220,10 @@ def print_configuration(folder, i_figure):
 
     Parameters
     ----------
-    folder :
-    i_figure :
-
+    folder : string
+        Path to the output folder
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -259,8 +265,12 @@ def print_graph_cor_func(folder, setup, i_figure):
 
     Parameters
     ----------
-    folder :
-
+    folder : string
+        Path to the output folder
+    setup: dictionary
+        Specifications for the axis limits
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -485,8 +495,8 @@ def print_density(i_figure):
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -607,8 +617,8 @@ def print_zcr_hist(i_figure):
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -651,8 +661,8 @@ def print_tau_centers(i_figure):
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -690,8 +700,8 @@ def print_switch_density(i_figure):
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -819,8 +829,8 @@ def print_iilm(i_figure):
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -922,8 +932,8 @@ def print_streamline(i_figure):
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
