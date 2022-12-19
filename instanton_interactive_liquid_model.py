@@ -7,7 +7,6 @@ import utility_custom
 import utility_monte_carlo as mc
 import utility_rilm as rilm
 
-
 def inst_int_liquid_model(n_lattice,
                           n_mc_sweeps,
                           n_points,
@@ -15,6 +14,8 @@ def inst_int_liquid_model(n_lattice,
                           tau_core,
                           action_core,
                           dx_update,
+                          n_conf = 3000,
+                          n_ia = 0,
                           x_potential_minimum=1.4,
                           dtau=0.05):
     """Compute correlation functions for the anharmonic oscillator
@@ -57,15 +58,13 @@ def inst_int_liquid_model(n_lattice,
     # Eucliadian time
     tau_array = np.linspace(0.0, n_lattice * dtau, n_lattice, False)
 
-    # Loop 2 expectation density
+    # Classical action value
     action_0 = 4 / 3 * np.power(x_potential_minimum, 3)
 
-    # loop_2 = 8 * np.power(x_potential_minimum, 5 / 2) \
-    #          * np.power(2 / np.pi, 1 / 2) * np.exp(
-    #     -action_0 - 71 / (72 * action_0))
-    loop_2 = mc.two_loop_density(x_potential_minimum)
-
-    n_ia = int(np.rint(loop_2 * n_lattice * dtau))
+    if n_ia == 0:
+        # n_ia evaluated from 2-loop semi-classical expansion
+        n_ia = int(np.rint(mc.two_loop_density(x_potential_minimum)
+                           * n_lattice * dtau))
 
     # Center of instantons and anti instantons
     tau_centers_ia = rilm.centers_setup(n_ia, tau_array.size)
@@ -75,19 +74,18 @@ def inst_int_liquid_model(n_lattice,
     x2_cor_sums = np.zeros((3, n_points))
 
     # Print evolution in conf of tau centers
-    n_conf = 3000
     tau_centers_evolution = np.zeros((n_conf, n_ia), float)
 
     # Initial centers
     tau_centers_evolution[0] = tau_centers_ia
 
-    hist_writer = open(output_path + '/zcr_hist.txt', 'w')
-
     start = time.time()
 
     for i_mc in range(n_mc_sweeps):
+        # Store tau centers between iterations
         tau_centers_ia_store = np.copy(tau_centers_ia)
 
+        # Initialize the lattice
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,
                                               x_potential_minimum)
@@ -105,7 +103,8 @@ def inst_int_liquid_model(n_lattice,
 
         if i_mc % 10000 == 0:
             print(f'#{i_mc} sweep in {n_mc_sweeps - 1}')
-
+            
+        # Evolve one center at a time
         for i in range(tau_centers_ia.size):
             tau_centers_ia[i] += \
                 (np.random.uniform(0.0, 1.0) - 0.5) * dx_update
@@ -138,17 +137,6 @@ def inst_int_liquid_model(n_lattice,
 
         if (i_mc + 1) < n_conf:
             tau_centers_evolution[i_mc + 1] = tau_centers_ia
-
-        for i in range(0, n_ia, 2):
-            if i == 0:
-                zero_m = tau_centers_ia[-1] - n_lattice * dtau
-            else:
-                zero_m = tau_centers_ia[i - 1]
-
-            z_ia = min((tau_centers_ia[i + 1] - tau_centers_ia[i]),
-                       (tau_centers_ia[i] - zero_m))
-
-            hist_writer.write(str(z_ia) + '\n')
 
         x_config = rilm.ansatz_instanton_conf(tau_centers_ia,
                                               tau_array,

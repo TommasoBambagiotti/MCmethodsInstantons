@@ -21,11 +21,13 @@ dtau = 0.05
 
 def print_potential(i_figure):
     """
-
+    Print the graph for the potential and the first four energy
+    levels of the quantum anharmonic oscillator.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -80,11 +82,14 @@ def print_potential(i_figure):
 
 def print_ground_state(i_figure):
     """
-
+    Print the grooundstate probability distribution of the anharmonic
+    quantum oscillator using the data collected from the diagonalization and 
+    the Monte Carlo method.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -135,11 +140,14 @@ def print_ground_state(i_figure):
 
 def print_graph_free_energy(i_figure):
     """
-
+    Print the graph of the free energy of the anharmonic oscillator computed
+    directly from the energy levels, compared with the ones obtained through
+    the adiabtic switching and the Virial method.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure :int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -212,12 +220,17 @@ def print_graph_free_energy(i_figure):
 
 def print_configuration(folder, i_figure):
     """
-
+    Print the spatial configuration of the lattice. Depending on the input
+    data folder, we print: 
+        1. The quantum configuration compared with its cooled form.
+        2. The RILM configuration compared with its heated form.
+        
     Parameters
     ----------
-    folder :
-    i_figure :
-
+    folder : string
+        Path to the input data folder
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -256,11 +269,22 @@ def print_configuration(folder, i_figure):
 
 def print_graph_cor_func(folder, setup, i_figure):
     """
-
+    Print the graph for the correlation functions and its logarithmic
+    derivative, obtained from all the different Monte Carlo approaches:
+        1. Monte Carlo.
+        2. Monte Carlo cooling.
+        3. RILM.
+        4. RILM heated.
+        5. IILM hard core.
+        
     Parameters
     ----------
-    folder :
-
+    folder : string
+        Path to the output folder
+    setup: dictionary
+        Specifications for the axis limits
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -482,11 +506,14 @@ def print_graph_cor_func(folder, setup, i_figure):
 
 def print_density(i_figure):
     """
-
+    Print the graph of the density of instantons with respect to the
+    number of cooling sweeps and the graph of the action per instanton with
+    respect to the number of cooling sweeps.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -508,7 +535,7 @@ def print_density(i_figure):
     # only for #potential_minima = 4
     colors = ['red', 'green', 'orange', 'blue']
 
-    i = 1
+    i = 0
     for pot in np.nditer(potential_minima):
         n_instantons = np.loadtxt(
             f'./output_data/output_cooled_monte_carlo/n_instantons_{i}.txt')
@@ -521,7 +548,7 @@ def print_density(i_figure):
                     fmt='.',
                     capsize=2.5,
                     elinewidth=0.5,
-                    color=colors[pot],
+                    color=colors[i],
                     label=f'$\eta = {pot}$')
 
         s0 = 4 / 3 * pow(pot, 3)
@@ -560,8 +587,8 @@ def print_density(i_figure):
     fig2 = plt.figure(i_figure + 1, facecolor="#fafafa", figsize=(5, 5))
     ax2 = fig2.add_axes((0.1, 0.1, 0.8, 0.8), facecolor="#e1e1e1")
 
-    i = 1
-
+    
+    i = 0
     for pot in np.nditer(potential_minima):
         action = np.loadtxt(
             f'./output_data/output_cooled_monte_carlo/action_{i}.txt',
@@ -578,7 +605,7 @@ def print_density(i_figure):
                      fmt='.',
                      capsize=2.5,
                      elinewidth=0.5,
-                     color=colors[pot],
+                     color=colors[i],
                      label=f'$\eta = {pot}$')
 
         s0 = 4 / 3 * pow(pot, 3)
@@ -604,11 +631,15 @@ def print_density(i_figure):
 
 def print_zcr_hist(i_figure):
     """
+    Print the distribution of the number of instanton-anti-instanton pairs
+    with respect to the distance between their zero-crossing centres. We
+    compare the results obtained from the Monte Carlo cooling method and
+    the RILM model.
 
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -626,15 +657,9 @@ def print_zcr_hist(i_figure):
         './output_data/output_cooled_monte_carlo/zero_crossing/zcr_cooling.txt',
         float, delimiter=' ')
 
-    zcr_int = np.loadtxt('./output_data/output_iilm/iilm/zcr_hist.txt',
-                         float, delimiter=' ')
-
     ax.hist(zcr, 40, (0., 4.), histtype='step',
             color='red', linewidth=1.2,
             label='RILM')
-    ax.hist(zcr_int, 40, (0., 4.), histtype='step',
-            color='orange', linewidth=1.2,
-            label='Core repulsion')  # , density='True')
     ax.hist(zcr_cooling, 40, (0., 4.), histtype='step',
             label='Monte carlo cooling',
             color='blue', linewidth=1.2)  # , density='True')
@@ -648,11 +673,13 @@ def print_zcr_hist(i_figure):
 
 def print_tau_centers(i_figure):
     """
-
+    Print the evolution of instanton and anti-instanton centres in the
+    IILM hard core model.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -687,11 +714,15 @@ def print_tau_centers(i_figure):
 
 def print_switch_density(i_figure):
     """
-
+    Print the graph of the number of instanton density depending on the
+    position of the minimum of the potential. We graph the result obtained
+    from the Monte Carlo cooling density and Monte Carlo density switching 
+    with the approximations at 1-loop, 2-loop and energy difference E1-E0.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
@@ -816,18 +847,23 @@ def print_switch_density(i_figure):
 
 def print_iilm(i_figure):
     """
-
+    Print the graph of the interactive action depending on the distance
+    between the centres of the instanton-anti-instanton pair. We graph
+    the data obtained from the RILM ansatz, the RILM ansatz zcr, the 
+    Streamline method and the Monte Carlo cooling method.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
     """
-    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(6, 4.5))
+ 
+    fig = plt.figure(i_figure, facecolor="#fafafa", figsize=(4, 4))
 
-    ax = fig.add_axes((0.11, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
+    ax = fig.add_axes((0.17, 0.11, 0.8, 0.8), facecolor="#e1e1e1")
 
     ax.set_xlabel(r'$\Delta\tau_{IA}$')
     ax.set_ylabel(r'$S_{int}\slash S_{0}$')
@@ -848,82 +884,83 @@ def print_iilm(i_figure):
     # bisogna implementare un modo per capire già quanto vale il potentiale?
     # tipo costruire l'istogramma già nella funzione zero_...
     action_ia = -np.log(hist_2[0:10] / hist_1[0:10]) / (
-            4 / 3 * np.power(1.4, 3))
+        4 / 3 * np.power(1.4, 3))
 
     act_int = np.loadtxt(
         './output_data/output_iilm/streamline/streamline_action_int.txt',
         float, delimiter=' ')
 
-    array_ia = np.loadtxt('./output_data/output_iilm/streamline/array_ia.txt',
+    tau_ia_ansatz = np.loadtxt('./output_data/output_iilm/streamline/tau_ia_ansatz.txt',
                           float, delimiter=' ')
 
-    array_ia_0 = np.loadtxt(
-        './output_data/output_iilm/streamline/array_ia_0.txt',
+    tau_ia_zcr = np.loadtxt(
+        './output_data/output_iilm/streamline/tau_ia_zcr.txt',
         float, delimiter=' ')
 
-    array_int = np.loadtxt(
-        './output_data/output_iilm/streamline/array_int.txt',
+    action_int_ansatz = np.loadtxt(
+        './output_data/output_iilm/streamline/action_int_ansatz.txt',
         float, delimiter=' ')
 
-    array_int_core = np.loadtxt(
-        './output_data/output_iilm/streamline/array_int_core.txt',
+
+    action_int_zcr = np.loadtxt(
+        './output_data/output_iilm/streamline/action_int_zcr.txt',
         float, delimiter=' ')
 
-    array_int_zero_cross = np.loadtxt(
-        './output_data/output_iilm/streamline/array_int_zero_cross.txt',
-        float, delimiter=' ')
+    
 
-    ax.scatter(tau_ia,
-               act_int,
-               marker='^',
-               color='green',
-               label=r'Streamline',
-               s=25
-               )
-
-    ax.plot(array_ia,
-            array_int,
+    ax.plot(tau_ia_ansatz,
+            action_int_ansatz,
             color='blue',
-            label=r'Sum ansatz'
+            label=r'Sum ansatz',
+            zorder = 1
             )
 
-    ax.plot(array_ia,
-            array_int_core,
-            color='orange',
-            label=r'Core repulsion'
-            )
 
-    ax.scatter(array_ia_0,
-               array_int_zero_cross,
+    ax.scatter(tau_ia_zcr,
+               action_int_zcr,
                color='red',
                marker='s',
                label=r'Sum ansatz zero crossing',
-               s=25
+               s=25,
+               zorder = 5
                )
+
+    ax.scatter(tau_ia,
+                act_int,
+                marker='^',
+                color='green',
+                label=r'Streamline',
+                s=25,
+                zorder = 10
+                )
 
     ax.scatter(np.linspace(0.1, 1.0, 10, False),
-               action_ia,
-               marker='s',
-               color='cyan',
-               label=r'Monte Carlo cooling',
-               s=25
-               )
+                action_ia,
+                marker='p',
+                color='orange',
+                label=r'Monte Carlo cooling',
+                s=25
+                )
 
-    ax.legend()
+    ax.legend(loc = 'lower right')
 
-    ax.set_ylim(-2.1, 0.5)
+    ax.set_ylim(-2.1, 0.1)
     ax.set_xlim(-0.05, 2.05)
 
-    fig.savefig(filepath + '/iilm.png', dpi=300)
+    fig.savefig(filepath + '/iilm.png', dpi=300)    
+    
 
 
 def print_streamline(i_figure):
     """
-
+    Print the lattice configurations and their action densities
+    along the streamline evolution. We have chosen configurations
+    with certain values of the action.
+    
     Parameters
     ----------
-    i_figure :
-
+    i_figure : int
+        Index identifier for the figure
     Returns
     ----------
     None
